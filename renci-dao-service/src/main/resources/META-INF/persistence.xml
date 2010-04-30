@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="1.0">
+  <persistence-unit name="rsp">
+    <provider>org.apache.openjpa.persistence.PersistenceProviderImpl</provider>
+    <class>org.renci.gate.dao.domain.Account</class>
+    <class>org.renci.gate.dao.domain.AccountGroup</class>
+    <class>org.renci.gate.dao.domain.ExecutionAttempt</class>
+    <class>org.renci.gate.dao.domain.GlideIn</class>
+    <class>org.renci.gate.dao.domain.Input</class>
+    <class>org.renci.gate.dao.domain.Job</class>
+    <class>org.renci.gate.dao.domain.Output</class>
+    <class>org.renci.gate.dao.domain.PhoneHome</class>
+    <class>org.renci.gate.dao.domain.Site</class>
+    <class>org.renci.gate.dao.domain.SiteSnapshot</class>
+    <properties>
+      <property name="openjpa.ConnectionURL" value="jdbc:postgresql://localhost:5432/rsp"/>
+      <property name="openjpa.ConnectionDriverName" value="org.postgresql.Driver"/>
+      <property name="openjpa.ConnectionUserName" value="rsp-user"/>
+      <property name="openjpa.ConnectionPassword" value="rsp-pwd"/>
+      <property name="openjpa.Log" value="DefaultLevel=WARN, Tool=INFO"/>
+    </properties>
+  </persistence-unit>
+</persistence>
