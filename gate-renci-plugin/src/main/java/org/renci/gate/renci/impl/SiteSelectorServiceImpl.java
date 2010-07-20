@@ -13,8 +13,8 @@ import org.apache.commons.io.FileUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.renci.gate.Site;
-import org.renci.gate.dao.PersistenceException;
-import org.renci.gate.dao.SitePersistence;
+import org.renci.gate.api.persistence.PersistenceException;
+import org.renci.gate.api.persistence.SitePersistenceService;
 import org.renci.gate.services.SiteSelectorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,17 +76,19 @@ public class SiteSelectorServiceImpl implements SiteSelectorService {
         logger.debug("ENTERING getSiteList()");
 
         List<Site> siteList = new ArrayList<Site>();
-        ServiceReference serviceReference = context.getServiceReference(SitePersistence.class.getName());
-        SitePersistence sitePersistence = (SitePersistence) context.getService(serviceReference);
-        List<org.renci.gate.dao.domain.Site> dbSiteList = null;
+        
+        ServiceReference serviceReference = context.getServiceReference(SitePersistenceService.class.getName());
+        SitePersistenceService sitePersistenceService = (SitePersistenceService) context.getService(serviceReference);
+        
+        List<? extends org.renci.gate.api.persistence.Site> dbSiteList = null;
         try {
-            dbSiteList = sitePersistence.findAll();
+            dbSiteList = sitePersistenceService.findAll();
         } catch (PersistenceException e) {
             e.printStackTrace();
         }
 
         if (dbSiteList != null && dbSiteList.size() > 0) {
-            for (org.renci.gate.dao.domain.Site s : dbSiteList) {
+            for (org.renci.gate.api.persistence.Site s : dbSiteList) {
 
                 Site site = new Site();
                 site.setGatekeeper(s.getGatekeeperHost());
@@ -110,5 +112,4 @@ public class SiteSelectorServiceImpl implements SiteSelectorService {
 
         return siteList;
     }
-
 }
