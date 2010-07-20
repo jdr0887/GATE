@@ -15,49 +15,41 @@
     <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.osgi.core</artifactId>
-      <version>1.5.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>pax-logging-service</artifactId>
-      <version>1.4</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>pax-logging-api</artifactId>
-      <version>1.4</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.renci.gate</groupId>
       <artifactId>gate-commons</artifactId>
-      <version>1.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.renci.gate</groupId>
       <artifactId>gate-shell-service</artifactId>
-      <version>1.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>1.4</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.renci.gate</groupId>
-      <artifactId>renci-dao-service</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <artifactId>renci-persistence-jpa</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-jpa_2.0_spec</artifactId>
-      <version>1.0</version>
+      <groupId>org.renci.gate</groupId>
+      <artifactId>renci-api</artifactId>
       <scope>provided</scope>
     </dependency>
   </dependencies>
@@ -66,20 +58,12 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>1.4.3</version>
-        <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-Name>GATE :: RENCI Plugin</Bundle-Name>
             <Bundle-Description>test</Bundle-Description>
-            <Bundle-Activator>org.renci.gate.plugin.Activator</Bundle-Activator>
-            <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-            <Bundle-Vendor>RENCI</Bundle-Vendor>
+            <Bundle-Activator>org.renci.gate.renci.Activator</Bundle-Activator>
             <Import-Package>*</Import-Package>
             <Private-Package>org.renci.gate.renci.*</Private-Package>
-	    <Bundle-ClassPath>.,{maven-dependencies}</Bundle-ClassPath>
-            <Embed-Dependency>*;scope=compile|runtime;inline=true</Embed-Dependency>
-            <Embed-Transitive>true</Embed-Transitive>
           </instructions>
         </configuration>
       </plugin>

@@ -15,25 +15,21 @@
     <dependency>
       <groupId>org.apache.felix</groupId>
       <artifactId>org.osgi.core</artifactId>
-      <version>1.5.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>pax-logging-service</artifactId>
-      <version>1.4</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.ops4j.pax.logging</groupId>
       <artifactId>pax-logging-api</artifactId>
-      <version>1.4</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>1.4</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
@@ -42,15 +38,10 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>1.4.3</version>
-        <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-Name>GATE :: Shell Service</Bundle-Name>
             <Bundle-Description>test</Bundle-Description>
             <Bundle-Activator>org.renci.gate.shell.Activator</Bundle-Activator>
-            <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-            <Bundle-Vendor>RENCI</Bundle-Vendor>
             <Export-Package>org.renci.gate.shell*;version=${project.version}</Export-Package>
             <Import-Package>!org.renci.gate.shell*,*</Import-Package>
             <Private-Package>org.renci.gate.shell.*</Private-Package>

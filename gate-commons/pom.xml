@@ -9,21 +9,15 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.renci.gate</groupId>
   <artifactId>gate-commons</artifactId>
-  <version>1.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <build>
     <plugins>
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
-        <version>1.4.3</version>
-        <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Bundle-Name>GATE :: Commons</Bundle-Name>
             <Bundle-Description>test</Bundle-Description>
-            <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
-            <Bundle-Vendor>RENCI</Bundle-Vendor>
             <Export-Package>org.renci.gate*;version=${project.version}</Export-Package>
             <Import-Package>!org.renci.gate*,*</Import-Package>
             <Private-Package>org.renci.gate.*</Private-Package>
