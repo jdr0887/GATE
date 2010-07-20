@@ -38,9 +38,12 @@ public class MainTask extends TimerTask {
                     .getName(), null);
             if (siteSelectorServiceRefArray != null) {
                 for (ServiceReference serviceRef : siteSelectorServiceRefArray) {
+                    logger.info(serviceRef.toString());
                     SiteSelectorService siteSelectorService = (SiteSelectorService) context.getService(serviceRef);
-                    siteList.addAll(siteSelectorService.getSiteList());
-                    context.ungetService(serviceRef);
+                    if (siteSelectorService != null) {
+                        siteList.addAll(siteSelectorService.getSiteList());
+                    }
+                    //context.ungetService(serviceRef);
                 }
             }
         } catch (InvalidSyntaxException e) {
