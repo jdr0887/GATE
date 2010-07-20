@@ -3,7 +3,7 @@ package org.renci.gate.tg;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.renci.gate.services.SiteSelectorService;
-import org.renci.gate.tg.impl.SiteSelectorServiceReSS;
+import org.renci.gate.tg.impl.SiteSelectorServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +17,7 @@ public class Activator implements BundleActivator {
 
     public void start(BundleContext context) throws Exception {
         logger.debug("ENTERING start(BundleContext)");
-        SiteSelectorService sss = new SiteSelectorServiceReSS(context);
+        SiteSelectorService sss = new SiteSelectorServiceImpl(context);
         context.registerService(SiteSelectorService.class.getName(), sss, null);
     }
 
