@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:tx="http://aries.apache.org/xmlns/transactions/v1.0.0" xmlns:jpa="http://aries.apache.org/xmlns/jpa/v1.0.0"
+  default-activation="lazy">
+
+  <bean id="accountGroupImpl" class="org.renci.gate.persistence.AccountGroupPersistenceServiceImpl">
+    <tx:transaction method="*" value="Required" />
+    <jpa:context property="entityManager" unitname="rsp" />
+  </bean>
+
+  <bean id="accountImpl" class="org.renci.gate.persistence.AccountPersistenceServiceImpl">
+    <tx:transaction method="*" value="Required" />
+    <jpa:context property="entityManager" unitname="rsp" />
+  </bean>
+
+  <bean id="executionAttemptImpl" class="org.renci.gate.persistence.ExecutionAttemptPersistenceServiceImpl">
+    <tx:transaction method="*" value="Required" />
+    <jpa:context property="entityManager" unitname="rsp" />
+  </bean>
+
+  <bean id="glideInImpl" class="org.renci.gate.persistence.GlideInPersistenceServiceImpl">
+    <tx:transaction method="*" value="Required" />
+    <jpa:context property="entityManager" unitname="rsp" />
+  </bean>
+
+  <bean id="inputImpl" class="org.renci.gate.persistence.InputPersistenceServiceImpl">
+    <tx:transaction method="*" value="Required" />
+    <jpa:context property="entityManager" unitname="rsp" />
+  </bean>
+
+  <bean id="jobImpl" class="org.renci.gate.persistence.JobPersistenceServiceImpl">
+    <tx:transaction method="*" value="Required" />
+    <jpa:context property="entityManager" unitname="rsp" />
+  </bean>
+
+  <bean id="outputImpl" class="org.renci.gate.persistence.OutputPersistenceServiceImpl">
+    <tx:transaction method="*" value="Required" />
+    <jpa:context property="entityManager" unitname="rsp" />
+  </bean>
+
+  <bean id="phoneHomeImpl" class="org.renci.gate.persistence.PhoneHomePersistenceServiceImpl">
+    <tx:transaction method="*" value="Required" />
+    <jpa:context property="entityManager" unitname="rsp" />
+  </bean>
+
+  <bean id="siteImpl" class="org.renci.gate.persistence.SitePersistenceServiceImpl">
+    <tx:transaction method="*" value="Required" />
+    <jpa:context property="entityManager" unitname="rsp" />
+  </bean>
+
+  <bean id="siteSnapshotImpl" class="org.renci.gate.persistence.SiteSnapshotPersistenceServiceImpl">
+    <tx:transaction method="*" value="Required" />
+    <jpa:context property="entityManager" unitname="rsp" />
+  </bean>
+
+  <service ref="accountGroupImpl" interface="org.renci.gate.api.persistence.AccountGroupPersistenceService" />
+  <service ref="accountImpl" interface="org.renci.gate.api.persistence.AccountPersistenceService" />
+  <service ref="executionAttemptImpl" interface="org.renci.gate.api.persistence.ExecutionAttemptPersistenceService" />
+  <service ref="glideInImpl" interface="org.renci.gate.api.persistence.GlideInPersistenceService" />
+  <service ref="inputImpl" interface="org.renci.gate.api.persistence.InputPersistenceService" />
+  <service ref="jobImpl" interface="org.renci.gate.api.persistence.JobPersistenceService" />
+  <service ref="outputImpl" interface="org.renci.gate.api.persistence.OutputPersistenceService" />
+  <service ref="phoneHomeImpl" interface="org.renci.gate.api.persistence.PhoneHomePersistenceService" />
+  <service ref="siteImpl" interface="org.renci.gate.api.persistence.SitePersistenceService" />
+  <service ref="siteSnapshotImpl" interface="org.renci.gate.api.persistence.SiteSnapshotPersistenceService" />
+
+</blueprint>
