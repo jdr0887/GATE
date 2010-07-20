@@ -1,0 +1,128 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.renci</groupId>
+    <artifactId>gate</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <name>RENCI-PERSISTENCE-JPA</name>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.renci.gate</groupId>
+  <artifactId>renci-persistence-jpa</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>bundle</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.felix</groupId>
+      <artifactId>org.osgi.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.logging</groupId>
+      <artifactId>pax-logging-service</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.logging</groupId>
+      <artifactId>pax-logging-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.renci.gate</groupId>
+      <artifactId>renci-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jpa_2.0_spec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jta_1.1_spec</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.renci.gate</groupId>
+      <artifactId>serp-osgi</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.renci.gate</groupId>
+      <artifactId>postgresql-osgi</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.openjpa</groupId>
+      <artifactId>openjpa</artifactId>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Meta-Persistence>META-INF/persistence.xml</Meta-Persistence>
+            <Bundle-Description>test</Bundle-Description>
+            <Private-Package>org.renci.gate.persistence.*</Private-Package>
+            <Export-Package>!org.renci.gate.persistence.*</Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-antrun-plugin</artifactId>
+	<executions>
+	  <execution>
+	    <phase>compile</phase>
+	    <configuration>
+	      <tasks>
+		<path id="enhance.path.ref">
+		  <fileset dir="${project.build.outputDirectory}">
+		    <include name="AccountGroupImpl.class" />
+		    <include name="AccountImpl.class" />
+		    <include name="ExecutionAttemptImpl.class" />
+		    <include name="GlideInImpl.class" />
+		    <include name="InputImpl.class" />
+		    <include name="JobImpl.class" />
+		    <include name="OutputImpl.class" />
+		    <include name="PhoneHomeImpl.class" />
+		    <include name="SiteImpl.class" />
+		    <include name="SiteSnapshotImpl.class" />
+		  </fileset>
+		</path>
+		<pathconvert property="enhance.files" refid="enhance.path.ref" pathsep=" " />
+		<java classname="org.apache.openjpa.enhance.PCEnhancer">
+		  <arg line="-p persistence.xml" />
+		  <arg line="${enhance.files}" />
+		  <classpath>
+		    <path refid="maven.dependency.classpath" />
+		    <path refid="maven.compile.classpath" />
+		  </classpath>
+		</java>
+	      </tasks>
+	    </configuration>
+	    <goals>
+	      <goal>run</goal>
+	    </goals>
+	  </execution>
+	</executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+
