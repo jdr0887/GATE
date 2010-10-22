@@ -6,12 +6,16 @@
   <artifactId>gate</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
+  <properties>
+    <postgresql.version>8.4-701.jdbc3</postgresql.version>
+    <serp.version>1.13.1</serp.version>
+  </properties>
   <dependencyManagement>
     <dependencies>
       <dependency>
 	<groupId>org.apache.felix</groupId>
 	<artifactId>org.osgi.core</artifactId>
-	<version>1.5.0-SNAPSHOT</version>
+	<version>1.4.0</version>
       </dependency>
       <dependency>
 	<groupId>junit</groupId>
@@ -46,12 +50,12 @@
       <dependency>
 	<groupId>org.renci.gate</groupId>
 	<artifactId>postgresql-osgi</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>${postgresql.version}</version>
       </dependency>
       <dependency>
 	<groupId>org.apache.aries.transaction</groupId>
 	<artifactId>org.apache.aries.transaction.blueprint</artifactId>
-	<version>0.2-incubating-SNAPSHOT</version>
+	<version>0.2-incubating</version>
       </dependency>
       <dependency>
 	<groupId>org.apache.geronimo.components</groupId>
@@ -65,23 +69,23 @@
       </dependency>
       <dependency>
 	<groupId>org.renci.gate</groupId>
-	<artifactId>renci-persistence-jpa</artifactId>
+	<artifactId>rsp-persistence-jpa</artifactId>
 	<version>1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
 	<groupId>org.renci.gate</groupId>
-	<artifactId>renci-api</artifactId>
+	<artifactId>rsp-persistence-api</artifactId>
 	<version>1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
 	<groupId>postgresql</groupId>
 	<artifactId>postgresql</artifactId>
-	<version>8.4-701.jdbc3</version>
+	<version>${postgresql.version}</version>
       </dependency>
       <dependency>
 	<groupId>net.sourceforge.serp</groupId>
 	<artifactId>serp</artifactId>
-	<version>1.13.1</version>
+	<version>${serp.version}</version>
       </dependency>
       <dependency>
 	<groupId>org.apache.geronimo.specs</groupId>
@@ -96,7 +100,7 @@
       <dependency>
 	<groupId>org.renci.gate</groupId>
 	<artifactId>serp-osgi</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>${serp.version}</version>
       </dependency>
       <dependency>
 	<groupId>commons-lang</groupId>
@@ -107,11 +111,6 @@
 	<groupId>commons-collections</groupId>
 	<artifactId>commons-collections</artifactId>
 	<version>3.2.1</version>
-      </dependency>
-      <dependency>
-	<groupId>org.renci.gate</groupId>
-	<artifactId>postgresql-osgi</artifactId>
-	<version>1.0-SNAPSHOT</version>
       </dependency>
       <dependency>
 	<groupId>org.apache.openjpa</groupId>
@@ -178,8 +177,8 @@
     <module>gate-renci-plugin</module>
     <module>gate-tg-plugin</module>
     <module>gate-osg-plugin</module>
-    <module>renci-api</module>
-    <module>renci-persistence-jpa</module>
+    <module>rsp-persistence-api</module>
+    <module>rsp-persistence-jpa</module>
     <module>postgresql-osgi</module>
     <module>serp-osgi</module>
   </modules>
