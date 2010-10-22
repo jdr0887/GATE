@@ -11,7 +11,7 @@
   <name>SERP-OSGI</name>
   <groupId>org.renci.gate</groupId>
   <artifactId>serp-osgi</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>${serp.version}</version>
   <packaging>bundle</packaging>
   <dependencies>
     <dependency>
