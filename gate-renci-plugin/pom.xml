@@ -44,12 +44,12 @@
     </dependency>
     <dependency>
       <groupId>org.renci.gate</groupId>
-      <artifactId>renci-persistence-jpa</artifactId>
+      <artifactId>rsp-persistence-jpa</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.renci.gate</groupId>
-      <artifactId>renci-api</artifactId>
+      <artifactId>rsp-persistence-api</artifactId>
       <scope>provided</scope>
     </dependency>
   </dependencies>
