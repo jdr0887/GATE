@@ -41,8 +41,8 @@
       <artifactId>geronimo-jta_1.1_spec</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.renci.gate</groupId>
-      <artifactId>serp-osgi</artifactId>
+      <groupId>net.sourceforge.serp</groupId>
+      <artifactId>serp</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -61,8 +61,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.renci.gate</groupId>
-      <artifactId>postgresql-osgi</artifactId>
+      <groupId>postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.openjpa</groupId>
@@ -77,9 +78,9 @@
         <configuration>
           <instructions>
             <Meta-Persistence>META-INF/persistence.xml</Meta-Persistence>
-            <Bundle-Description>test</Bundle-Description>
-            <Private-Package>org.renci.gate.persistence.*</Private-Package>
-            <Export-Package>!org.renci.gate.persistence.*</Export-Package>
+            <Private-Package/>
+            <Export-Package>org.renci.gate.persistence.*</Export-Package>
+            <Import-Package>*</Import-Package>
           </instructions>
         </configuration>
       </plugin>
