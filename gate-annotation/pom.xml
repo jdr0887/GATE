@@ -9,8 +9,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.renci.gate</groupId>
   <artifactId>gate-annotation</artifactId>
-  <version>0.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
+  <packaging>bundle</packaging>
   <build>
     <plugins>
       <plugin>
@@ -19,8 +18,9 @@
         <configuration>
           <instructions>
             <Bundle-Description>Gate Annotations</Bundle-Description>
-            <Import-Package>!org.renci.gate.annotations*,*</Import-Package>
-            <Private-Package>org.renci.gate.annotations.*</Private-Package>
+            <Export-Package>org.renci.gate.annotation*;version=${project.version}</Export-Package>
+            <Import-Package>!org.renci.gate.annotation*,*</Import-Package>
+            <Private-Package/>
           </instructions>
         </configuration>
       </plugin>
