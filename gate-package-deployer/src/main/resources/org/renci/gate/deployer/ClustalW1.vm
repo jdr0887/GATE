@@ -1,0 +1,60 @@
+
+function setup() {
+
+	# first some basic setup
+	mkdir -p $APPLICATION_DIR
+	mkdir -p $APPLICATION_DIR/apps
+	mkdir -p $APPLICATION_DIR/bin
+	mkdir -p $APPLICATION_DIR/logs
+	mkdir -p $APPLICATION_DIR/src
+
+	for BINARY in `ls -al $APPLICATION_DIR/bin | grep "${package}/${version}"`; do
+		rm $APPLICATION_DIR/bin/$BINARY
+	done
+
+	# install the environement files
+	pushd $APPLICATION_DIR; rm -f setup.sh; wget -q ${sourceURL}/environment/setup.sh; popd
+
+}
+
+function install() {
+
+	mkdir -p $APPLICATION_DIR/src/${package}
+	mkdir -p $APPLICATION_DIR/apps/${package}/${version}
+	
+	cd $APPLICATION_DIR/src/${package}
+	rm -rf clustalw${version}* clustalw.patch
+	
+	wget -nv ${sourceURL}/packages/${runMode}/clustalw${version}.UNIX.tar.gz
+	wget -nv ${sourceURL}/packages/${runMode}/clustalw.patch
+	
+	tar xzf clustalw${version}.UNIX.tar.gz
+	rm clustalw${version}.UNIX.tar.gz
+	cd clustalw${version}
+	
+	make
+	cp clustalw $APPLICATION_DIR/apps/${package}/${version}/
+	
+	# and a patched version
+	make clean
+	patch -p1 < ../clustalw.patch
+	make
+	cp clustalw $APPLICATION_DIR/apps/${package}/${version}/clustalw-patched
+	
+	ln -s -f $APPLICATION_DIR/apps/${package}/${version}/clustalw $APPLICATION_DIR/bin/clustalw
+	ln -s -f $APPLICATION_DIR/apps/${package}/${version}/clustalw-patched $APPLICATION_DIR/bin/clustalw-patched
+	
+	rm -rf $APPLICATION_DIR/src/${package}/${version}
+
+}
+
+echo "Starting install of ${package}"
+if setup > $APPLICATION_DIR/logs/${package}.build.log 2>&1 && install >> $APPLICATION_DIR/logs/${package}.build.log 2>&1; then
+    echo "Success build of ${package}"
+else
+    echo "Build failed with exit code $?. 100 lines of output:"
+    tail -n 100 $APPLICATION_DIR/logs/${package}.build.log
+    APP_RC=1
+fi
+
+

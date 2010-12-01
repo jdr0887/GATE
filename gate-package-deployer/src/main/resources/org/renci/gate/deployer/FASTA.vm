@@ -1,0 +1,85 @@
+#!/bin/bash
+
+function setup() {
+
+	# first some basic setup
+	mkdir -p $APPLICATION_DIR
+	mkdir -p $APPLICATION_DIR/apps
+	mkdir -p $APPLICATION_DIR/bin
+	mkdir -p $APPLICATION_DIR/logs
+	mkdir -p $APPLICATION_DIR/src
+
+	for BINARY in `ls -al $APPLICATION_DIR/bin | grep "${package}/${version}"`; do
+		rm $APPLICATION_DIR/bin/$BINARY
+	done
+
+	# install the environement files
+	pushd $APPLICATION_DIR; rm -f setup.sh; wget -q ${sourceURL}/environment/setup.sh; popd
+
+}
+
+function install() {
+
+	# set up directories
+	rm -rf $APPLICATION_DIR/src/${package}
+	mkdir -p $APPLICATION_DIR/src/${package}
+	
+	cd $APPLICATION_DIR/src/${package}
+	wget -nv ${sourceURL}/packages/${runMode}/${archive}
+	wget -nv ${sourceURL}/packages/${runMode}/fasta_wrapper
+	zcat ${archive} | sh
+	
+	make all -f Makefile.linux
+	
+	mkdir -p $APPLICATION_DIR/apps/${package}/bin
+	for FILE in \
+	    fasta34 \
+	    fasta34_t \
+	    fastf34 \
+	    fastf34_t \
+	    fastm34 \
+	    fastm34_t \
+	    fasts34 \
+	    fasts34_t \
+	    fastx34 \
+	    fastx34_t \
+	    fasty34 \
+	    fasty34_t \
+	    tfasta34 \
+	    tfasta34_t \
+	    tfastf34 \
+	    tfastf34_t \
+	    tfastm34 \
+	    tfasts34 \
+	    tfasts34_t \
+	    tfastx34 \
+	    tfastx34_t \
+	    tfasty34 \
+	    tfasty34_t \
+	; do
+	    cp $FILE $APPLICATION_DIR/apps/${package}/bin/
+	
+	    WRAPPER=`echo $FILE | sed 's/34//'`
+	    cp $APPLICATION_DIR/src/${package}/fasta_wrapper $APPLICATION_DIR/apps/${package}/bin/$WRAPPER
+	    perl -p -i -e "s:^\\\$executable.*:\\\$executable = \"$APPLICATION_DIR/apps/${package}/bin/$FILE\";:" $APPLICATION_DIR/apps/${package}/bin/$WRAPPER
+	    chmod 755 $APPLICATION_DIR/apps/${package}/bin/$WRAPPER
+	
+	    ln -s -f $APPLICATION_DIR/apps/${package}/bin/$WRAPPER $APPLICATION_DIR/bin/$WRAPPER
+	
+	done
+
+}
+
+
+echo "Starting install of ${package}"
+if setup > $APPLICATION_DIR/logs/${package}.build.log 2>&1 && install >> $APPLICATION_DIR/logs/${package}.build.log 2>&1; then
+    echo "Success build of ${package}"
+else
+    echo "Build failed with exit code $?. 100 lines of output:"
+    tail -n 100 $APPLICATION_DIR/logs/${package}.build.log
+    APP_RC=1
+fi
+
+
+
+

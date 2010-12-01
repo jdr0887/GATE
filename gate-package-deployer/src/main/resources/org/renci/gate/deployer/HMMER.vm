@@ -1,0 +1,59 @@
+#!/bin/bash
+
+function setup() {
+
+	# first some basic setup
+	mkdir -p $APPLICATION_DIR
+	mkdir -p $APPLICATION_DIR/apps
+	mkdir -p $APPLICATION_DIR/bin
+	mkdir -p $APPLICATION_DIR/logs
+	mkdir -p $APPLICATION_DIR/src
+
+	for BINARY in `ls -al $APPLICATION_DIR/bin | grep "${package}/${version}"`; do
+		rm $APPLICATION_DIR/bin/$BINARY
+	done
+
+	# install the environement files
+	pushd $APPLICATION_DIR; rm -f setup.sh; wget -q ${sourceURL}/environment/setup.sh; popd
+
+}
+
+
+function install() {
+
+	# set up directories
+	rm -rf $APPLICATION_DIR/src/${package}/hmmer-${version}*
+	mkdir -p $APPLICATION_DIR/src/${package}
+	
+	cd $APPLICATION_DIR/src/${package}
+	wget -nv ${sourceURL}/packages/${runMode}/${archive}
+	tar xzf ${archive}
+	
+	cd hmmer-${version}
+	
+	export LDFLAGS='-static'
+	./configure --prefix=$APPLICATION_DIR/apps/${package}/${version} --enable-static --disable-shared
+	make
+	make install
+	
+	# symlinks
+	cd $APPLICATION_DIR/apps/${package}/${version}/bin
+	for BINARY in `ls`; do
+	    ln -s -f $APPLICATION_DIR/apps/${package}/${version}/bin/$BINARY $APPLICATION_DIR/bin/$BINARY
+	done
+	
+	cd $APPLICATION_DIR
+	rm -rf $APPLICATION_DIR/src/${package}/hmmer-${version}*
+
+}
+
+echo "Starting install of ${package}"
+if setup > $APPLICATION_DIR/logs/${package}.build.log 2>&1 && install >> $APPLICATION_DIR/logs/${package}.build.log 2>&1; then
+    echo "Success build of ${package}"
+else
+    echo "Build failed with exit code $?. 100 lines of output:"
+    tail -n 100 $APPLICATION_DIR/logs/${package}.build.log
+    APP_RC=1
+fi
+
+
