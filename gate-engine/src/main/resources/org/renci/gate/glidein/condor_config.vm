@@ -1,0 +1,117 @@
+
+WORK_DIR=$(LOCAL_DIR)
+
+LOG = $(LOCAL_DIR)/log
+EXECUTE = $(LOCAL_DIR)/execute
+HOSTALLOW_ADMINISTRATOR = $(HOSTNAME), $(GLIDEIN_HOST)
+
+CONDOR_ADMIN="portal-staff@renci.org"
+
+MAIL = /bin/mail
+CONDOR_ADMIN = "jdr0887@renci.org"
+DAEMON_LIST = MASTER, STARTD  
+MASTER_ADDRESS_FILE = $(LOG)/.master_address
+MASTER = $(SBIN)/condor_master              
+MASTER_LOG = $(LOG)/MasterLog               
+STARTD = $(SBIN)/condor_startd              
+STARTER = $(SBIN)/condor_starter            
+PROCD = $(SBIN)/condor_procd                
+PROCD_LOG = $(LOG)/ProcLog                  
+PROCD_ADDRESS = $(LOCK)/procd_address       
+
+STARTER_STD = $(SBIN)/condor_starter.std
+STARTER_LIST = STARTER, STARTER_STD      
+
+USE_NFS = False
+USE_CKPT_SERVER = False
+
+COLLECTOR_HOST = baleen.renci.org
+
+LOCK = $(LOG)
+STARTD_LOG = $(LOG)/StartLog
+STARTER_LOG = $(LOG)/StarterLog
+
+STARTD_DEBUG = D_COMMAND
+
+JOB_RENICE_INCREMENT = 0
+
+# advertise site information and what user we are serving
+GLIDEIN_SITE_NAME = "${siteName}"
+GLIDEIN_PARENT_ID = "${glideinParentId}"       
+GLIDEIN_CHILD_ID = "@GLIDEIN_CHILD_ID@"
+PortalUser = "${portalUser}"                   
+
+STARTER_JOB_ENVIRONMENT = GLIDEIN_SITE_NAME=${siteName};GLIDEIN_PARENT_ID=${glideinParentId};GLIDEIN_CHILD_ID=@GLIDEIN_CHILD_ID@;OSG_DATA=@OSG_DATA@;OSG_APP=@OSG_APP@;OSG_WN_TMP=@OSG_WN_TMP@
+
+USER_JOB_WRAPPER = $(WORK_DIR)/user-job-wrapper.sh
+
+MAX_SLOT_TYPES = 1
+SLOT_TYPE_1 = cpus=1, ram=2000, swap=10%, disk=25%
+NUM_SLOTS_TYPE_1 = 1                              
+SLOTS_CONNECTED_TO_CONSOLE = 0                    
+SLOTS_CONNECTED_TO_KEYBOARD = 0                   
+
+REQUIREMENTS = (START)
+START = (TARGET.PortalUser == "${portalUser}")                  
+RANK = 0
+SUSPEND = False                      
+CONTINUE = True                      
+PREEMPT = False                     
+WANT_VACATE = False
+WANT_SUSPEND = True
+SUSPEND_VANILLA = False              
+WANT_SUSPEND_VANILLA = True   
+WANT_UDP_COMMAND_SOCKET=False 
+KILL = False    
+         
+IS_GLIDEIN = True                    
+#STARTD_EXPRS = IS_GLIDEIN,START,DaemonStopTime,GLIDEIN_SITE_NAME,GLIDEIN_PARENT_ID,GLIDEIN_CHILD_ID,PortalUser,${siteClassAdAttributesKeys}
+STARTD_ATTRS = IS_GLIDEIN,START,DaemonStopTime,GLIDEIN_SITE_NAME,GLIDEIN_PARENT_ID,GLIDEIN_CHILD_ID,PortalUser,${siteClassAdAttributesKeys}
+    
+
+MASTER_GCB_RECONNECT_TIMEOUT=1200
+GCB_ORDER="NONE"
+#MASTER_WAITS_FOR_GCB_BROKER = False
+SEC_DEFAULT_AUTHENTICATION = REQUIRED
+SEC_DEFAULT_AUTHENTICATION_METHODS = GSI
+SEC_DEFAULT_ENCRYPTION=OPTIONAL
+SEC_DEFAULT_INTEGRITY=REQUIRED
+SEC_ENABLE_MATCH_PASSWORD_AUTHENTICATION=True
+
+GSI_DAEMON_DIRECTORY = $(WORK_DIR)/glidein/grid-security
+GRIDMAP = $(GSI_DAEMON_DIRECTORY)/grid-mapfile 
+
+GSI_DAEMON_NAME = /C=US/O=National Center for Supercomputing Applications/OU=People/CN=Bioportal Community User,\
+/DC=org/DC=doegrids/OU=Services/CN=RENCI Science Portal/arnoux.renci.org,\
+/O=Grid/OU=RENCI Bioportal/CN=host/arnoux.renci.org,\
+/O=Grid/OU=RENCI Bioportal/CN=host/baleen.renci.org,\
+/O=Grid/OU=RENCI Bioportal/CN=host/gervais.renci.org,\
+/O=Grid/OU=RENCI Bioportal/CN=host/irrawaddy.renci.org,\
+/O=Grid/OU=RENCI Bioportal/CN=host/porpoise.renci.org,\
+/O=Grid/OU=RENCI Bioportal/CN=host/sei.renci.org,\
+/O=Grid/OU=RENCI Bioportal/CN=host/rorqual.renci.org,\
+/O=RENCI/OU=Globus/OU=renci.org/CN=Science Portal,\
+/O=Grid/OU=RENCI Bioportal/CN=scienceportal
+
+# Tell Condor to use a network remapping service
+#NET_REMAP_ENABLE = true                         
+#NET_REMAP_SERVICE = GCB                         
+# Public IP address (in standard dot notation) of the GCB broker(s)
+# serving this private node.                                       
+#NET_REMAP_INAGENT = 152.54.1.84     
+
+USE_CCB="True"
+CCB_ADDRESS=$(COLLECTOR_HOST)
+#PRIVATE_NETWORK_NAME=$(HOSTNAME)
+
+# run cron job to advertise application and database information
+STARTD_CRON_NAME = EXTRA
+EXTRA_JOBLIST = job1
+EXTRA_job1_PREFIX =
+EXTRA_job1_EXECUTABLE = $(WORK_DIR)/advertise-capabilities
+EXTRA_job1_ARGS =
+EXTRA_job1_PERIOD = 15m
+EXTRA_job1_MODE = periodic
+EXTRA_job1_RECONFIG = true
+EXTRA_job1_KILL = true
+
