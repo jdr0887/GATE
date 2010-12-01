@@ -14,16 +14,19 @@
   <packaging>bundle</packaging>
   <dependencies>
     <dependency>
-      <groupId>org.renci.gate</groupId>
-      <artifactId>postgresql-osgi</artifactId>
+      <groupId>postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.aries.transaction</groupId>
       <artifactId>org.apache.aries.transaction.blueprint</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.geronimo.components</groupId>
       <artifactId>geronimo-transaction</artifactId>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>commons-dbcp</groupId>
