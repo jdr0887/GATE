@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.renci.gate</groupId>
+    <artifactId>bundles</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <name>CRYPTIX-ASN1</name>
+  <groupId>org.renci.gate.bundles</groupId>
+  <artifactId>cryptix-asn1</artifactId>
+  <version>${cryptix-asn1.version}</version>
+  <packaging>bundle</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>cryptix</groupId>
+      <artifactId>cryptix-asn1</artifactId>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+	<groupId>org.apache.felix</groupId>
+	<artifactId>maven-bundle-plugin</artifactId>
+	<configuration>
+	  <instructions>
+	    <Private-Package/>
+	    <Export-Package>*</Export-Package>
+	    <Import-Package>*</Import-Package>
+	  </instructions>
+	</configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
