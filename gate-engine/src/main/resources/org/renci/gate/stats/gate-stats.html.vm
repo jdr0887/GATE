@@ -1,0 +1,31 @@
+<HTML>
+<HEAD>
+<TITLE>Portal GlideIn stats</TITLE>
+</HEAD>
+
+<BODY BGCOLOR="white" TEXT="black" LINK="blue" VLINK="red">
+<CENTER>
+<FONT SIZE="7"></FONT>
+</CENTER>
+
+<img src="gate-stats.png"/>
+
+<h3>User Jobs</h3>
+
+${userJobs}
+
+<h3>Registered Glideins - available to serve jobs</h3>
+
+${registeredGlideIns}
+
+<h3>Glideins Jobs</h3>
+
+${glideInJobs}
+
+<h3>Verified Sites</h3>
+
+${verifiedSites}
+
+
+</BODY>
+</HTML>
