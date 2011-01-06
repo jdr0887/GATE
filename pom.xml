@@ -26,15 +26,16 @@
     <gridshib-saml-tools.version>0.5.0</gridshib-saml-tools.version>
     <opensaml.version>1.1</opensaml.version>
     <globus-opensaml.version>1.1</globus-opensaml.version>
+    <rrd4j.version>2.0.5</rrd4j.version>
   </properties>
   <url>http://beluga.renci.org/m2/gate/project-info.html</url>
   <issueManagement>
     <system>gForge</system>
-    <url>https://code.renci.org/</url>
+    <url>https://code.renci.org/gf/project/gate/tracker/</url>
   </issueManagement>
   <ciManagement>
-    <system>continuum</system>
-    <url>http://devtools.renci.org:8080/continuum</url>
+    <system>hudson</system>
+    <url>https://ci-dev.renci.org/hudson</url>
     <notifiers>
       <notifier>
 	<type>mail</type>
@@ -59,6 +60,19 @@
   </scm>
   <repositories>
     <repository>
+      <id>ibiblio.repository</id>
+      <name>ibiblio.repository</name>
+      <url>http://mirrors.ibiblio.org/pub/mirrors/maven2</url>
+      <releases>
+	<enabled>true</enabled>
+      </releases>
+      <snapshots>
+	<enabled>true</enabled>
+	<updatePolicy>never</updatePolicy>
+	<checksumPolicy>fail</checksumPolicy>
+      </snapshots>
+    </repository>
+    <repository>
       <id>jboss</id>
       <name>jboss.repository</name>
       <url>http://repository.jboss.com/maven2/</url>
@@ -74,9 +88,9 @@
       </snapshots>
     </repository>
     <repository>
-      <id>renci.repository</id>
-      <name>renci.repository</name>
-      <url>http://beluga.renci.org/m2/repository</url>
+      <id>opennms.repository</id>
+      <name>opennms.repository</name>
+      <url>http://repo.opennms.org/maven2/</url>
       <releases>
 	<enabled>true</enabled>
 	<updatePolicy>always</updatePolicy>
@@ -89,11 +103,13 @@
       </snapshots>
     </repository>
     <repository>
-      <id>ibiblio.repository</id>
-      <name>ibiblio.repository</name>
-      <url>http://mirrors.ibiblio.org/pub/mirrors/maven2</url>
+      <id>renci.repository</id>
+      <name>renci.repository</name>
+      <url>http://ci-dev.renci.org/nexus/content/repositories/release</url>
       <releases>
 	<enabled>true</enabled>
+	<updatePolicy>always</updatePolicy>
+	<checksumPolicy>warn</checksumPolicy>
       </releases>
       <snapshots>
 	<enabled>true</enabled>
@@ -102,8 +118,43 @@
       </snapshots>
     </repository>
   </repositories>
+  <developers>
+    <developer>
+      <id>jdr0887</id>
+      <name>Jason Reilly</name>
+      <email>jdr0887@renci.org</email>
+      <url>http://www.renci.org/~jdr0887</url>
+      <organization>Rennaissance Computing Institute</organization>
+      <organizationUrl>http://www.renci.org/</organizationUrl>
+      <roles>
+        <role>Senior Research Software Developer</role>
+      </roles>
+    </developer>
+  </developers>
+  <distributionManagement>
+    <repository>
+      <id>renci.repository</id>
+      <name>renci.repository</name>
+      <url>https://ci-dev.renci.org/nexus/content/repositories/release</url>
+    </repository>
+    <snapshotRepository>
+      <id>renci.repository</id>
+      <name>renci.repository</name>
+      <url>https://ci-dev.renci.org/nexus/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <site>
+      <id>renci.site</id>
+      <name>renci.site</name>
+      <url>file:///${user.dir}/sites/gate</url>
+    </site>
+  </distributionManagement>
   <dependencyManagement>
     <dependencies>
+      <dependency>
+	<groupId>org.rrd4j</groupId>
+	<artifactId>rrd4j</artifactId>
+	<version>${rrd4j.version}</version>
+      </dependency>
       <dependency>
 	<groupId>jaxen</groupId>
 	<artifactId>jaxen</artifactId>
