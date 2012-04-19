@@ -314,7 +314,7 @@
 	    <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
 	    <Implementation-Title>${project.name}</Implementation-Title>
 	    <Implementation-Version>${project.version}</Implementation-Version>
-	    <Bundle-Vendor>UNC</Bundle-Vendor>
+	    <Bundle-Vendor>RENCI</Bundle-Vendor>
 	    <Include-Resource>{maven-resources}</Include-Resource>
 	    <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
 	    <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
@@ -370,6 +370,5 @@
     <module>gate-api</module>
     <module>gate-features</module>
     <module>gate-engine</module>
-    <module>gate-distribution</module>
   </modules>
 </project>
