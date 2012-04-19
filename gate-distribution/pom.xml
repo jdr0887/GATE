@@ -97,7 +97,7 @@
 		<artifactItem>
 		  <groupId>org.renci.gate</groupId>
 		  <artifactId>gate-engine</artifactId>
-		  <version>0.0.1-SNAPSHOT</version>
+		  <version>${project.version}</version>
 		  <outputDirectory>target/dependencies</outputDirectory>
 		</artifactItem>
 	      </artifactItems>
