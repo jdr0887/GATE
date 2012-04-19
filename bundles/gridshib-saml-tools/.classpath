@@ -1,5 +1,0 @@
-<classpath>
-  <classpathentry kind="output" path="target/classes"/>
-  <classpathentry kind="var" path="M2_REPO/org/globus/gridshib-saml-tools/0.5.0/gridshib-saml-tools-0.5.0.jar"/>
-  <classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-</classpath>
