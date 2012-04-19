@@ -1,15 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.renci.gate</groupId>
     <artifactId>gate-bundles</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.1-SNAPSHOT</version>
   </parent>
   <name>GATE :: Bundles :: RRD4J</name>
   <groupId>org.renci.gate.gate-bundles</groupId>
   <artifactId>gate-bundle-rrd4j</artifactId>
-  <version>0.0.1</version>
+  <version>0.0.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <dependencies>
     <dependency>
@@ -24,7 +26,7 @@
 	<artifactId>maven-bundle-plugin</artifactId>
 	<configuration>
 	  <instructions>
-	    <Private-Package />
+	    <Private-Package/>
 	    <Import-Package>com.sun.image.codec.jpeg;resolution:=optional,
 	      sun.misc;resolution:=optional,
 	      sun.nio.ch;resolution:=optional,*</Import-Package>
