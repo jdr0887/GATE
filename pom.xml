@@ -4,16 +4,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.renci</groupId>
   <artifactId>gate</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <properties>
-    <postgresql.version>8.3-603.jdbc4</postgresql.version>
-    <serp.version>1.13.1</serp.version>
+    <karaf.version>2.2.6</karaf.version>
     <jxls-reader.version>0.9.8</jxls-reader.version>
     <jaxen.version>1.1.1</jaxen.version>
     <wutka-dtdparser.version>1.21</wutka-dtdparser.version>
     <milyn-smooks.version>1.3.1</milyn-smooks.version>
-    <drools.version>5.0.1</drools.version>
     <puretls.version>1.1</puretls.version>
     <velocity.version>1.6.4</velocity.version>
     <cog-jglobus.version>1.8.0</cog-jglobus.version>
@@ -24,9 +22,9 @@
     <shib-util.version>1.0</shib-util.version>
     <gridshib-common.version>0.5.0</gridshib-common.version>
     <gridshib-saml-tools.version>0.5.0</gridshib-saml-tools.version>
-    <opensaml.version>1.1</opensaml.version>
-    <globus-opensaml.version>1.1</globus-opensaml.version>
-    <rrd4j.version>2.0.5</rrd4j.version>
+    <rrd4j.version>2.1.1</rrd4j.version>
+    <renci.jlrm.version>0.0.4-SNAPSHOT</renci.jlrm.version>
+    <renci.commons.version>0.1.12</renci.commons.version>
   </properties>
   <url>http://beluga.renci.org/m2/gate/project-info.html</url>
   <issueManagement>
@@ -59,6 +57,11 @@
     <developerConnection>scm:git:ssh://developername@code.renci.org/gitroot/gate</developerConnection>
   </scm>
   <repositories>
+    <repository> 
+      <id>com.springsource.repository.bundles.external</id> 
+      <name>SpringSource Enterprise Bundle Repository - SpringSource Bundle External</name> 
+      <url>http://repository.springsource.com/maven/bundles/external</url> 
+    </repository>
     <repository>
       <id>ibiblio.repository</id>
       <name>ibiblio.repository</name>
@@ -73,39 +76,9 @@
       </snapshots>
     </repository>
     <repository>
-      <id>jboss</id>
-      <name>jboss.repository</name>
-      <url>http://repository.jboss.com/maven2/</url>
-      <releases>
-	<enabled>true</enabled>
-	<updatePolicy>always</updatePolicy>
-	<checksumPolicy>warn</checksumPolicy>
-      </releases>
-      <snapshots>
-	<enabled>true</enabled>
-	<updatePolicy>never</updatePolicy>
-	<checksumPolicy>fail</checksumPolicy>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>opennms.repository</id>
-      <name>opennms.repository</name>
-      <url>http://repo.opennms.org/maven2/</url>
-      <releases>
-	<enabled>true</enabled>
-	<updatePolicy>always</updatePolicy>
-	<checksumPolicy>warn</checksumPolicy>
-      </releases>
-      <snapshots>
-	<enabled>true</enabled>
-	<updatePolicy>never</updatePolicy>
-	<checksumPolicy>fail</checksumPolicy>
-      </snapshots>
-    </repository>
-    <repository>
       <id>renci.repository</id>
       <name>renci.repository</name>
-      <url>http://ci-dev.renci.org/nexus/content/repositories/release</url>
+      <url>http://ci-dev.renci.org/nexus/content/repositories/public</url>
       <releases>
 	<enabled>true</enabled>
 	<updatePolicy>always</updatePolicy>
@@ -151,109 +124,47 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
-	<groupId>org.rrd4j</groupId>
-	<artifactId>rrd4j</artifactId>
-	<version>${rrd4j.version}</version>
+	<groupId>org.renci.gate.gate-plugins</groupId>
+	<artifactId>gate-plugin-kure</artifactId>
+	<version>0.0.1-SNAPSHOT</version>      
+      </dependency>     
+      <dependency>
+	<groupId>org.apache.felix</groupId>
+	<artifactId>org.apache.felix.main</artifactId>
+	<version>4.0.2</version>
       </dependency>
       <dependency>
-	<groupId>jaxen</groupId>
-	<artifactId>jaxen</artifactId>
-	<version>${jaxen.version}</version>
+	<groupId>org.apache.karaf</groupId>
+	<artifactId>apache-karaf</artifactId>
+	<version>${karaf.version}</version>
+	<type>tar.gz</type>
       </dependency>
       <dependency>
-	<groupId>com.wutka</groupId>
-	<artifactId>dtdparser</artifactId>
-	<version>${wutka-dtdparser.version}</version>
+	<groupId>org.apache.karaf</groupId>
+	<artifactId>apache-karaf</artifactId>
+	<version>${karaf.version}</version>
+	<type>xml</type>
+	<classifier>features</classifier>
       </dependency>
       <dependency>
-	<groupId>org.milyn</groupId>
-	<artifactId>milyn-commons</artifactId>
-	<version>${milyn-smooks.version}</version>
+	<groupId>org.renci.jlrm</groupId>
+	<artifactId>jlrm-api</artifactId>
+	<version>${renci.jlrm.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.milyn</groupId>
-	<artifactId>milyn-smooks-core</artifactId>
-	<version>${milyn-smooks.version}</version>
+	<groupId>org.renci.jlrm.jlrm-pbs</groupId>
+	<artifactId>jlrm-pbs-api</artifactId>
+	<version>${renci.jlrm.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.milyn</groupId>
-	<artifactId>milyn-smooks-javabean</artifactId>
-	<version>${milyn-smooks.version}</version>
-      </dependency>
+	<groupId>org.renci.jlrm.jlrm-lsf</groupId>
+	<artifactId>jlrm-lsf-ssh</artifactId>
+	<version>${renci.jlrm.version}</version>
+      </dependency>      
       <dependency>
-	<groupId>com.claymoresystems</groupId>
-	<artifactId>puretls</artifactId>
-	<version>${puretls.version}</version>
-      </dependency>
-      <dependency>
-	<groupId>org.globus.jglobus</groupId>
-	<artifactId>cog-jglobus</artifactId>
-	<version>${cog-jglobus.version}</version>
-      </dependency>
-      <dependency>
-	<groupId>cryptix</groupId>
-	<artifactId>cryptix</artifactId>
-	<version>${cryptix.version}</version>
-      </dependency>
-      <dependency>
-	<groupId>cryptix</groupId>
-	<artifactId>cryptix-asn1</artifactId>
-	<version>${cryptix-asn1.version}</version>
-      </dependency>
-      <dependency>
-	<groupId>cryptix</groupId>
-	<artifactId>cryptix32</artifactId>
-	<version>${cryptix32.version}</version>
-      </dependency>
-      <dependency>
-	<groupId>org.bouncycastle</groupId>
-	<artifactId>jce</artifactId>
-	<version>${bouncycastle-jce.version}</version>
-      </dependency>
-      <dependency>
-	<groupId>edu.internet2.middleware</groupId>
-	<artifactId>shib-util</artifactId>
-	<version>${shib-util.version}</version>
-      </dependency>
-      <dependency>
-	<groupId>org.globus</groupId>
-	<artifactId>gridshib-common</artifactId>
-	<version>${gridshib-common.version}</version>
-      </dependency>
-      <dependency>
-	<groupId>org.globus</groupId>
-	<artifactId>gridshib-saml-tools</artifactId>
-	<version>${gridshib-saml-tools.version}</version>
-      </dependency>
-      <dependency>
-	<groupId>org.opensaml</groupId>
-	<artifactId>opensaml</artifactId>
-	<version>${opensaml.version}</version>
-      </dependency>
-      <dependency>
-	<groupId>org.globus</groupId>
-	<artifactId>globus-opensaml</artifactId>
-	<version>${globus-opensaml.version}</version>
-      </dependency>
-      <dependency>
-	<groupId>org.drools</groupId>
-	<artifactId>drools-api</artifactId>
-	<version>${drools.version}</version>
-      </dependency>
-      <dependency>
-	<groupId>org.drools</groupId>
-	<artifactId>drools-core</artifactId>
-	<version>${drools.version}</version>
-      </dependency>
-      <dependency>
-	<groupId>org.drools</groupId>
-	<artifactId>drools-compiler</artifactId>
-	<version>${drools.version}</version>
-      </dependency>
-      <dependency>
-	<groupId>org.drools</groupId>
-	<artifactId>drools-decisiontables</artifactId>
-	<version>${drools.version}</version>
+	<groupId>org.renci.jlrm.jlrm-condor</groupId>
+	<artifactId>jlrm-condor-cli</artifactId>
+	<version>${renci.jlrm.version}</version>
       </dependency>
       <dependency>
 	<groupId>org.apache.felix</groupId>
@@ -261,29 +172,56 @@
 	<version>1.4.0</version>
       </dependency>
       <dependency>
-	<groupId>junit</groupId>
-	<artifactId>junit</artifactId>
-	<version>4.1</version>
+	<groupId>org.renci.gate</groupId>
+	<artifactId>gate-api</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
       </dependency>
+      <dependency>
+	<groupId>org.renci.gate.gate-bundles</groupId>
+	<artifactId>gate-bundle-rrd4j</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+      </dependency>            
+      <dependency>
+	<groupId>org.renci.gate</groupId>
+	<artifactId>gate-features</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<type>xml</type>
+	<classifier>features</classifier>
+      </dependency>            
+      <dependency>
+	<groupId>org.renci.gate</groupId>
+	<artifactId>gate-config</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+      </dependency>            
+      <dependency>
+	<groupId>org.rrd4j</groupId>
+	<artifactId>rrd4j</artifactId>
+	<version>${rrd4j.version}</version>
+      </dependency>      
       <dependency>
 	<groupId>org.ops4j.pax.logging</groupId>
 	<artifactId>pax-logging-service</artifactId>
-	<version>1.4</version>
+	<version>1.6.3</version>
       </dependency>
       <dependency>
 	<groupId>org.ops4j.pax.logging</groupId>
 	<artifactId>pax-logging-api</artifactId>
-	<version>1.4</version>
+	<version>1.6.3</version>
       </dependency>
       <dependency>
-	<groupId>org.renci.gate</groupId>
-	<artifactId>gate-annotation</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<groupId>org.renci.commons</groupId>
+	<artifactId>commons-exec</artifactId>
+	<version>${renci.commons.version}</version>
       </dependency>
       <dependency>
-	<groupId>org.apache.velocity</groupId>
-	<artifactId>velocity-tools</artifactId>
-	<version>2.0</version>
+	<groupId>org.renci.commons</groupId>
+	<artifactId>commons-reflection</artifactId>
+	<version>${renci.commons.version}</version>
+      </dependency>
+      <dependency>
+	<groupId>junit</groupId>
+	<artifactId>junit</artifactId>
+	<version>4.8.2</version>
       </dependency>
       <dependency>
 	<groupId>org.apache.velocity</groupId>
@@ -291,89 +229,19 @@
 	<version>1.6.4</version>
       </dependency>
       <dependency>
-	<groupId>org.apache.velocity</groupId>
-	<artifactId>velocity-tools</artifactId>
-	<version>2.0</version>
+	<groupId>org.slf4j</groupId>
+	<artifactId>slf4j-api</artifactId>
+	<version>1.6.2</version>
       </dependency>
       <dependency>
-	<groupId>org.renci.launchers</groupId>
-	<artifactId>condor-cli-launcher</artifactId>
-	<version>0.4</version>
-      </dependency>
-      <dependency>
-	<groupId>org.renci.launchers</groupId>
-	<artifactId>launcher-api</artifactId>
-	<version>0.4</version>
-      </dependency>
-      <dependency>
-	<groupId>org.renci.commons</groupId>
-	<artifactId>commons-reflection</artifactId>
-	<version>0.3</version>
-      </dependency>
-      <dependency>
-	<groupId>org.renci.commons</groupId>
-	<artifactId>commons-exec</artifactId>
-	<version>0.4-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-	<groupId>org.renci.gate</groupId>
-	<artifactId>gate-api</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<groupId>org.slf4j</groupId>
+	<artifactId>slf4j-simple</artifactId>
+	<version>1.6.2</version>
       </dependency>
       <dependency>
 	<groupId>commons-io</groupId>
 	<artifactId>commons-io</artifactId>
-	<version>1.4</version>
-      </dependency>
-      <dependency>
-	<groupId>org.apache.aries.transaction</groupId>
-	<artifactId>org.apache.aries.transaction.blueprint</artifactId>
-	<version>0.2-incubating</version>
-      </dependency>
-      <dependency>
-	<groupId>org.apache.geronimo.components</groupId>
-	<artifactId>geronimo-transaction</artifactId>
-	<version>2.1.3</version>
-      </dependency>
-      <dependency>
-	<groupId>commons-dbcp</groupId>
-	<artifactId>commons-dbcp</artifactId>
-	<version>1.4</version>
-      </dependency>
-      <dependency>
-	<groupId>org.renci.gate</groupId>
-	<artifactId>rsp-persistence-jpa</artifactId>
-	<version>1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-	<groupId>org.renci.gate</groupId>
-	<artifactId>rsp-persistence-api</artifactId>
-	<version>1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-	<groupId>postgresql</groupId>
-	<artifactId>postgresql</artifactId>
-	<version>${postgresql.version}</version>
-      </dependency>
-      <dependency>
-	<groupId>net.sourceforge.serp</groupId>
-	<artifactId>serp</artifactId>
-	<version>${serp.version}</version>
-      </dependency>
-      <dependency>
-	<groupId>org.apache.velocity</groupId>
-	<artifactId>velocity</artifactId>
-	<version>${velocity.version}</version>
-      </dependency>
-      <dependency>
-	<groupId>org.apache.geronimo.specs</groupId>
-	<artifactId>geronimo-jpa_2.0_spec</artifactId>
-	<version>1.0</version>
-      </dependency>
-      <dependency>
-	<groupId>org.apache.geronimo.specs</groupId>
-	<artifactId>geronimo-jta_1.1_spec</artifactId>
-	<version>1.1.1</version>
+	<version>2.1</version>
       </dependency>
       <dependency>
 	<groupId>commons-lang</groupId>
@@ -381,69 +249,58 @@
 	<version>2.4</version>
       </dependency>
       <dependency>
-	<groupId>commons-collections</groupId>
-	<artifactId>commons-collections</artifactId>
-	<version>3.2.1</version>
+	<groupId>org.jgrapht</groupId>
+	<artifactId>jgrapht-jdk1.6</artifactId>
+	<version>0.8.3</version>
       </dependency>
       <dependency>
-	<groupId>org.apache.openjpa</groupId>
-	<artifactId>openjpa</artifactId>
-	<version>2.0.1</version>
+	<groupId>graphlayout</groupId>
+	<artifactId>graphlayout</artifactId>
+	<version>1.2.1</version>
       </dependency>
       <dependency>
-	<groupId>org.renci.gate</groupId>
-	<artifactId>gate-package-deployer</artifactId>
-	<version>1.0-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-	<groupId>org.renci.cm</groupId>
-	<artifactId>rsp-cm-api</artifactId>
-	<version>0.2-SNAPSHOT</version>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.felix</groupId>
-        <artifactId>org.osgi.compendium</artifactId>
-	<version>1.4.0</version>
-	<exclusions>
-          <exclusion>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>org.osgi.foundation</artifactId>
-          </exclusion>
-          <exclusion>
-            <groupId>org.apache.felix</groupId>
-            <artifactId>javax.servlet</artifactId>
-          </exclusion>
-        </exclusions>
+	<groupId>jgraph</groupId>
+	<artifactId>jgraph</artifactId>
+	<version>5.0.4</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.logging</groupId>
+      <artifactId>pax-logging-service</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.ops4j.pax.logging</groupId>
+      <artifactId>pax-logging-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
   <build>
     <plugins>
       <plugin>
-	<groupId>org.apache.felix</groupId>
-	<artifactId>maven-bundle-plugin</artifactId>
-	<version>2.1.0</version>
-	<extensions>true</extensions>
-	<inherited>true</inherited>
-	<configuration>
-	  <excludeDependencies>${aries.osgi.exclude.dependencies}</excludeDependencies>
-	  <instructions>
-	    <Bundle-Name>GATE :: ${project.name}</Bundle-Name>
-	    <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-	    <Private-Package>${project.artifactId}*.impl</Private-Package>
-	    <Implementation-Title>RENCI GATE</Implementation-Title>
-	    <Implementation-Version>${project.version}</Implementation-Version>
-	    <Bundle-Vendor>RENCI</Bundle-Vendor>
-	    <Include-Resource>{maven-resources}</Include-Resource>
-	    <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
-	    <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
-	    <_failok>false</_failok>
-	  </instructions>
-	</configuration>
-      </plugin>
-      <plugin>
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-compiler-plugin</artifactId>
+	<version>2.3.1</version>
 	<configuration>
 	  <source>1.6</source>
 	  <target>1.6</target>
@@ -452,21 +309,80 @@
       <plugin>
 	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-surefire-plugin</artifactId>
+	<version>2.9</version>
 	<configuration>
 	  <skip>true</skip>
+	</configuration>
+      </plugin>
+      <plugin>
+	<groupId>org.apache.felix</groupId>
+	<artifactId>maven-bundle-plugin</artifactId>
+	<version>2.3.5</version>
+	<extensions>true</extensions>
+	<inherited>true</inherited>
+	<configuration>
+	  <excludeDependencies>${aries.osgi.exclude.dependencies}</excludeDependencies>
+	  <instructions>
+	    <Bundle-Name>${project.name}</Bundle-Name>
+	    <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+	    <Implementation-Title>${project.name}</Implementation-Title>
+	    <Implementation-Version>${project.version}</Implementation-Version>
+	    <Bundle-Vendor>UNC</Bundle-Vendor>
+	    <Include-Resource>{maven-resources}</Include-Resource>
+	    <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
+	    <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
+	    <_failok>false</_failok>
+	  </instructions>
+	</configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.0</version>
+	<executions>
+	  <execution>
+            <id>attach-descriptor</id>
+            <goals>
+              <goal>attach-descriptor</goal>
+            </goals>
+          </execution>
+        </executions>
+	<configuration>
+	  <reportPlugins>
+	    <plugin>
+	      <groupId>org.apache.maven.plugins</groupId>
+	      <artifactId>maven-project-info-reports-plugin</artifactId>
+	      <version>2.4</version>
+	      <configuration>
+		<dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+		<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+	      </configuration>
+	      <reports>
+		<report>scm</report>
+		<report>summary</report>
+		<report>issue-tracking</report>
+		<report>license</report>
+		<report>dependency-convergence</report>
+		<report>project-team</report>
+		<report>mailing-list</report>
+		<!-- <report>distribution-management</report> -->
+		<report>index</report>
+		<report>cim</report>
+		<!-- <report>dependency-management</report> -->
+	      </reports>
+	    </plugin>
+	  </reportPlugins>
 	</configuration>
       </plugin>
     </plugins>
   </build>
   <modules>
-    <module>bundles</module>
-    <module>plugins</module>
+    <module>gate-config</module>
+    <module>gate-bundles</module>
+    <module>gate-plugins</module>
     <module>gate-api</module>
-    <module>gate-annotation</module>
-    <module>gate-package-deployer</module>
+    <module>gate-features</module>
     <module>gate-engine</module>
-    <module>gate-ds</module>
-    <module>rsp-persistence-api</module>
-    <module>rsp-persistence-jpa</module>
+    <module>gate-distribution</module>
   </modules>
 </project>
