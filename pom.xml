@@ -40,8 +40,8 @@
     </license>
   </licenses>
   <scm>
-    <developerConnection>scm:git:ssh://developername@code.renci.org/gitroot/gate</developerConnection>
-    <connection>scm:git:ssh://${user.name}@code.renci.org/gitroot/gate</connection>
+    <developerConnection>scm:git:ssh://${user.name}@code.renci.org/gitroot/gate</developerConnection>
+    <connection>scm:git:ssh://developername@code.renci.org/gitroot/gate</connection>
   </scm>
   <repositories>
     <repository> 
