@@ -24,13 +24,6 @@
       <type>xml</type>
       <classifier>features</classifier>
     </dependency>
-    <dependency>
-      <groupId>org.renci.gate</groupId>
-      <artifactId>gate-features</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
-      <type>xml</type>
-      <classifier>features</classifier>
-    </dependency>
   </dependencies>
   <build>
     <resources>
