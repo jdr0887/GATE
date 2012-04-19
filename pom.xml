@@ -23,7 +23,7 @@
     <gridshib-common.version>0.5.0</gridshib-common.version>
     <gridshib-saml-tools.version>0.5.0</gridshib-saml-tools.version>
     <rrd4j.version>2.1.1</rrd4j.version>
-    <renci.jlrm.version>0.0.4-SNAPSHOT</renci.jlrm.version>
+    <renci.jlrm.version>0.0.4</renci.jlrm.version>
     <renci.commons.version>0.1.12</renci.commons.version>
   </properties>
   <url>http://beluga.renci.org/m2/gate/project-info.html</url>
