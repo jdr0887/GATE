@@ -7,6 +7,7 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <karaf.version>2.2.6</karaf.version>
     <rrd4j.version>2.1.1</rrd4j.version>
     <renci.jlrm.version>0.0.4</renci.jlrm.version>
@@ -39,8 +40,8 @@
     </license>
   </licenses>
   <scm>
-    <connection>scm:git:ssh://developername@code.renci.org/gitroot/gate</connection>
     <developerConnection>scm:git:ssh://developername@code.renci.org/gitroot/gate</developerConnection>
+    <connection>scm:git:ssh://${user.name}@code.renci.org/gitroot/gate</connection>
   </scm>
   <repositories>
     <repository> 
