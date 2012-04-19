@@ -1,0 +1,45 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.renci.gate</groupId>
+    <artifactId>gate-plugins</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <name>GATE :: Plugins :: BlueRidge</name>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.renci.gate.gate-plugins</groupId>
+  <artifactId>gate-plugin-blueridge</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>bundle</packaging>
+  <dependencies>
+    <dependency>
+      <groupId>org.renci.gate</groupId>
+      <artifactId>gate-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.renci.jlrm.jlrm-pbs</groupId>
+      <artifactId>jlrm-pbs-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <configuration>
+          <instructions>
+            <Import-Package>*</Import-Package>
+            <Private-Package>org.renci.gate.renci.*</Private-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
