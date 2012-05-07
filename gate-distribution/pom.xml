@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.renci</groupId>
     <artifactId>gate</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.2-SNAPSHOT</version>
   </parent>
   <name>GATE :: Distribution</name>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.renci.gate</groupId>
   <artifactId>gate-distribution</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.2-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <dependencies>
     <dependency>
@@ -63,7 +63,6 @@
       	    </goals>
       	    <configuration>
               <descriptors>
-                <descriptor>mvn:org.apache.karaf.assemblies.features/standard/${karaf.version}/xml/features</descriptor>
                 <descriptor>mvn:org.renci.gate/gate-features/${project.version}/xml/features</descriptor>
               </descriptors>
               <features>
@@ -79,23 +78,6 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
-          <execution>
-            <id>copy</id>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-	      <artifactItems>
-		<artifactItem>
-		  <groupId>org.renci.gate</groupId>
-		  <artifactId>gate-engine</artifactId>
-		  <version>${project.version}</version>
-		  <outputDirectory>target/dependencies</outputDirectory>
-		</artifactItem>
-	      </artifactItems>
-            </configuration>
-          </execution>
           <execution>
             <id>unpack</id>
             <phase>generate-resources</phase>
