@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  default-activation="lazy">
+
+  <bean id="siteInfo" class="org.renci.gate.SiteInfo">
+    <property name="condorCollectorHost" value="killdevil.its.unc.edu" />
+    <property name="submitHost" value="killdevil.its.unc.edu" />
+    <property name="maxIdleCount" value="10" />
+    <property name="maxMultipleJobs" value="4" />
+    <property name="maxNoClaimTime" value="60" />
+    <property name="maxQueueTime" value="1440" />
+    <property name="maxRunTime" value="2880" />
+    <property name="maxTotalCount" value="50" />
+    <property name="multiplier" value="1" />
+    <property name="name" value="KillDevil" />
+    <property name="project" value="TCGA" />
+    <property name="queue" value="week" />
+  </bean>
+
+  <bean id="killDevilGATEService" class="org.renci.gate.plugins.killdevil.KillDevilGATEService">
+    <property name="siteInfo" ref="siteInfo" />
+    <property name="lsfHome" value="/opt/lsf/8.0/linux2.6-glibc2.3-x86_64/" />
+  </bean>
+
+  <service ref="killDevilGATEService" interface="org.renci.gate.GATEService" />
+
+</blueprint>
