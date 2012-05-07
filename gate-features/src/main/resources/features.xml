@@ -12,7 +12,7 @@
     <bundle>mvn:org.bouncycastle/com.springsource.org.bouncycastle.jce/1.39.0</bundle>
     <bundle>mvn:com.sleepycat.je/com.springsource.com.sleepycat.je/3.3.87</bundle>
     <bundle>mvn:com.jcraft.jzlib/com.springsource.com.jcraft.jzlib/1.0.7</bundle>
-    <bundle>mvn:net.schmizz/sshj/0.7.0</bundle>
+    <bundle>mvn:com.jcraft.jsch/com.springsource.com.jcraft.jsch/0.1.41</bundle>
     <bundle>mvn:org.apache.openjpa/openjpa/2.1.1</bundle>
     <bundle>mvn:org.apache.geronimo.specs/geronimo-validation_1.0_spec/1.1</bundle>
     <bundle>mvn:org.codehaus.jettison/jettison/1.3.1</bundle>
@@ -26,12 +26,12 @@
     <bundle>mvn:org.renci.jlrm.jlrm-lsf/jlrm-lsf-api/${renci.jlrm.version}</bundle>
     <bundle>mvn:org.renci.jlrm.jlrm-lsf/jlrm-lsf-cli/${renci.jlrm.version}</bundle>
     <bundle>mvn:org.renci.jlrm.jlrm-lsf/jlrm-lsf-ssh/${renci.jlrm.version}</bundle>
-  </feature>
-
-  <feature name="gate-core" version="${project.version}" resolver="(obr)">
     <bundle>mvn:org.renci.gate/gate-api/${project.version}</bundle>
     <bundle>mvn:org.renci.gate/gate-config/${project.version}</bundle>
-    <bundle>mvn:org.renci.gate/gate-engine/${project.version}</bundle>
+  </feature>
+
+  <feature name="gate-engine" version="${project.version}" resolver="(obr)">
+    <bundle start-level="100">mvn:org.renci.gate/gate-engine/${project.version}</bundle>
   </feature>
 
   <feature name="gate-plugins" version="${project.version}" resolver="(obr)">
@@ -44,8 +44,8 @@
     <feature>jndi</feature>
     <feature>jpa</feature>
     <feature version="${project.version}">gate-common</feature>
-    <feature version="${project.version}">gate-core</feature>
     <feature version="${project.version}">gate-plugins</feature>
+    <feature version="${project.version}">gate-engine</feature>
   </feature>
 
 </features>
