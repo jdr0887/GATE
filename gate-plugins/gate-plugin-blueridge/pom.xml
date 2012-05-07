@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.renci.gate</groupId>
     <artifactId>gate-plugins</artifactId>
@@ -35,7 +36,7 @@
         <configuration>
           <instructions>
             <Import-Package>*</Import-Package>
-            <Private-Package>org.renci.gate.renci.*</Private-Package>
+            <Private-Package>org.renci.gate.plugins.blueridge.*</Private-Package>
           </instructions>
         </configuration>
       </plugin>
