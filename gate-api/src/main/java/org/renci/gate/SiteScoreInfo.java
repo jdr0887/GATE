@@ -32,4 +32,9 @@ public class SiteScoreInfo {
         this.message = message;
     }
 
+    @Override
+    public String toString() {
+        return "SiteScoreInfo [score=" + score + ", message=" + message + "]";
+    }
+
 }
