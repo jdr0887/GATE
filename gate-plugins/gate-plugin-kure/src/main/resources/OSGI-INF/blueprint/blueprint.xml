@@ -4,7 +4,7 @@
 
   <bean id="siteInfo" class="org.renci.gate.SiteInfo">
     <property name="condorCollectorHost" value="biodev1.its.unc.edu" />
-    <property name="submitHost" value="biodev2.its.unc.edu" />
+    <property name="submitHost" value="biodev1.its.unc.edu" />
     <property name="maxIdleCount" value="10" />
     <property name="maxMultipleJobs" value="4" />
     <property name="maxNoClaimTime" value="60" />
