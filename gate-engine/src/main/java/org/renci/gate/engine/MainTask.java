@@ -10,9 +10,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TimerTask;
 
+import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
 import org.renci.gate.GATEService;
 import org.renci.gate.GlideinMetrics;
 import org.renci.gate.SiteScoreInfo;
+import org.renci.gate.config.GATEConfigurationService;
 import org.renci.jlrm.LRMException;
 import org.renci.jlrm.condor.ClassAdvertisement;
 import org.renci.jlrm.condor.ClassAdvertisementFactory;
@@ -25,23 +28,39 @@ public class MainTask extends TimerTask {
 
     private final Logger logger = LoggerFactory.getLogger(MainTask.class);
 
-    private Map<String, GATEService> gateServiceMap;
+    private ServiceTracker tracker;
 
-    private String condorHome;
+    private GATEConfigurationService configService;
 
-    public MainTask(Map<String, GATEService> gateServiceMap, String condorHome) {
+    public MainTask(ServiceTracker tracker, GATEConfigurationService configService) {
         super();
-        this.gateServiceMap = gateServiceMap;
-        this.condorHome = condorHome;
+        this.tracker = tracker;
+        this.configService = configService;
     }
 
     @Override
     public void run() {
 
+        String condorHome = configService.getCoreProperties().getProperty(GATEConfigurationService.CONDOR_HOME);
+
+        Map<String, GATEService> gateServiceMap = new HashMap<String, GATEService>();
+
+        ServiceReference[] siteSelectorServiceRefArray = tracker.getServiceReferences();
+
+        if (siteSelectorServiceRefArray != null) {
+            for (ServiceReference serviceRef : siteSelectorServiceRefArray) {
+                logger.info(serviceRef.toString());
+                GATEService gateService = (GATEService) tracker.getService(serviceRef);
+                if (gateService != null) {
+                    gateServiceMap.put(gateService.getSiteInfo().getName(), gateService);
+                }
+            }
+        }
+
         // get a snapshot of jobs across sites
         Map<String, GlideinMetrics> siteMetricsMap = new HashMap<String, GlideinMetrics>();
-        for (String siteName : this.gateServiceMap.keySet()) {
-            GATEService gateService = this.gateServiceMap.get(siteName);
+        for (String siteName : gateServiceMap.keySet()) {
+            GATEService gateService = gateServiceMap.get(siteName);
             GlideinMetrics glideinMetrics = gateService.lookupMetrics();
             siteMetricsMap.put(gateService.getSiteInfo().getName(), glideinMetrics);
         }
@@ -85,22 +104,19 @@ public class MainTask extends TimerTask {
 
                 // assume we need new glideins, and then run some tests to negate the assumptions
                 boolean needGlidein = true;
-                for (String siteName : this.gateServiceMap.keySet()) {
-                    GATEService gateService = this.gateServiceMap.get(siteName);
+                for (String siteName : gateServiceMap.keySet()) {
+                    GATEService gateService = gateServiceMap.get(siteName);
                     GlideinMetrics glideinMetrics = siteMetricsMap.get(gateService.getSiteInfo().getName());
-                    if (totalJobs > 0) {
 
-                        if (totalJobs > 100 && (glideinMetrics.getRunning() > (totalJobs * 0.2))) {
-                            logger.info("Number of running glideins is probably enough for the workload. No glideins needed.");
-                            needGlidein = false;
-                        } else if (runningJobs > (totalJobs * 0.9)) {
-                            logger.info("Number of running jobs is high compared to idle jobs. No glideins needed.");
-                            needGlidein = false;
-                        } else if (glideinMetrics.getPending() >= gateService.getSiteInfo().getMaxIdleCount()) {
-                            logger.info("High number of idle glideins. No glideins needed.");
-                            needGlidein = false;
-                        }
-
+                    if (totalJobs > 100 && (glideinMetrics.getRunning() > (totalJobs * 0.2))) {
+                        logger.info("Number of running glideins is probably enough for the workload. No glideins needed.");
+                        needGlidein = false;
+                    } else if (runningJobs > (totalJobs * 0.9)) {
+                        logger.info("Number of running jobs is high compared to idle jobs. No glideins needed.");
+                        needGlidein = false;
+                    } else if (glideinMetrics.getPending() >= gateService.getSiteInfo().getMaxIdleCount()) {
+                        logger.info("High number of idle glideins. No glideins needed.");
+                        needGlidein = false;
                     }
 
                 }
@@ -109,8 +125,8 @@ public class MainTask extends TimerTask {
                 if (needGlidein) {
 
                     int numToSubmit = 1;
-                    for (String siteName : this.gateServiceMap.keySet()) {
-                        GATEService gateService = this.gateServiceMap.get(siteName);
+                    for (String siteName : gateServiceMap.keySet()) {
+                        GATEService gateService = gateServiceMap.get(siteName);
                         GlideinMetrics glideinMetrics = siteMetricsMap.get(gateService.getSiteInfo().getName());
                         if (totalJobs > 0) {
 
@@ -128,18 +144,18 @@ public class MainTask extends TimerTask {
                             numToSubmit = Math.min(numToSubmit, gateService.getSiteInfo().getMaxTotalCount()
                                     - glideinMetrics.getTotal());
 
-                            logger.info("Will try to submit " + numToSubmit + " glideins");
-
                         }
 
                     }
 
                     // find the highest site score
                     Map<String, SiteScoreInfo> siteScoreMap = new HashMap<String, SiteScoreInfo>();
-                    for (String siteName : this.gateServiceMap.keySet()) {
-                        GATEService gateService = this.gateServiceMap.get(siteName);
+                    for (String siteName : gateServiceMap.keySet()) {
+                        GATEService gateService = gateServiceMap.get(siteName);
+                        logger.info("gateService.getSiteInfo().getName(): {}", gateService.getSiteInfo().getName());
                         GlideinMetrics glideinMetrics = siteMetricsMap.get(gateService.getSiteInfo().getName());
                         SiteScoreInfo siteScoreInfo = calculateScore(gateService, glideinMetrics);
+                        logger.info("siteScoreInfo: {}", siteScoreInfo);
                         if (siteScoreInfo != null) {
                             siteScoreMap.put(gateService.getSiteInfo().getName(), siteScoreInfo);
                         }
@@ -148,20 +164,26 @@ public class MainTask extends TimerTask {
                     List<Map.Entry<String, SiteScoreInfo>> list = new LinkedList<Map.Entry<String, SiteScoreInfo>>(
                             siteScoreMap.entrySet());
 
-                    // sort list based on comparator...descending score
-                    Collections.sort(list, new Comparator<Map.Entry<String, SiteScoreInfo>>() {
-                        @Override
-                        public int compare(Entry<String, SiteScoreInfo> o1, Entry<String, SiteScoreInfo> o2) {
-                            return o2.getValue().getScore().compareTo(o1.getValue().getScore());
+                    logger.info("list.size(): {}", list.size());
+                    if (list.size() > 0) {
+
+                        // sort list based on comparator...descending score
+                        Collections.sort(list, new Comparator<Map.Entry<String, SiteScoreInfo>>() {
+                            @Override
+                            public int compare(Entry<String, SiteScoreInfo> o1, Entry<String, SiteScoreInfo> o2) {
+                                return o2.getValue().getScore().compareTo(o1.getValue().getScore());
+                            }
+                        });
+
+                        Map.Entry<String, SiteScoreInfo> winner = list.get(0);
+                        logger.info("numToSubmit: {} ", numToSubmit);
+
+                        for (int i = numToSubmit; i > 0; --i) {
+                            logger.info("Submitting glidein for {} to {}", System.getProperty("user.name"),
+                                    winner.getKey());
+                            GATEService gateService = gateServiceMap.get(winner.getKey());
+                            gateService.postGlidein();
                         }
-                    });
-
-                    Map.Entry<String, SiteScoreInfo> winner = list.get(0);
-
-                    for (int i = numToSubmit; i <= 0; --i) {
-                        logger.info("Submitting glidein for {} to {}", System.getProperty("user.name"), winner.getKey());
-                        GATEService gateService = this.gateServiceMap.get(winner.getKey());
-                        gateService.postGlidein();
                     }
 
                 }
@@ -169,8 +191,8 @@ public class MainTask extends TimerTask {
             } else {
 
                 // remove pending glideins
-                for (String siteName : this.gateServiceMap.keySet()) {
-                    GATEService gateService = this.gateServiceMap.get(siteName);
+                for (String siteName : gateServiceMap.keySet()) {
+                    GATEService gateService = gateServiceMap.get(siteName);
                     GlideinMetrics glideinMetrics = siteMetricsMap.get(gateService.getSiteInfo().getName());
                     if (glideinMetrics.getPending() > 0) {
                         gateService.deleteGlidein();
@@ -203,7 +225,7 @@ public class MainTask extends TimerTask {
         // all sites a chance - this helps initial startup when a user submits
         // one or a few jobs
         if (glideinMetrics.getTotal() == 0) {
-            siteScoreInfo.setMessage("Total number of glides is 0");
+            siteScoreInfo.setMessage("Total number of glideins: " + glideinMetrics.getTotal());
             siteScoreInfo.setScore(500);
             return siteScoreInfo;
         }
@@ -224,12 +246,15 @@ public class MainTask extends TimerTask {
 
         // when a lot of glideins are running, lower the score to spread the
         // jobs out between the sites
-        if (score > 15 && glideinMetrics.getRunning() > 10 && glideinMetrics.getPending() < 5) {
+        if (score > 15 && glideinMetrics.getRunning() > 6 && glideinMetrics.getPending() < 3) {
             siteScoreInfo.setMessage("Score lowered to spread jobs out on available sites");
             siteScoreInfo.setScore(1);
             return siteScoreInfo;
         }
-        return null;
+
+        siteScoreInfo.setMessage("Total number of glideins: " + glideinMetrics.getTotal());
+        siteScoreInfo.setScore(score);
+        return siteScoreInfo;
     }
 
 }
