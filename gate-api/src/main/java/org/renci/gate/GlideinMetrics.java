@@ -36,4 +36,9 @@ public class GlideinMetrics {
         this.pending = pending;
     }
 
+    @Override
+    public String toString() {
+        return "GlideinMetrics [running=" + running + ", total=" + total + ", pending=" + pending + "]";
+    }
+
 }
