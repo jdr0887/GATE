@@ -14,6 +14,7 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.renci.gate.GATEService;
 import org.renci.gate.GlideinMetrics;
+import org.renci.gate.SiteInfo;
 import org.renci.gate.SiteScoreInfo;
 import org.renci.gate.config.GATEConfigurationService;
 import org.renci.jlrm.LRMException;
@@ -61,7 +62,13 @@ public class MainTask extends TimerTask {
         Map<String, GlideinMetrics> siteMetricsMap = new HashMap<String, GlideinMetrics>();
         for (String siteName : gateServiceMap.keySet()) {
             GATEService gateService = gateServiceMap.get(siteName);
-            GlideinMetrics glideinMetrics = gateService.lookupMetrics();
+            GlideinMetrics glideinMetrics;
+            try {
+                glideinMetrics = gateService.lookupMetrics();
+            } catch (Exception e) {
+                logger.error("There was a problem looking up metrics...doing nothing");
+                return;
+            }
             siteMetricsMap.put(gateService.getSiteInfo().getName(), glideinMetrics);
         }
 
@@ -152,11 +159,13 @@ public class MainTask extends TimerTask {
                     Map<String, SiteScoreInfo> siteScoreMap = new HashMap<String, SiteScoreInfo>();
                     for (String siteName : gateServiceMap.keySet()) {
                         GATEService gateService = gateServiceMap.get(siteName);
-                        logger.info("gateService.getSiteInfo().getName(): {}", gateService.getSiteInfo().getName());
-                        GlideinMetrics glideinMetrics = siteMetricsMap.get(gateService.getSiteInfo().getName());
+                        SiteInfo siteInfo = gateService.getSiteInfo();
+                        logger.info(siteInfo.toString());
+                        GlideinMetrics glideinMetrics = siteMetricsMap.get(siteInfo.getName());
+                        logger.info(glideinMetrics.toString());
                         SiteScoreInfo siteScoreInfo = calculateScore(gateService, glideinMetrics);
-                        logger.info("siteScoreInfo: {}", siteScoreInfo);
-                        if (siteScoreInfo != null) {
+                        logger.info(siteScoreInfo.toString());
+                        if (siteScoreInfo != null && siteScoreInfo.getScore() > 0) {
                             siteScoreMap.put(gateService.getSiteInfo().getName(), siteScoreInfo);
                         }
                     }
@@ -206,6 +215,7 @@ public class MainTask extends TimerTask {
 
     private SiteScoreInfo calculateScore(GATEService gateService, GlideinMetrics glideinMetrics) {
         SiteScoreInfo siteScoreInfo = new SiteScoreInfo();
+
         // first, check if some limits have been reached
         if (glideinMetrics.getTotal() >= gateService.getSiteInfo().getMaxTotalCount()) {
             siteScoreInfo.setMessage("Total number of glideins has reached the limit of "
@@ -232,16 +242,19 @@ public class MainTask extends TimerTask {
 
         // basic score, the maximum number of idle jobs
         int score = gateService.getSiteInfo().getMaxIdleCount();
-
+        
         // idle jobs are not so good
-        score = score - glideinMetrics.getPending() * 3;
+        score -= glideinMetrics.getPending() * 3;
+        logger.info("score: {}", score);
 
         // running jobs are good
-        score = score + glideinMetrics.getPending();
-
+        score += glideinMetrics.getRunning();
+        logger.info("score: {}", score);
+        
         // if we have a positive number, use the multiplication factor
         if (score > 0) {
             score = score * gateService.getSiteInfo().getMultiplier();
+            logger.info("score: {}", score);
         }
 
         // when a lot of glideins are running, lower the score to spread the
