@@ -3,6 +3,7 @@ package org.renci.gate.plugins.killdevil;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.renci.gate.GATEService;
 import org.renci.gate.GlideinMetrics;
@@ -57,9 +58,14 @@ public class KillDevilGATEService implements GATEService {
         metrics.setTotal(jobCache.size());
         int running = 0;
         int pending = 0;
-        for (LSFSSHJob job : jobCache) {
-            try {
-                LSFJobStatusType status = lsfSSHFactory.lookupStatus(job);
+
+        try {
+
+            Map<String, LSFJobStatusType> jobStatusMap = lsfSSHFactory.lookupStatus(jobCache
+                    .toArray(new LSFSSHJob[jobCache.size()]));
+
+            for (LSFSSHJob job : jobCache) {
+                LSFJobStatusType status = jobStatusMap.get(job.getId());
                 switch (status) {
                     case PENDING:
                         ++pending;
@@ -77,9 +83,9 @@ public class KillDevilGATEService implements GATEService {
                     default:
                         break;
                 }
-            } catch (LRMException e) {
-                e.printStackTrace();
             }
+        } catch (LRMException e) {
+            e.printStackTrace();
         }
         metrics.setPending(pending);
         metrics.setRunning(running);
