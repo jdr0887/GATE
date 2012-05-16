@@ -126,4 +126,13 @@ public class SiteInfo {
         this.queue = queue;
     }
 
+    @Override
+    public String toString() {
+        return "SiteInfo [condorCollectorHost=" + condorCollectorHost + ", submitHost=" + submitHost
+                + ", maxIdleCount=" + maxIdleCount + ", maxMultipleJobs=" + maxMultipleJobs + ", maxNoClaimTime="
+                + maxNoClaimTime + ", maxQueueTime=" + maxQueueTime + ", maxRunTime=" + maxRunTime + ", maxTotalCount="
+                + maxTotalCount + ", multiplier=" + multiplier + ", name=" + name + ", project=" + project + ", queue="
+                + queue + "]";
+    }
+
 }
