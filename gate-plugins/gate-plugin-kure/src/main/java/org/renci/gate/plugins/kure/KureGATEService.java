@@ -3,7 +3,9 @@ package org.renci.gate.plugins.kure;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.renci.gate.GATEService;
 import org.renci.gate.GlideinMetrics;
 import org.renci.gate.SiteInfo;
@@ -57,9 +59,13 @@ public class KureGATEService implements GATEService {
         metrics.setTotal(jobCache.size());
         int running = 0;
         int pending = 0;
-        for (LSFSSHJob job : jobCache) {
-            try {
-                LSFJobStatusType status = lsfSSHFactory.lookupStatus(job);
+        try {
+
+            Map<String, LSFJobStatusType> jobStatusMap = lsfSSHFactory.lookupStatus(jobCache
+                    .toArray(new LSFSSHJob[jobCache.size()]));
+
+            for (LSFSSHJob job : jobCache) {
+                LSFJobStatusType status = jobStatusMap.get(job.getId());
                 switch (status) {
                     case PENDING:
                         ++pending;
@@ -77,9 +83,9 @@ public class KureGATEService implements GATEService {
                     default:
                         break;
                 }
-            } catch (LRMException e) {
-                e.printStackTrace();
             }
+        } catch (LRMException e) {
+            e.printStackTrace();
         }
         metrics.setPending(pending);
         metrics.setRunning(running);
@@ -95,8 +101,10 @@ public class KureGATEService implements GATEService {
                     siteInfo.getSubmitHost());
             job = lsfSSHFactory.submitGlidein(submitDir, siteInfo.getMaxNoClaimTime(), siteInfo.getMaxRunTime(), 40,
                     siteInfo.getCondorCollectorHost(), siteInfo.getQueue());
-            logger.info("job.getId(): {}", job.getId());
-            jobCache.add(job);
+            if (job != null && StringUtils.isNotEmpty(job.getId())) {
+                logger.info("job.getId(): {}", job.getId());
+                jobCache.add(job);
+            }
         } catch (LRMException e) {
             e.printStackTrace();
         }
@@ -110,6 +118,7 @@ public class KureGATEService implements GATEService {
                         siteInfo.getSubmitHost());
                 LSFSSHJob job = jobCache.get(0);
                 lsfSSHFactory.killGlidein(job);
+                jobCache.remove(0);
             } catch (LRMException e) {
                 e.printStackTrace();
             }
