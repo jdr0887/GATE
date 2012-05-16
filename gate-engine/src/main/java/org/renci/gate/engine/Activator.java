@@ -36,9 +36,9 @@ public class Activator implements BundleActivator {
         ServiceReference gateConfigServiceRef = context.getServiceReference(GATEConfigurationService.class.getName());
         GATEConfigurationService configService = (GATEConfigurationService) context.getService(gateConfigServiceRef);
 
-        // run every 5 minutes
-        long delay = 5 * 1000;
-        long period = 5 * 60 * 1000;
+        long delay = 10 * 1000;
+        // run every 3 minutes
+        long period = 3 * 60 * 1000;
 
         mainTimer.scheduleAtFixedRate(new MainTask(tracker, configService), delay, period);
 
