@@ -2,6 +2,7 @@ package org.renci.gate.plugins.killdevil;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +56,6 @@ public class KillDevilGATEService implements GATEService {
         LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(lsfHome, System.getProperty("user.name"),
                 siteInfo.getSubmitHost());
 
-        metrics.setTotal(jobCache.size());
         int running = 0;
         int pending = 0;
 
@@ -64,7 +64,9 @@ public class KillDevilGATEService implements GATEService {
             Map<String, LSFJobStatusType> jobStatusMap = lsfSSHFactory.lookupStatus(jobCache
                     .toArray(new LSFSSHJob[jobCache.size()]));
 
-            for (LSFSSHJob job : jobCache) {
+            Iterator<LSFSSHJob> jobCacheIter = jobCache.iterator();
+            while (jobCacheIter.hasNext()) {
+                LSFSSHJob job = jobCacheIter.next();
                 LSFJobStatusType status = jobStatusMap.get(job.getId());
                 switch (status) {
                     case PENDING:
@@ -73,13 +75,15 @@ public class KillDevilGATEService implements GATEService {
                     case RUNNING:
                         ++running;
                         break;
+                    case EXIT:
+                        jobCacheIter.remove();
+                        break;
                     case SUSPENDED_BY_SYSTEM:
                     case SUSPENDED_BY_USER:
                     case SUSPENDED_FROM_PENDING:
                     case UNKNOWN:
                     case ZOMBIE:
                     case DONE:
-                    case EXIT:
                     default:
                         break;
                 }
@@ -87,6 +91,7 @@ public class KillDevilGATEService implements GATEService {
         } catch (LRMException e) {
             e.printStackTrace();
         }
+        metrics.setTotal(jobCache.size());
         metrics.setPending(pending);
         metrics.setRunning(running);
         return metrics;
