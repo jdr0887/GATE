@@ -203,7 +203,7 @@ public class MainTask extends TimerTask {
                 for (String siteName : gateServiceMap.keySet()) {
                     GATEService gateService = gateServiceMap.get(siteName);
                     GlideinMetrics glideinMetrics = siteMetricsMap.get(gateService.getSiteInfo().getName());
-                    if (glideinMetrics.getPending() > 0) {
+                    if (glideinMetrics.getTotal() > 0) {
                         gateService.deleteGlidein();
                     }
                 }
