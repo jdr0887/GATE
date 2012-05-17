@@ -99,7 +99,8 @@ public class KureGATEService implements GATEService {
 
     @Override
     public void postGlidein() {
-        File submitDir = new File("/tmp");
+        File submitDir = new File("/tmp", System.getProperty("user.name"));
+        submitDir.mkdirs();
         LSFSSHJob job = null;
         try {
             LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(lsfHome, System.getProperty("user.name"),
