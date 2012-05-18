@@ -5,13 +5,12 @@
   <bean id="siteInfo" class="org.renci.gate.SiteInfo">
     <property name="condorCollectorHost" value="biodev1.its.unc.edu" />
     <property name="submitHost" value="biodev1.its.unc.edu" />
-    <property name="maxIdleCount" value="6" />
-    <property name="maxMultipleJobs" value="4" />
+    <property name="maxIdleCount" value="9" />
+    <property name="maxMultipleJobs" value="3" />
     <property name="maxNoClaimTime" value="60" />
     <property name="maxQueueTime" value="1440" />
     <property name="maxRunTime" value="2880" />
-    <property name="maxTotalCount" value="40" />
-    <property name="multiplier" value="1" />
+    <property name="maxRunningCount" value="40" />
     <property name="name" value="Kure" />
     <property name="project" value="TCGA" />
     <property name="queue" value="pseq_prod" />
