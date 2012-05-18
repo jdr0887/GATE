@@ -16,9 +16,7 @@ public class SiteInfo {
 
     private int maxRunTime;
 
-    private int maxTotalCount;
-
-    private int multiplier;
+    private int maxRunningCount;
 
     private String name;
 
@@ -86,20 +84,12 @@ public class SiteInfo {
         this.maxRunTime = maxRunTime;
     }
 
-    public int getMaxTotalCount() {
-        return maxTotalCount;
+    public int getMaxRunningCount() {
+        return maxRunningCount;
     }
 
-    public void setMaxTotalCount(int maxTotalCount) {
-        this.maxTotalCount = maxTotalCount;
-    }
-
-    public int getMultiplier() {
-        return multiplier;
-    }
-
-    public void setMultiplier(int multiplier) {
-        this.multiplier = multiplier;
+    public void setMaxRunningCount(int maxRunningCount) {
+        this.maxRunningCount = maxRunningCount;
     }
 
     public String getName() {
@@ -130,8 +120,8 @@ public class SiteInfo {
     public String toString() {
         return "SiteInfo [condorCollectorHost=" + condorCollectorHost + ", submitHost=" + submitHost
                 + ", maxIdleCount=" + maxIdleCount + ", maxMultipleJobs=" + maxMultipleJobs + ", maxNoClaimTime="
-                + maxNoClaimTime + ", maxQueueTime=" + maxQueueTime + ", maxRunTime=" + maxRunTime + ", maxTotalCount="
-                + maxTotalCount + ", multiplier=" + multiplier + ", name=" + name + ", project=" + project + ", queue="
+                + maxNoClaimTime + ", maxQueueTime=" + maxQueueTime + ", maxRunTime=" + maxRunTime
+                + ", maxRunningCount=" + maxRunningCount + ", name=" + name + ", project=" + project + ", queue="
                 + queue + "]";
     }
 
