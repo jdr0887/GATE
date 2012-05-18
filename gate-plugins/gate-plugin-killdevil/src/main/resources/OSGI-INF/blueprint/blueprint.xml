@@ -5,13 +5,12 @@
   <bean id="siteInfo" class="org.renci.gate.SiteInfo">
     <property name="condorCollectorHost" value="killdevil.its.unc.edu" />
     <property name="submitHost" value="killdevil.its.unc.edu" />
-    <property name="maxIdleCount" value="10" />
+    <property name="maxIdleCount" value="12" />
     <property name="maxMultipleJobs" value="4" />
     <property name="maxNoClaimTime" value="60" />
     <property name="maxQueueTime" value="1440" />
     <property name="maxRunTime" value="2880" />
-    <property name="maxTotalCount" value="50" />
-    <property name="multiplier" value="1" />
+    <property name="maxRunningCount" value="50" />
     <property name="name" value="KillDevil" />
     <property name="project" value="TCGA" />
     <property name="queue" value="week" />
