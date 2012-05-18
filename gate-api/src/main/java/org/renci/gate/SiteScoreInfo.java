@@ -2,7 +2,7 @@ package org.renci.gate;
 
 public class SiteScoreInfo {
 
-    private Integer score;
+    private Double score;
 
     private String message;
 
@@ -10,17 +10,17 @@ public class SiteScoreInfo {
         super();
     }
 
-    public SiteScoreInfo(Integer score, String message) {
+    public SiteScoreInfo(Double score, String message) {
         super();
         this.score = score;
         this.message = message;
     }
 
-    public Integer getScore() {
+    public Double getScore() {
         return score;
     }
 
-    public void setScore(Integer score) {
+    public void setScore(Double score) {
         this.score = score;
     }
 
