@@ -12,6 +12,20 @@ public class GlideinMetrics {
         super();
     }
 
+    public GlideinMetrics(int running, int pending) {
+        super();
+        this.running = running;
+        this.pending = pending;
+        this.total = this.running + this.pending;
+    }
+
+    public GlideinMetrics(int running, int total, int pending) {
+        super();
+        this.running = running;
+        this.total = total;
+        this.pending = pending;
+    }
+
     public int getRunning() {
         return running;
     }
