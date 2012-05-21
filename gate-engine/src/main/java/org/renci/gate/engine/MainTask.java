@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.TimerTask;
 
 import org.osgi.framework.ServiceReference;
@@ -32,6 +33,8 @@ public class MainTask extends TimerTask {
     private ServiceTracker tracker;
 
     private GATEConfigurationService configService;
+
+    private final Random random = new Random();
 
     public MainTask(ServiceTracker tracker, GATEConfigurationService configService) {
         super();
@@ -112,16 +115,15 @@ public class MainTask extends TimerTask {
 
                     GATEService gateService = gateServiceMap.get(siteName);
                     SiteInfo siteInfo = gateService.getSiteInfo();
+                    logger.info(siteInfo.toString());
                     GlideinMetrics metrics = siteMetricsMap.get(siteInfo.getName());
+                    logger.info(metrics.toString());
 
                     if (totalCondorJobs > 100 && (metrics.getRunning() > (totalCondorJobs * 0.33))) {
                         logger.info("Number of running glideins is probably enough for the workload.");
                         needGlidein = false;
                     } else if (runningCondorJobs > (totalCondorJobs * 0.66)) {
                         logger.info("Number of running jobs is high compared to idle jobs.");
-                        needGlidein = false;
-                    } else if (metrics.getPending() >= siteInfo.getMaxIdleCount()) {
-                        logger.info("High number of idle glideins.");
                         needGlidein = false;
                     }
 
@@ -132,45 +134,22 @@ public class MainTask extends TimerTask {
                     return;
                 }
 
-                // calculate number of glideins to submit
-
-                double numToSubmit = 1;
-                for (String siteName : gateServiceMap.keySet()) {
-
-                    GATEService gateService = gateServiceMap.get(siteName);
-                    SiteInfo siteInfo = gateService.getSiteInfo();
-                    GlideinMetrics metrics = siteMetricsMap.get(siteInfo.getName());
-
-                    numToSubmit = siteInfo.getMaxMultipleJobs();
-                    numToSubmit -= metrics.getPending() * 0.4;
-                    numToSubmit -= metrics.getRunning() * 0.4;
-                    numToSubmit -= runningCondorJobs * 0.005;
-                    numToSubmit += idleCondorJobs * 0.005;
-
-                    if (numToSubmit <= 1 && metrics.getRunning() <= siteInfo.getMaxRunningCount()) {
-                        numToSubmit = 1;
-                    }
-
-                    numToSubmit = Math.round(numToSubmit);
-                    numToSubmit = Math.min(numToSubmit, siteInfo.getMaxMultipleJobs());
-
-                }
-                
-                logger.info("Planning on submitting {} glideins in this iteration", numToSubmit);
-
-                // find the highest site score
                 Map<String, SiteScoreInfo> siteScoreMap = new HashMap<String, SiteScoreInfo>();
+
                 for (String siteName : gateServiceMap.keySet()) {
+
                     GATEService gateService = gateServiceMap.get(siteName);
                     SiteInfo siteInfo = gateService.getSiteInfo();
                     logger.info(siteInfo.toString());
-                    GlideinMetrics glideinMetrics = siteMetricsMap.get(siteInfo.getName());
-                    logger.info(glideinMetrics.toString());
-                    SiteScoreInfo siteScoreInfo = calculateScore(siteInfo, glideinMetrics);
+                    GlideinMetrics metrics = siteMetricsMap.get(siteInfo.getName());
+                    logger.info(metrics.toString());
+
+                    SiteScoreInfo siteScoreInfo = calculateScore(siteInfo, metrics);
                     logger.info(siteScoreInfo.toString());
                     if (siteScoreInfo != null && siteScoreInfo.getScore() > 0) {
                         siteScoreMap.put(gateService.getSiteInfo().getName(), siteScoreInfo);
                     }
+
                 }
 
                 List<Map.Entry<String, SiteScoreInfo>> list = new LinkedList<Map.Entry<String, SiteScoreInfo>>(
@@ -187,11 +166,36 @@ public class MainTask extends TimerTask {
                         }
                     });
 
-                    Map.Entry<String, SiteScoreInfo> winner = list.get(0);
+                    Map.Entry<String, SiteScoreInfo> winner = null;
+                    if (list.size() <= 3) {
+                        winner = list.get(0);
+                    } else {
+                        winner = list.get(random.nextInt(3));
+                    }
+
+                    GATEService gateService = gateServiceMap.get(winner.getKey());
+                    SiteInfo siteInfo = gateService.getSiteInfo();
+                    GlideinMetrics metrics = siteMetricsMap.get(siteInfo.getName());
+
+                    // calculate number of glideins to submit
+                    double numToSubmit = 1;
+
+                    numToSubmit = siteInfo.getMaxMultipleJobs();
+                    numToSubmit -= metrics.getPending() * 0.4;
+                    numToSubmit -= metrics.getRunning() * 0.4;
+                    numToSubmit -= runningCondorJobs * 0.005;
+                    numToSubmit += idleCondorJobs * 0.005;
+
+                    if (numToSubmit <= 1 && metrics.getRunning() <= siteInfo.getMaxRunningCount()) {
+                        numToSubmit = 1;
+                    }
+
+                    numToSubmit = Math.round(numToSubmit);
+                    numToSubmit = Math.min(numToSubmit, siteInfo.getMaxMultipleJobs());
+                    logger.info("Planning on submitting {} glideins in this iteration", numToSubmit);
 
                     for (int i = 0; i < numToSubmit; ++i) {
                         logger.info("Submitting glidein for {} to {}", System.getProperty("user.name"), winner.getKey());
-                        GATEService gateService = gateServiceMap.get(winner.getKey());
                         gateService.postGlidein();
                         try {
                             Thread.sleep(3000);
@@ -217,19 +221,19 @@ public class MainTask extends TimerTask {
 
     }
 
-    private SiteScoreInfo calculateScore(SiteInfo siteInfo, GlideinMetrics glideinMetrics) {
+    private SiteScoreInfo calculateScore(SiteInfo siteInfo, GlideinMetrics metrics) {
         SiteScoreInfo siteScoreInfo = new SiteScoreInfo();
 
         int maxTotal = siteInfo.getMaxIdleCount() + siteInfo.getMaxRunningCount();
         // first, check if some limits have been reached
 
-        if (glideinMetrics.getTotal() >= maxTotal) {
+        if (metrics.getTotal() >= maxTotal) {
             siteScoreInfo.setMessage("Total number of glideins has reached the limit of " + maxTotal);
             siteScoreInfo.setScore(0D);
             return siteScoreInfo;
         }
 
-        if (glideinMetrics.getPending() >= siteInfo.getMaxIdleCount()) {
+        if (metrics.getPending() >= siteInfo.getMaxIdleCount()) {
             siteScoreInfo.setMessage("Number of idle/pending glideins has reached the limit of "
                     + siteInfo.getMaxIdleCount());
             siteScoreInfo.setScore(0D);
@@ -239,23 +243,23 @@ public class MainTask extends TimerTask {
         // we want to start all sites at the same score so that we can give
         // all sites a chance - this helps initial startup when a user submits
         // one or a few jobs
-        if (glideinMetrics.getTotal() == 0) {
-            siteScoreInfo.setMessage("Total number of glideins: " + glideinMetrics.getTotal());
-            siteScoreInfo.setScore(500D);
+        if (metrics.getTotal() == 0) {
+            siteScoreInfo.setMessage("Total number of glideins: " + metrics.getTotal());
+            siteScoreInfo.setScore(100D);
             return siteScoreInfo;
         }
 
         double score = 100;
         double pendingWeight = 9;
         // penalize for pending jobs
-        for (int i = 1; i < glideinMetrics.getPending() + 1; ++i) {
+        for (int i = 1; i < metrics.getPending() + 1; ++i) {
             score -= i * pendingWeight;
         }
         logger.info("score = {}", score);
 
         double runningWeight = 4.5;
         // reward for pending jobs
-        for (int i = 1; i < glideinMetrics.getRunning() + 1; ++i) {
+        for (int i = 1; i < metrics.getRunning() + 1; ++i) {
             score += i * runningWeight;
         }
         logger.info("score = {}", score);
@@ -268,7 +272,7 @@ public class MainTask extends TimerTask {
             return siteScoreInfo;
         }
 
-        siteScoreInfo.setMessage("Total number of glideins: " + glideinMetrics.getTotal());
+        siteScoreInfo.setMessage("Total number of glideins: " + metrics.getTotal());
         siteScoreInfo.setScore(score);
         return siteScoreInfo;
     }
