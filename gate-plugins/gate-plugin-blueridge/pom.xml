@@ -18,7 +18,7 @@
     </dependency>
     <dependency>
       <groupId>org.renci.jlrm.jlrm-pbs</groupId>
-      <artifactId>jlrm-pbs-api</artifactId>
+      <artifactId>jlrm-pbs-ssh</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
