@@ -76,20 +76,21 @@ public class KureGATEService implements GATEService {
                         ++running;
                         break;
                     case EXIT:
+                    case UNKNOWN:
+                    case ZOMBIE:
+                    case DONE:
                         jobCacheIter.remove();
                         break;
                     case SUSPENDED_BY_SYSTEM:
                     case SUSPENDED_BY_USER:
                     case SUSPENDED_FROM_PENDING:
-                    case UNKNOWN:
-                    case ZOMBIE:
-                    case DONE:
                     default:
                         break;
                 }
             }
         } catch (LRMException e) {
             e.printStackTrace();
+            logger.error("Error:", e);
         }
         metrics.setTotal(jobCache.size());
         metrics.setPending(pending);
