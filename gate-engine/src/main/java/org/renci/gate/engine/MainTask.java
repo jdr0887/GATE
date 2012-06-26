@@ -69,7 +69,7 @@ public class MainTask extends TimerTask {
             try {
                 glideinMetrics = gateService.lookupMetrics();
             } catch (Exception e) {
-                logger.error("There was a problem looking up metrics...doing nothing");
+                logger.error("There was a problem looking up metrics...doing nothing", e);
                 return;
             }
             siteMetricsMap.put(gateService.getSiteInfo().getName(), glideinMetrics);
