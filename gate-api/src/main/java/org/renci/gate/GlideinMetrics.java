@@ -4,26 +4,27 @@ public class GlideinMetrics {
 
     private int running;
 
-    private int total;
-
     private int pending;
+
+    private String queue;
 
     public GlideinMetrics() {
         super();
     }
 
-    public GlideinMetrics(int running, int pending) {
+    public GlideinMetrics(int running, int pending, String queue) {
         super();
         this.running = running;
         this.pending = pending;
-        this.total = this.running + this.pending;
+        this.queue = queue;
     }
 
-    public GlideinMetrics(int running, int total, int pending) {
-        super();
-        this.running = running;
-        this.total = total;
-        this.pending = pending;
+    public String getQueue() {
+        return queue;
+    }
+
+    public void setQueue(String queue) {
+        this.queue = queue;
     }
 
     public int getRunning() {
@@ -35,11 +36,7 @@ public class GlideinMetrics {
     }
 
     public int getTotal() {
-        return total;
-    }
-
-    public void setTotal(int total) {
-        this.total = total;
+        return this.running + this.pending;
     }
 
     public int getPending() {
@@ -52,7 +49,7 @@ public class GlideinMetrics {
 
     @Override
     public String toString() {
-        return "GlideinMetrics [running=" + running + ", total=" + total + ", pending=" + pending + "]";
+        return "GlideinMetrics [running=" + running + ", pending=" + pending + ", queue=" + queue + "]";
     }
 
 }
