@@ -59,21 +59,21 @@ public class Scratch {
         siteInfo.setMaxRunningCount(40);
         siteInfo.setMaxRunTime(2880);
 
-        logger.info("Number To submit: {}", calculateNumberToSubmit(20, 0, siteInfo, new GlideinMetrics(0, 0)));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 0, siteInfo, new GlideinMetrics(0, 0)));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 10, siteInfo, new GlideinMetrics(0, 0)));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 10, siteInfo, new GlideinMetrics(1, 2)));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 20, siteInfo, new GlideinMetrics(2, 4)));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 30, siteInfo, new GlideinMetrics(4, 4)));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 30, siteInfo, new GlideinMetrics(6, 4)));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 40, siteInfo, new GlideinMetrics(8, 4)));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(30, 5, siteInfo, new GlideinMetrics(1, 2)));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(50, 10, siteInfo, new GlideinMetrics(2, 5)));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(80, 12, siteInfo, new GlideinMetrics(4, 6)));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(80, 12, siteInfo, new GlideinMetrics(10, 2)));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(80, 12, siteInfo, new GlideinMetrics(30, 2)));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(120, 12, siteInfo, new GlideinMetrics(40, 10)));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(2, 50, siteInfo, new GlideinMetrics(40, 10)));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(20, 0, siteInfo, new GlideinMetrics(0, 0, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 0, siteInfo, new GlideinMetrics(0, 0, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 10, siteInfo, new GlideinMetrics(0, 0, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 10, siteInfo, new GlideinMetrics(1, 2, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 20, siteInfo, new GlideinMetrics(2, 4, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 30, siteInfo, new GlideinMetrics(4, 4, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 30, siteInfo, new GlideinMetrics(6, 4, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 40, siteInfo, new GlideinMetrics(8, 4, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(30, 5, siteInfo, new GlideinMetrics(1, 2, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(50, 10, siteInfo, new GlideinMetrics(2, 5, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(80, 12, siteInfo, new GlideinMetrics(4, 6, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(80, 12, siteInfo, new GlideinMetrics(10, 2, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(80, 12, siteInfo, new GlideinMetrics(30, 2, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(120, 12, siteInfo, new GlideinMetrics(40, 10, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(2, 50, siteInfo, new GlideinMetrics(40, 10, "pseq_prod")));
 
     }
 
@@ -108,25 +108,25 @@ public class Scratch {
         siteInfo.setMaxRunningCount(40);
         siteInfo.setMaxRunTime(2880);
 
-        SiteScoreInfo siteScoreInfo = calculateScore(siteInfo, new GlideinMetrics(0, 0));
+        SiteScoreInfo siteScoreInfo = calculateScore(siteInfo, new GlideinMetrics(0, 0, "pseq_prod"));
         logger.info(siteScoreInfo.toString());
 
-        siteScoreInfo = calculateScore(siteInfo, new GlideinMetrics(0, 2));
+        siteScoreInfo = calculateScore(siteInfo, new GlideinMetrics(0, 2, "pseq_prod"));
         logger.info(siteScoreInfo.toString());
 
-        siteScoreInfo = calculateScore(siteInfo, new GlideinMetrics(1, 2));
+        siteScoreInfo = calculateScore(siteInfo, new GlideinMetrics(1, 2, "pseq_prod"));
         logger.info(siteScoreInfo.toString());
 
-        siteScoreInfo = calculateScore(siteInfo, new GlideinMetrics(2, 2));
+        siteScoreInfo = calculateScore(siteInfo, new GlideinMetrics(2, 2, "pseq_prod"));
         logger.info(siteScoreInfo.toString());
 
-        siteScoreInfo = calculateScore(siteInfo, new GlideinMetrics(4, 2));
+        siteScoreInfo = calculateScore(siteInfo, new GlideinMetrics(4, 2, "pseq_prod"));
         logger.info(siteScoreInfo.toString());
 
-        siteScoreInfo = calculateScore(siteInfo, new GlideinMetrics(12, 8));
+        siteScoreInfo = calculateScore(siteInfo, new GlideinMetrics(12, 8, "pseq_prod"));
         logger.info(siteScoreInfo.toString());
 
-        siteScoreInfo = calculateScore(siteInfo, new GlideinMetrics(12, 0));
+        siteScoreInfo = calculateScore(siteInfo, new GlideinMetrics(12, 0, "pseq_prod"));
         logger.info(siteScoreInfo.toString());
 
     }
