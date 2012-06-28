@@ -1,5 +1,7 @@
 package org.renci.gate;
 
+import java.util.List;
+
 public class SiteInfo {
 
     private String condorCollectorHost;
@@ -22,7 +24,7 @@ public class SiteInfo {
 
     private String project;
 
-    private String queue;
+    private List<String> queues;
 
     public SiteInfo() {
         super();
@@ -108,12 +110,12 @@ public class SiteInfo {
         this.project = project;
     }
 
-    public String getQueue() {
-        return queue;
+    public List<String> getQueues() {
+        return queues;
     }
 
-    public void setQueue(String queue) {
-        this.queue = queue;
+    public void setQueues(List<String> queues) {
+        this.queues = queues;
     }
 
     @Override
@@ -121,8 +123,8 @@ public class SiteInfo {
         return "SiteInfo [condorCollectorHost=" + condorCollectorHost + ", submitHost=" + submitHost
                 + ", maxIdleCount=" + maxIdleCount + ", maxMultipleJobs=" + maxMultipleJobs + ", maxNoClaimTime="
                 + maxNoClaimTime + ", maxQueueTime=" + maxQueueTime + ", maxRunTime=" + maxRunTime
-                + ", maxRunningCount=" + maxRunningCount + ", name=" + name + ", project=" + project + ", queue="
-                + queue + "]";
+                + ", maxRunningCount=" + maxRunningCount + ", name=" + name + ", project=" + project + ", queues="
+                + queues + "]";
     }
 
 }
