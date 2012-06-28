@@ -62,17 +62,17 @@ public class MainTask extends TimerTask {
         }
 
         // get a snapshot of jobs across sites
-        Map<String, GlideinMetrics> siteMetricsMap = new HashMap<String, GlideinMetrics>();
+        Map<String, Map<String, GlideinMetrics>> siteMetricsMap = new HashMap<String, Map<String, GlideinMetrics>>();
         for (String siteName : gateServiceMap.keySet()) {
             GATEService gateService = gateServiceMap.get(siteName);
-            GlideinMetrics glideinMetrics;
+            Map<String, GlideinMetrics> glideinMetricsMap;
             try {
-                glideinMetrics = gateService.lookupMetrics();
+                glideinMetricsMap = gateService.lookupMetrics();
             } catch (Exception e) {
                 logger.error("There was a problem looking up metrics...doing nothing", e);
                 return;
             }
-            siteMetricsMap.put(gateService.getSiteInfo().getName(), glideinMetrics);
+            siteMetricsMap.put(gateService.getSiteInfo().getName(), glideinMetricsMap);
         }
 
         // go get a snapshot of local jobs
@@ -121,15 +121,19 @@ public class MainTask extends TimerTask {
                     GATEService gateService = gateServiceMap.get(siteName);
                     SiteInfo siteInfo = gateService.getSiteInfo();
                     logger.info(siteInfo.toString());
-                    GlideinMetrics metrics = siteMetricsMap.get(siteInfo.getName());
-                    logger.info(metrics.toString());
+                    Map<String, GlideinMetrics> metricsMap = siteMetricsMap.get(siteInfo.getName());
+                    
+                    for (String queue : metricsMap.keySet()) {
+                        GlideinMetrics metrics = metricsMap.get(queue);
+                        logger.info(metrics.toString());
 
-                    if (totalCondorJobs > 100 && (metrics.getRunning() > (totalCondorJobs * 0.5))) {
-                        logger.info("Number of running glideins is probably enough for the workload.");
-                        needGlidein = false;
-                    } else if (runningCondorJobs > (totalCondorJobs * 0.75)) {
-                        logger.info("Number of running jobs is high compared to idle jobs.");
-                        needGlidein = false;
+                        if (totalCondorJobs > 100 && (metrics.getRunning() > (totalCondorJobs * 0.5))) {
+                            logger.info("Number of running glideins is probably enough for the workload.");
+                            needGlidein = false;
+                        } else if (runningCondorJobs > (totalCondorJobs * 0.75)) {
+                            logger.info("Number of running jobs is high compared to idle jobs.");
+                            needGlidein = false;
+                        }
                     }
 
                 }
@@ -197,7 +201,6 @@ public class MainTask extends TimerTask {
                     numToSubmit = Math.round(numToSubmit);
                     numToSubmit = Math.min(numToSubmit, siteInfo.getMaxMultipleJobs());
                     logger.info("Planning on submitting {} glideins in this iteration", numToSubmit);
-
                     
                     for (int i = 0; i < numToSubmit; ++i) {
                         logger.info("Submitting glidein for {} to {}", System.getProperty("user.name"), winner.getKey());
