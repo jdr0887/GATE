@@ -1,6 +1,7 @@
 package org.renci.gate.plugins.blueridge;
 
 import java.util.List;
+import java.util.Map;
 
 import org.renci.gate.GATEService;
 import org.renci.gate.GlideinMetrics;
@@ -33,13 +34,13 @@ public class BlueRidgeGATEService implements GATEService {
     }
 
     @Override
-    public GlideinMetrics lookupMetrics() {
+    public Map<String, GlideinMetrics> lookupMetrics() {
         // TODO Auto-generated method stub
         return null;
     }
 
     @Override
-    public void postGlidein() {
+    public void postGlidein(String queue) {
         // TODO Auto-generated method stub
 
     }
