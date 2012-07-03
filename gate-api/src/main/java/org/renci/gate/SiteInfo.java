@@ -8,23 +8,15 @@ public class SiteInfo {
 
     private String submitHost;
 
-    private int maxIdleCount;
+    private int maxTotalPending;
 
-    private int maxMultipleJobs;
-
-    private int maxNoClaimTime;
-
-    private int maxQueueTime;
-
-    private int maxRunTime;
-
-    private int maxRunningCount;
+    private int maxTotalRunning;
 
     private String name;
 
     private String project;
 
-    private List<String> queues;
+    private List<QueueInfo> queues;
 
     public SiteInfo() {
         super();
@@ -46,52 +38,20 @@ public class SiteInfo {
         this.submitHost = submitHost;
     }
 
-    public int getMaxIdleCount() {
-        return maxIdleCount;
+    public int getMaxTotalPending() {
+        return maxTotalPending;
     }
 
-    public void setMaxIdleCount(int maxIdleCount) {
-        this.maxIdleCount = maxIdleCount;
+    public void setMaxTotalPending(int maxTotalPending) {
+        this.maxTotalPending = maxTotalPending;
     }
 
-    public int getMaxMultipleJobs() {
-        return maxMultipleJobs;
+    public int getMaxTotalRunning() {
+        return maxTotalRunning;
     }
 
-    public void setMaxMultipleJobs(int maxMultipleJobs) {
-        this.maxMultipleJobs = maxMultipleJobs;
-    }
-
-    public int getMaxNoClaimTime() {
-        return maxNoClaimTime;
-    }
-
-    public void setMaxNoClaimTime(int maxNoClaimTime) {
-        this.maxNoClaimTime = maxNoClaimTime;
-    }
-
-    public int getMaxQueueTime() {
-        return maxQueueTime;
-    }
-
-    public void setMaxQueueTime(int maxQueueTime) {
-        this.maxQueueTime = maxQueueTime;
-    }
-
-    public int getMaxRunTime() {
-        return maxRunTime;
-    }
-
-    public void setMaxRunTime(int maxRunTime) {
-        this.maxRunTime = maxRunTime;
-    }
-
-    public int getMaxRunningCount() {
-        return maxRunningCount;
-    }
-
-    public void setMaxRunningCount(int maxRunningCount) {
-        this.maxRunningCount = maxRunningCount;
+    public void setMaxTotalRunning(int maxTotalRunning) {
+        this.maxTotalRunning = maxTotalRunning;
     }
 
     public String getName() {
@@ -110,21 +70,19 @@ public class SiteInfo {
         this.project = project;
     }
 
-    public List<String> getQueues() {
+    public List<QueueInfo> getQueues() {
         return queues;
     }
 
-    public void setQueues(List<String> queues) {
+    public void setQueues(List<QueueInfo> queues) {
         this.queues = queues;
     }
 
     @Override
     public String toString() {
         return "SiteInfo [condorCollectorHost=" + condorCollectorHost + ", submitHost=" + submitHost
-                + ", maxIdleCount=" + maxIdleCount + ", maxMultipleJobs=" + maxMultipleJobs + ", maxNoClaimTime="
-                + maxNoClaimTime + ", maxQueueTime=" + maxQueueTime + ", maxRunTime=" + maxRunTime
-                + ", maxRunningCount=" + maxRunningCount + ", name=" + name + ", project=" + project + ", queues="
-                + queues + "]";
+                + ", maxTotalPending=" + maxTotalPending + ", maxTotalRunning=" + maxTotalRunning + ", name=" + name
+                + ", project=" + project + ", queues=" + queues + "]";
     }
 
 }
