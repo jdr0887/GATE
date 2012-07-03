@@ -4,10 +4,10 @@
     <artifactId>gate-plugins</artifactId>
     <version>0.0.3-SNAPSHOT</version>
   </parent>
-  <name>GATE :: Plugins :: Kure</name>
+  <name>GATE :: Plugins :: Lineberger</name>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.renci.gate.gate-plugins</groupId>
-  <artifactId>gate-plugin-kure</artifactId>
+  <artifactId>gate-plugin-lineberger</artifactId>
   <version>0.0.3-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <dependencies>
