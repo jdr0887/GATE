@@ -14,6 +14,7 @@
   </dependencies>
   <modules>
     <module>gate-plugin-kure</module>
+    <module>gate-plugin-lineberger</module>
     <module>gate-plugin-killdevil</module>
     <module>gate-plugin-blueridge</module>
   </modules>
