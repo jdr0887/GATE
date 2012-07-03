@@ -2,6 +2,7 @@ package org.renci.gate.engine;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -9,9 +10,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
-import org.renci.gate.GlideinMetrics;
+import org.renci.gate.GlideinMetric;
+import org.renci.gate.QueueInfo;
 import org.renci.gate.SiteInfo;
 import org.renci.gate.SiteScoreInfo;
 import org.slf4j.Logger;
@@ -51,35 +54,56 @@ public class Scratch {
 
     @Test
     public void testNumberToSubmit() {
-        SiteInfo siteInfo = new SiteInfo();
-        siteInfo.setMaxIdleCount(9);
-        siteInfo.setMaxMultipleJobs(3);
-        siteInfo.setMaxNoClaimTime(60);
-        siteInfo.setMaxQueueTime(1440);
-        siteInfo.setMaxRunningCount(40);
-        siteInfo.setMaxRunTime(2880);
+        
+        List<QueueInfo> queueList = new ArrayList<QueueInfo>();
 
-        logger.info("Number To submit: {}", calculateNumberToSubmit(20, 0, siteInfo, new GlideinMetrics(0, 0, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 0, siteInfo, new GlideinMetrics(0, 0, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 10, siteInfo, new GlideinMetrics(0, 0, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 10, siteInfo, new GlideinMetrics(1, 2, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 20, siteInfo, new GlideinMetrics(2, 4, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 30, siteInfo, new GlideinMetrics(4, 4, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 30, siteInfo, new GlideinMetrics(6, 4, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 40, siteInfo, new GlideinMetrics(8, 4, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(30, 5, siteInfo, new GlideinMetrics(1, 2, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(50, 10, siteInfo, new GlideinMetrics(2, 5, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(80, 12, siteInfo, new GlideinMetrics(4, 6, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(80, 12, siteInfo, new GlideinMetrics(10, 2, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(80, 12, siteInfo, new GlideinMetrics(30, 2, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(120, 12, siteInfo, new GlideinMetrics(40, 10, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(2, 50, siteInfo, new GlideinMetrics(40, 10, "pseq_prod")));
+        QueueInfo queueInfo = new QueueInfo();
+        queueInfo.setName("pseq_prod");
+        queueInfo.setMaxJobLimit(30);
+        queueInfo.setMaxMultipleJobsToSubmit(4);
+        queueInfo.setPendingTime(1440);
+        queueInfo.setPendingTimeUnit(TimeUnit.MINUTES);
+        queueInfo.setRunTime(2880);
+        queueInfo.setRunTimeUnit(TimeUnit.MINUTES);
+        queueList.add(queueInfo);
+
+        queueInfo = new QueueInfo();
+        queueInfo.setName("week");
+        queueInfo.setMaxJobLimit(30);
+        queueInfo.setMaxMultipleJobsToSubmit(4);
+        queueInfo.setPendingTime(1440);
+        queueInfo.setPendingTimeUnit(TimeUnit.MINUTES);
+        queueInfo.setRunTime(2880);
+        queueInfo.setRunTimeUnit(TimeUnit.MINUTES);
+        queueList.add(queueInfo);
+
+        SiteInfo siteInfo = new SiteInfo();
+        siteInfo.setMaxTotalPending(8);
+        siteInfo.setMaxTotalRunning(40);
+        siteInfo.setQueues(queueList);
+
+        logger.info("Number To submit: {}", calculateNumberToSubmit(20, 0, siteInfo, new GlideinMetric(0, 0, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 0, siteInfo, new GlideinMetric(0, 0, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 10, siteInfo, new GlideinMetric(0, 0, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 10, siteInfo, new GlideinMetric(1, 2, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 20, siteInfo, new GlideinMetric(2, 4, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 30, siteInfo, new GlideinMetric(4, 4, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 30, siteInfo, new GlideinMetric(6, 4, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 40, siteInfo, new GlideinMetric(8, 4, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(30, 5, siteInfo, new GlideinMetric(1, 2, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(50, 10, siteInfo, new GlideinMetric(2, 5, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(80, 12, siteInfo, new GlideinMetric(4, 6, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(80, 12, siteInfo, new GlideinMetric(10, 2, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(80, 12, siteInfo, new GlideinMetric(30, 2, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(120, 12, siteInfo, new GlideinMetric(40, 10, "pseq_prod")));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(2, 50, siteInfo, new GlideinMetric(40, 10, "pseq_prod")));
 
     }
 
     private Long calculateNumberToSubmit(int idleCondorJobs, int runningCondorJobs, SiteInfo siteInfo,
-            GlideinMetrics metrics) {
+            GlideinMetric metrics) {
         logger.info(metrics.toString());
+        
         double numToSubmit = siteInfo.getMaxMultipleJobs();
         numToSubmit -= metrics.getPending() * 0.4;
         numToSubmit -= metrics.getRunning() * 0.4;
@@ -108,30 +132,30 @@ public class Scratch {
         siteInfo.setMaxRunningCount(40);
         siteInfo.setMaxRunTime(2880);
 
-        SiteScoreInfo siteScoreInfo = calculateScore(siteInfo, new GlideinMetrics(0, 0, "pseq_prod"));
+        SiteScoreInfo siteScoreInfo = calculateScore(siteInfo, new GlideinMetric(0, 0, "pseq_prod"));
         logger.info(siteScoreInfo.toString());
 
-        siteScoreInfo = calculateScore(siteInfo, new GlideinMetrics(0, 2, "pseq_prod"));
+        siteScoreInfo = calculateScore(siteInfo, new GlideinMetric(0, 2, "pseq_prod"));
         logger.info(siteScoreInfo.toString());
 
-        siteScoreInfo = calculateScore(siteInfo, new GlideinMetrics(1, 2, "pseq_prod"));
+        siteScoreInfo = calculateScore(siteInfo, new GlideinMetric(1, 2, "pseq_prod"));
         logger.info(siteScoreInfo.toString());
 
-        siteScoreInfo = calculateScore(siteInfo, new GlideinMetrics(2, 2, "pseq_prod"));
+        siteScoreInfo = calculateScore(siteInfo, new GlideinMetric(2, 2, "pseq_prod"));
         logger.info(siteScoreInfo.toString());
 
-        siteScoreInfo = calculateScore(siteInfo, new GlideinMetrics(4, 2, "pseq_prod"));
+        siteScoreInfo = calculateScore(siteInfo, new GlideinMetric(4, 2, "pseq_prod"));
         logger.info(siteScoreInfo.toString());
 
-        siteScoreInfo = calculateScore(siteInfo, new GlideinMetrics(12, 8, "pseq_prod"));
+        siteScoreInfo = calculateScore(siteInfo, new GlideinMetric(12, 8, "pseq_prod"));
         logger.info(siteScoreInfo.toString());
 
-        siteScoreInfo = calculateScore(siteInfo, new GlideinMetrics(12, 0, "pseq_prod"));
+        siteScoreInfo = calculateScore(siteInfo, new GlideinMetric(12, 0, "pseq_prod"));
         logger.info(siteScoreInfo.toString());
 
     }
 
-    private SiteScoreInfo calculateScore(SiteInfo siteInfo, GlideinMetrics metrics) {
+    private SiteScoreInfo calculateScore(SiteInfo siteInfo, GlideinMetric metrics) {
         logger.info(metrics.toString());
         SiteScoreInfo siteScoreInfo = new SiteScoreInfo();
 
