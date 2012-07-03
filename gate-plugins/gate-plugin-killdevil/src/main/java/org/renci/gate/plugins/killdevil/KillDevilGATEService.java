@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.renci.gate.GATEService;
-import org.renci.gate.GlideinMetrics;
+import org.renci.gate.GlideinMetric;
 import org.renci.gate.SiteInfo;
 import org.renci.jlrm.LRMException;
 import org.renci.jlrm.lsf.LSFJobStatusInfo;
@@ -53,8 +53,8 @@ public class KillDevilGATEService implements GATEService {
         return siteInfo;
     }
     @Override
-    public Map<String, GlideinMetrics> lookupMetrics() {
-        Map<String, GlideinMetrics> metricsMap = new HashMap<String, GlideinMetrics>();
+    public Map<String, GlideinMetric> lookupMetrics() {
+        Map<String, GlideinMetric> metricsMap = new HashMap<String, GlideinMetric>();
         LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(lsfHome, System.getProperty("user.name"),
                 siteInfo.getSubmitHost());
 
@@ -78,7 +78,7 @@ public class KillDevilGATEService implements GATEService {
                     int running = 0;
                     int pending = 0;
                     for (LSFJobStatusInfo info : jobStatusSet) {
-                        GlideinMetrics metrics = new GlideinMetrics();
+                        GlideinMetric metrics = new GlideinMetric();
                         if (info.getQueue().equals(queue) && job.getId().equals(info.getJobId())) {
                             switch (info.getType()) {
                                 case PENDING:

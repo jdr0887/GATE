@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.renci.gate.GATEService;
-import org.renci.gate.GlideinMetrics;
+import org.renci.gate.GlideinMetric;
 import org.renci.gate.SiteInfo;
 import org.renci.jlrm.Job;
 import org.slf4j.Logger;
@@ -34,7 +34,7 @@ public class BlueRidgeGATEService implements GATEService {
     }
 
     @Override
-    public Map<String, GlideinMetrics> lookupMetrics() {
+    public Map<String, GlideinMetric> lookupMetrics() {
         // TODO Auto-generated method stub
         return null;
     }
