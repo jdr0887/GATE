@@ -1,6 +1,7 @@
 package org.renci.gate;
 
-import java.util.Map;
+import java.util.List;
+
 
 
 /**
@@ -11,10 +12,10 @@ public interface GATEService {
 
     public SiteInfo getSiteInfo();
 
-    public Map<String, GlideinMetrics> lookupMetrics();
+    public List<GlideinMetric> lookupMetrics();
 
-    public void postGlidein(String queue);
+    public void postGlidein(SiteInfo site, QueueInfo queue);
 
-    public void deleteGlidein();
+    public void deleteGlidein(SiteInfo site, QueueInfo queue);
 
 }
