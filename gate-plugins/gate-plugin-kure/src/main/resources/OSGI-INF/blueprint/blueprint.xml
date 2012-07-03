@@ -5,20 +5,36 @@
   <bean id="siteInfo" class="org.renci.gate.SiteInfo">
     <property name="condorCollectorHost" value="biodev1.its.unc.edu" />
     <property name="submitHost" value="biodev1.its.unc.edu" />
-    <property name="maxIdleCount" value="9" />
-    <property name="maxMultipleJobs" value="3" />
-    <property name="maxNoClaimTime" value="60" />
-    <property name="maxQueueTime" value="1440" />
-    <property name="maxRunTime" value="2880" />
-    <property name="maxRunningCount" value="40" />
+    <property name="maxTotalPending" value="6" />
+    <property name="maxTotalRunning" value="30" />
     <property name="name" value="Kure" />
     <property name="project" value="TCGA" />
     <property name="queues">
       <list>
-        <value>pseq_prod</value>
-        <value>week</value>
+        <ref bean="pseqProdQueue" /> 
+        <ref bean="weekQueue" /> 
       </list>
     </property>
+  </bean>
+
+  <bean id="pseqProdQueue" class="org.renci.gate.QueueInfo">
+    <property name="name" value="pseq_prod" />
+    <property name="maxJobLimit" value="64"/>
+    <property name="maxMultipleJobsToSubmit" value="3" />
+    <property name="pendingTime" value="1440" />
+    <property name="pendingTimeUnit" value="TimeUnit.MINUTES" />
+    <property name="runTime" value="2880" />
+    <property name="runTimeUnit" value="TimeUnit.MINUTES" />
+  </bean>
+
+  <bean id="weekQueue" class="org.renci.gate.QueueInfo">
+    <property name="name" value="week" />
+    <property name="maxJobLimit" value="8"/>
+    <property name="maxMultipleJobsToSubmit" value="1" />
+    <property name="pendingTime" value="1440" />
+    <property name="pendingTimeUnit" value="TimeUnit.MINUTES" />
+    <property name="runTime" value="2880" />
+    <property name="runTimeUnit" value="TimeUnit.MINUTES" />
   </bean>
 
   <bean id="kureGATEService" class="org.renci.gate.plugins.kure.KureGATEService">
