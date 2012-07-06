@@ -12,9 +12,9 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.renci.gate.GATEService;
 import org.renci.gate.GlideinMetric;
-import org.renci.gate.QueueInfo;
-import org.renci.gate.SiteInfo;
-import org.renci.jlrm.LRMException;
+import org.renci.jlrm.JLRMException;
+import org.renci.jlrm.Queue;
+import org.renci.jlrm.Site;
 import org.renci.jlrm.lsf.LSFJobStatusInfo;
 import org.renci.jlrm.lsf.ssh.LSFSSHFactory;
 import org.renci.jlrm.lsf.ssh.LSFSSHJob;
@@ -31,35 +31,18 @@ public class KureGATEService implements GATEService {
 
     private final List<LSFSSHJob> jobCache = new ArrayList<LSFSSHJob>();
 
-    private SiteInfo siteInfo;
+    private Site site;
 
-    private String lsfHome;
+    private String collectorHost;
 
     public KureGATEService() {
         super();
     }
 
-    public String getLsfHome() {
-        return lsfHome;
-    }
-
-    public void setLsfHome(String lsfHome) {
-        this.lsfHome = lsfHome;
-    }
-
-    public void setSiteInfo(SiteInfo siteInfo) {
-        this.siteInfo = siteInfo;
-    }
-
-    public SiteInfo getSiteInfo() {
-        return siteInfo;
-    }
-
     @Override
     public Map<String, GlideinMetric> lookupMetrics() {
         Map<String, GlideinMetric> metricsMap = new HashMap<String, GlideinMetric>();
-        LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(lsfHome, System.getProperty("user.name"),
-                siteInfo.getSubmitHost());
+        LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(this.site, System.getProperty("user.name"));
 
         try {
 
@@ -103,14 +86,15 @@ public class KureGATEService implements GATEService {
                                     break;
                             }
                         }
+                        metrics.setQueue(queue);
                         metrics.setPending(pending);
                         metrics.setRunning(running);
-                        metricsMap.put(info.getQueue(), metrics);
+                        metricsMap.put(queue, metrics);
                     }
                 }
             }
 
-        } catch (LRMException e) {
+        } catch (JLRMException e) {
             e.printStackTrace();
             logger.error("Error:", e);
         }
@@ -118,37 +102,56 @@ public class KureGATEService implements GATEService {
     }
 
     @Override
-    public void postGlidein(SiteInfo site, QueueInfo queue) {
+    public void createGlidein(Queue queue) {
+        logger.info("ENTERING createGlidein(Queue)");
         File submitDir = new File("/tmp", System.getProperty("user.name"));
         submitDir.mkdirs();
         LSFSSHJob job = null;
         try {
-            LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(lsfHome, System.getProperty("user.name"),
-                    siteInfo.getSubmitHost());
-            job = lsfSSHFactory.submitGlidein(submitDir, siteInfo.getMaxNoClaimTime(), siteInfo.getMaxRunTime(), 40,
-                    siteInfo.getCondorCollectorHost(), queue);
+            logger.info("siteInfo: {}", this.site);
+            logger.info("queueInfo: {}", queue);
+            LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(this.site, System.getProperty("user.name"));
+            job = lsfSSHFactory.submitGlidein(submitDir, this.getCollectorHost(), queue, 40);
             if (job != null && StringUtils.isNotEmpty(job.getId())) {
                 logger.info("job.getId(): {}", job.getId());
                 jobCache.add(job);
             }
-        } catch (LRMException e) {
+        } catch (JLRMException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void deleteGlidein() {
+    public void deleteGlidein(Queue queue) {
+        logger.info("ENTERING deleteGlidein(QueueInfo)");
         if (jobCache.size() > 0) {
             try {
-                LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(lsfHome, System.getProperty("user.name"),
-                        siteInfo.getSubmitHost());
+                logger.info("siteInfo: {}", this.site);
+                logger.info("queueInfo: {}", queue);
+                LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(this.site, System.getProperty("user.name"));
                 LSFSSHJob job = jobCache.get(0);
                 lsfSSHFactory.killGlidein(job);
                 jobCache.remove(0);
-            } catch (LRMException e) {
+            } catch (JLRMException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public String getCollectorHost() {
+        return collectorHost;
+    }
+
+    public void setCollectorHost(String collectorHost) {
+        this.collectorHost = collectorHost;
+    }
+
+    public Site getSite() {
+        return site;
+    }
+
+    public void setSite(Site site) {
+        this.site = site;
     }
 
 }

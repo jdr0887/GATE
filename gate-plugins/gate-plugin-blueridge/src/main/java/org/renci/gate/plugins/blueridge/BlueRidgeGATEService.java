@@ -1,12 +1,11 @@
 package org.renci.gate.plugins.blueridge;
 
-import java.util.List;
 import java.util.Map;
 
 import org.renci.gate.GATEService;
 import org.renci.gate.GlideinMetric;
-import org.renci.gate.SiteInfo;
-import org.renci.jlrm.Job;
+import org.renci.jlrm.Queue;
+import org.renci.jlrm.Site;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,19 +17,12 @@ public class BlueRidgeGATEService implements GATEService {
 
     private final Logger logger = LoggerFactory.getLogger(BlueRidgeGATEService.class);
 
-    private SiteInfo siteInfo;
+    private Site site;
+
+    private String collectorHost;
 
     public BlueRidgeGATEService() {
         super();
-    }
-
-    @Override
-    public SiteInfo getSiteInfo() {
-        return siteInfo;
-    }
-
-    public void setSiteInfo(SiteInfo siteInfo) {
-        this.siteInfo = siteInfo;
     }
 
     @Override
@@ -40,15 +32,31 @@ public class BlueRidgeGATEService implements GATEService {
     }
 
     @Override
-    public void postGlidein(String queue) {
-        // TODO Auto-generated method stub
+    public void createGlidein(Queue queue) {
+        logger.info("ENTERING createGlidein(Queue)");
 
     }
 
     @Override
-    public void deleteGlidein() {
-        // TODO Auto-generated method stub
+    public void deleteGlidein(Queue queue) {
+        logger.info("ENTERING deleteGlidein(Queue)");
 
+    }
+
+    public Site getSite() {
+        return site;
+    }
+
+    public void setSite(Site site) {
+        this.site = site;
+    }
+
+    public String getCollectorHost() {
+        return collectorHost;
+    }
+
+    public void setCollectorHost(String collectorHost) {
+        this.collectorHost = collectorHost;
     }
 
 }
