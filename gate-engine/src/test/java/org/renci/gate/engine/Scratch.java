@@ -6,17 +6,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.renci.gate.GlideinMetric;
-import org.renci.gate.QueueInfo;
-import org.renci.gate.SiteInfo;
-import org.renci.gate.SiteScoreInfo;
+import org.renci.gate.SiteQueueScore;
+import org.renci.jlrm.Queue;
+import org.renci.jlrm.Site;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,163 +28,158 @@ public class Scratch {
     @Test
     public void testMapSort() {
 
-        Map<String, SiteScoreInfo> siteScoreMap = new HashMap<String, SiteScoreInfo>();
-        siteScoreMap.put("qwer", new SiteScoreInfo(5D, "qwer"));
-        siteScoreMap.put("asdf", new SiteScoreInfo(1D, "asdf"));
-        siteScoreMap.put("zxcv", new SiteScoreInfo(3D, "zxcv"));
-        siteScoreMap.put("qwerasdfzxcv", new SiteScoreInfo(7D, "qwerasdfzxcv"));
+        List<SiteQueueScore> siteScoreList = new ArrayList<SiteQueueScore>();
+        siteScoreList.add(new SiteQueueScore("kure", "week", 5, "asdf", 1));
+        siteScoreList.add(new SiteQueueScore("kure", "pseq_prod", 7, "qwer", 1));
+        siteScoreList.add(new SiteQueueScore("kure", "pseq_tcga", 6, "qwer", 1));
+        siteScoreList.add(new SiteQueueScore("blueridge", "serial", 5, "asdf", 1));
 
-        List<Map.Entry<String, SiteScoreInfo>> list = new LinkedList<Map.Entry<String, SiteScoreInfo>>(
-                siteScoreMap.entrySet());
-
-        Collections.sort(list, new Comparator<Map.Entry<String, SiteScoreInfo>>() {
+        Collections.sort(siteScoreList, new Comparator<SiteQueueScore>() {
             @Override
-            public int compare(Entry<String, SiteScoreInfo> o1, Entry<String, SiteScoreInfo> o2) {
-                return o2.getValue().getScore().compareTo(o1.getValue().getScore());
+            public int compare(SiteQueueScore o1, SiteQueueScore o2) {
+                return o2.getScore().compareTo(o1.getScore());
             }
         });
 
-        Map.Entry<String, SiteScoreInfo> winner = list.get(0);
-        assertTrue(winner.getKey().equals("qwerasdfzxcv"));
+        SiteQueueScore winner = siteScoreList.get(0);
+        assertTrue(winner.getQueueName().equals("pseq_prod"));
 
     }
 
     @Test
     public void testNumberToSubmit() {
-        
-        List<QueueInfo> queueList = new ArrayList<QueueInfo>();
 
-        QueueInfo queueInfo = new QueueInfo();
-        queueInfo.setName("pseq_prod");
-        queueInfo.setMaxJobLimit(30);
-        queueInfo.setMaxMultipleJobsToSubmit(4);
-        queueInfo.setPendingTime(1440);
-        queueInfo.setPendingTimeUnit(TimeUnit.MINUTES);
-        queueInfo.setRunTime(2880);
-        queueInfo.setRunTimeUnit(TimeUnit.MINUTES);
-        queueList.add(queueInfo);
+        Map<String, Queue> queueMap = new HashMap<String, Queue>();
 
-        queueInfo = new QueueInfo();
-        queueInfo.setName("week");
-        queueInfo.setMaxJobLimit(30);
-        queueInfo.setMaxMultipleJobsToSubmit(4);
-        queueInfo.setPendingTime(1440);
-        queueInfo.setPendingTimeUnit(TimeUnit.MINUTES);
-        queueInfo.setRunTime(2880);
-        queueInfo.setRunTimeUnit(TimeUnit.MINUTES);
-        queueList.add(queueInfo);
+        Queue pseqProdQueueInfo = new Queue();
+        pseqProdQueueInfo.setName("pseq_prod");
+        pseqProdQueueInfo.setWeight(1D);
+        pseqProdQueueInfo.setMaxJobLimit(30);
+        pseqProdQueueInfo.setMaxMultipleJobsToSubmit(4);
+        pseqProdQueueInfo.setPendingTime(1440);
+        pseqProdQueueInfo.setRunTime(2880);
+        queueMap.put("pseq_prod", pseqProdQueueInfo);
 
-        SiteInfo siteInfo = new SiteInfo();
+        Queue weekQueueInfo = new Queue();
+        weekQueueInfo.setName("week");
+        weekQueueInfo.setWeight(0.8D);
+        weekQueueInfo.setMaxJobLimit(30);
+        weekQueueInfo.setMaxMultipleJobsToSubmit(4);
+        weekQueueInfo.setPendingTime(1440);
+        weekQueueInfo.setRunTime(2880);
+        queueMap.put("week", weekQueueInfo);
+
+        Site siteInfo = new Site();
         siteInfo.setMaxTotalPending(8);
         siteInfo.setMaxTotalRunning(40);
-        siteInfo.setQueues(queueList);
+        siteInfo.setQueueInfoMap(queueMap);
 
-        logger.info("Number To submit: {}", calculateNumberToSubmit(20, 0, siteInfo, new GlideinMetric(0, 0, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 0, siteInfo, new GlideinMetric(0, 0, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 10, siteInfo, new GlideinMetric(0, 0, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 10, siteInfo, new GlideinMetric(1, 2, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 20, siteInfo, new GlideinMetric(2, 4, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 30, siteInfo, new GlideinMetric(4, 4, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 30, siteInfo, new GlideinMetric(6, 4, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(100, 40, siteInfo, new GlideinMetric(8, 4, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(30, 5, siteInfo, new GlideinMetric(1, 2, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(50, 10, siteInfo, new GlideinMetric(2, 5, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(80, 12, siteInfo, new GlideinMetric(4, 6, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(80, 12, siteInfo, new GlideinMetric(10, 2, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(80, 12, siteInfo, new GlideinMetric(30, 2, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(120, 12, siteInfo, new GlideinMetric(40, 10, "pseq_prod")));
-        logger.info("Number To submit: {}", calculateNumberToSubmit(2, 50, siteInfo, new GlideinMetric(40, 10, "pseq_prod")));
+        logger.info("Number To submit: {}",
+                calculateNumberToSubmit(20, 0, siteInfo, pseqProdQueueInfo, new GlideinMetric(0, 0, "pseq_prod")));
+        logger.info("Number To submit: {}",
+                calculateNumberToSubmit(100, 0, siteInfo, pseqProdQueueInfo, new GlideinMetric(0, 0, "pseq_prod")));
+        logger.info("Number To submit: {}",
+                calculateNumberToSubmit(100, 10, siteInfo, pseqProdQueueInfo, new GlideinMetric(0, 0, "pseq_prod")));
+        logger.info("Number To submit: {}",
+                calculateNumberToSubmit(100, 10, siteInfo, pseqProdQueueInfo, new GlideinMetric(1, 2, "pseq_prod")));
+        logger.info("Number To submit: {}",
+                calculateNumberToSubmit(100, 20, siteInfo, pseqProdQueueInfo, new GlideinMetric(2, 4, "pseq_prod")));
+        logger.info("Number To submit: {}",
+                calculateNumberToSubmit(100, 30, siteInfo, pseqProdQueueInfo, new GlideinMetric(4, 4, "pseq_prod")));
+        logger.info("Number To submit: {}",
+                calculateNumberToSubmit(100, 30, siteInfo, pseqProdQueueInfo, new GlideinMetric(6, 4, "pseq_prod")));
+        logger.info("Number To submit: {}",
+                calculateNumberToSubmit(100, 40, siteInfo, pseqProdQueueInfo, new GlideinMetric(8, 4, "pseq_prod")));
+        logger.info("Number To submit: {}",
+                calculateNumberToSubmit(30, 5, siteInfo, pseqProdQueueInfo, new GlideinMetric(1, 2, "pseq_prod")));
+        logger.info("Number To submit: {}",
+                calculateNumberToSubmit(50, 10, siteInfo, pseqProdQueueInfo, new GlideinMetric(2, 5, "pseq_prod")));
+        logger.info("Number To submit: {}",
+                calculateNumberToSubmit(80, 12, siteInfo, pseqProdQueueInfo, new GlideinMetric(4, 6, "pseq_prod")));
+        logger.info("Number To submit: {}",
+                calculateNumberToSubmit(80, 12, siteInfo, pseqProdQueueInfo, new GlideinMetric(10, 2, "pseq_prod")));
+        logger.info("Number To submit: {}",
+                calculateNumberToSubmit(80, 12, siteInfo, pseqProdQueueInfo, new GlideinMetric(30, 2, "pseq_prod")));
+        logger.info("Number To submit: {}",
+                calculateNumberToSubmit(120, 12, siteInfo, pseqProdQueueInfo, new GlideinMetric(40, 10, "pseq_prod")));
+        logger.info("Number To submit: {}",
+                calculateNumberToSubmit(2, 50, siteInfo, pseqProdQueueInfo, new GlideinMetric(40, 10, "pseq_prod")));
 
     }
 
-    private Long calculateNumberToSubmit(int idleCondorJobs, int runningCondorJobs, SiteInfo siteInfo,
+    private Integer calculateNumberToSubmit(int idleCondorJobs, int runningCondorJobs, Site siteInfo, Queue queueInfo,
             GlideinMetric metrics) {
         logger.info(metrics.toString());
-        
-        double numToSubmit = siteInfo.getMaxMultipleJobs();
+        double numToSubmit = 1;
+
+        numToSubmit = queueInfo.getMaxMultipleJobsToSubmit();
         numToSubmit -= metrics.getPending() * 0.4;
         numToSubmit -= metrics.getRunning() * 0.4;
         numToSubmit -= runningCondorJobs * 0.005;
         numToSubmit += idleCondorJobs * 0.005;
 
-        if (numToSubmit <= 1 && metrics.getRunning() <= siteInfo.getMaxRunningCount()) {
+        if (numToSubmit <= 1 && metrics.getRunning() <= siteInfo.getMaxTotalRunning()) {
             numToSubmit = 1;
         }
 
-        // numToSubmit = Math.round(0.1 * idleCondorJobs);
-        numToSubmit = Math.min(numToSubmit, siteInfo.getMaxMultipleJobs());
-        // int totalGlideinsAllowed = siteInfo.getMaxRunningCount() + siteInfo.getMaxIdleCount();
-        // numToSubmit = Math.min(numToSubmit, totalGlideinsAllowed - metrics.getTotal());
-        return Math.round(numToSubmit);
+        numToSubmit = Math.round(numToSubmit);
+        return Double.valueOf(Math.min(numToSubmit, queueInfo.getMaxMultipleJobsToSubmit())).intValue();
     }
 
     @Test
     public void testScoring() {
 
-        SiteInfo siteInfo = new SiteInfo();
-        siteInfo.setMaxIdleCount(9);
-        siteInfo.setMaxMultipleJobs(3);
+        Site siteInfo = new Site();
         siteInfo.setMaxNoClaimTime(60);
-        siteInfo.setMaxQueueTime(1440);
-        siteInfo.setMaxRunningCount(40);
-        siteInfo.setMaxRunTime(2880);
+        Map<String, Queue> queueMap = new HashMap<String, Queue>();
 
-        SiteScoreInfo siteScoreInfo = calculateScore(siteInfo, new GlideinMetric(0, 0, "pseq_prod"));
+        Queue pseqProdQueueInfo = new Queue();
+        pseqProdQueueInfo.setName("pseq_prod");
+        pseqProdQueueInfo.setWeight(1D);
+        pseqProdQueueInfo.setMaxJobLimit(30);
+        pseqProdQueueInfo.setMaxMultipleJobsToSubmit(4);
+        pseqProdQueueInfo.setPendingTime(1440);
+        pseqProdQueueInfo.setRunTime(2880);
+        queueMap.put("pseq_prod", pseqProdQueueInfo);
+
+        Queue weekQueueInfo = new Queue();
+        weekQueueInfo.setName("week");
+        weekQueueInfo.setWeight(0.8D);
+        weekQueueInfo.setMaxJobLimit(30);
+        weekQueueInfo.setMaxMultipleJobsToSubmit(4);
+        weekQueueInfo.setPendingTime(1440);
+        weekQueueInfo.setRunTime(2880);
+        queueMap.put("week", weekQueueInfo);
+        siteInfo.setQueueInfoMap(queueMap);
+
+        SiteQueueScore siteScoreInfo = calculateScore(siteInfo, pseqProdQueueInfo, new GlideinMetric(0, 0, "pseq_prod"));
         logger.info(siteScoreInfo.toString());
 
-        siteScoreInfo = calculateScore(siteInfo, new GlideinMetric(0, 2, "pseq_prod"));
+        siteScoreInfo = calculateScore(siteInfo, pseqProdQueueInfo, new GlideinMetric(0, 2, "pseq_prod"));
         logger.info(siteScoreInfo.toString());
 
-        siteScoreInfo = calculateScore(siteInfo, new GlideinMetric(1, 2, "pseq_prod"));
+        siteScoreInfo = calculateScore(siteInfo, pseqProdQueueInfo, new GlideinMetric(1, 2, "pseq_prod"));
         logger.info(siteScoreInfo.toString());
 
-        siteScoreInfo = calculateScore(siteInfo, new GlideinMetric(2, 2, "pseq_prod"));
+        siteScoreInfo = calculateScore(siteInfo, pseqProdQueueInfo, new GlideinMetric(2, 2, "pseq_prod"));
         logger.info(siteScoreInfo.toString());
 
-        siteScoreInfo = calculateScore(siteInfo, new GlideinMetric(4, 2, "pseq_prod"));
+        siteScoreInfo = calculateScore(siteInfo, pseqProdQueueInfo, new GlideinMetric(4, 2, "pseq_prod"));
         logger.info(siteScoreInfo.toString());
 
-        siteScoreInfo = calculateScore(siteInfo, new GlideinMetric(12, 8, "pseq_prod"));
+        siteScoreInfo = calculateScore(siteInfo, pseqProdQueueInfo, new GlideinMetric(12, 8, "pseq_prod"));
         logger.info(siteScoreInfo.toString());
 
-        siteScoreInfo = calculateScore(siteInfo, new GlideinMetric(12, 0, "pseq_prod"));
+        siteScoreInfo = calculateScore(siteInfo, pseqProdQueueInfo, new GlideinMetric(12, 0, "pseq_prod"));
         logger.info(siteScoreInfo.toString());
 
     }
 
-    private SiteScoreInfo calculateScore(SiteInfo siteInfo, GlideinMetric metrics) {
+    private SiteQueueScore calculateScore(Site siteInfo, Queue queueInfo, GlideinMetric metrics) {
         logger.info(metrics.toString());
-        SiteScoreInfo siteScoreInfo = new SiteScoreInfo();
-
-        int maxTotal = siteInfo.getMaxRunningCount() + siteInfo.getMaxIdleCount();
-        // first, check if some limits have been reached
-        if (metrics.getTotal() >= maxTotal) {
-            siteScoreInfo.setMessage("Total number of glideins has reached the limit of " + maxTotal);
-            siteScoreInfo.setScore(0D);
-            return siteScoreInfo;
-        }
-
-        int remainingPending = siteInfo.getMaxIdleCount() - metrics.getPending();
-        logger.info("remainingPending = {}", remainingPending);
-
-        if (remainingPending <= 0) {
-            siteScoreInfo.setMessage("Number of idle/pending glideins has reached the limit of "
-                    + siteInfo.getMaxIdleCount());
-            siteScoreInfo.setScore(0D);
-            return siteScoreInfo;
-        }
-
-        // we want to start all sites at the same score so that we can give
-        // all sites a chance - this helps initial startup when a user submits
-        // one or a few jobs
-        if (metrics.getTotal() == 0) {
-            siteScoreInfo.setMessage("Total number of glideins: " + metrics.getTotal());
-            siteScoreInfo.setScore(100D);
-            return siteScoreInfo;
-        }
-
-        int remainingRunning = siteInfo.getMaxRunningCount() - metrics.getRunning();
-        logger.info("remainingRunning = {}", remainingRunning);
+        SiteQueueScore siteScoreInfo = new SiteQueueScore();
+        siteScoreInfo.setSiteName(siteInfo.getName());
+        siteScoreInfo.setQueueName(queueInfo.getName());
 
         double score = 100;
         double pendingWeight = 9;
@@ -202,6 +194,7 @@ public class Scratch {
         for (int i = 1; i < metrics.getRunning() + 1; ++i) {
             score += i * runningWeight;
         }
+        score *= queueInfo.getWeight();
         logger.info("score = {}", score);
 
         // double proportionPending = remainingPending / siteInfo.getMaxIdleCount();
@@ -210,12 +203,12 @@ public class Scratch {
 
         if (score > 100) {
             siteScoreInfo.setMessage("Score lowered to spread jobs out on available sites");
-            siteScoreInfo.setScore(100D);
+            siteScoreInfo.setScore(100);
             return siteScoreInfo;
         }
 
         siteScoreInfo.setMessage("Total number of glideins: " + metrics.getTotal());
-        siteScoreInfo.setScore(score);
+        siteScoreInfo.setScore(Double.valueOf(score).intValue());
 
         logger.info("---------------");
         return siteScoreInfo;
