@@ -159,6 +159,11 @@
 	<version>${renci.jlrm.version}</version>
       </dependency>      
       <dependency>
+	<groupId>org.renci.jlrm.jlrm-sge</groupId>
+	<artifactId>jlrm-sge-ssh</artifactId>
+	<version>${renci.jlrm.version}</version>
+      </dependency>      
+      <dependency>
 	<groupId>org.renci.jlrm.jlrm-condor</groupId>
 	<artifactId>jlrm-condor-cli</artifactId>
 	<version>${renci.jlrm.version}</version>
