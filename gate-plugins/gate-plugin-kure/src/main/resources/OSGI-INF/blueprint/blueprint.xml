@@ -2,44 +2,51 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   default-activation="lazy">
 
-  <bean id="siteInfo" class="org.renci.gate.SiteInfo">
-    <property name="condorCollectorHost" value="biodev1.its.unc.edu" />
-    <property name="submitHost" value="biodev1.its.unc.edu" />
-    <property name="maxTotalPending" value="6" />
-    <property name="maxTotalRunning" value="30" />
+  <bean id="pseqProdQueue" class="org.renci.jlrm.Queue">
+    <property name="name" value="pseq_prod" />
+    <property name="weight" value="1" />
+    <property name="maxJobLimit" value="64" />
+    <property name="maxMultipleJobsToSubmit" value="3" />
+    <property name="pendingTime" value="1440" />
+    <property name="runTime" value="2880" />
+  </bean>
+
+  <bean id="weekQueue" class="org.renci.jlrm.Queue">
+    <property name="name" value="week" />
+    <property name="weight" value="0.6" />
+    <property name="maxJobLimit" value="8" />
+    <property name="maxMultipleJobsToSubmit" value="1" />
+    <property name="pendingTime" value="1440" />
+    <property name="runTime" value="2880" />
+  </bean>
+
+  <bean id="pseqTCGAQueue" class="org.renci.jlrm.Queue">
+    <property name="name" value="pseq_tcga" />
+    <property name="weight" value="1" />
+    <property name="maxJobLimit" value="8" />
+    <property name="maxMultipleJobsToSubmit" value="1" />
+    <property name="pendingTime" value="1440" />
+    <property name="runTime" value="2880" />
+  </bean>
+
+  <bean id="site" class="org.renci.jlrm.Site">
     <property name="name" value="Kure" />
     <property name="project" value="TCGA" />
-    <property name="queues">
-      <list>
-        <ref bean="pseqProdQueue" /> 
-        <ref bean="weekQueue" /> 
+    <property name="submitHost" value="biodev1.its.unc.edu" />
+    <property name="LRMBinDirectory" value="/nas02/apps/lsf/LSF_TOP_706/7.0/linux2.6-glibc2.3-x86_64/bin" />
+    <property name="maxTotalPending" value="6" />
+    <property name="maxTotalRunning" value="30" />
+    <property name="queueInfoMap">
+      <map>
+        <entry key="pseq_prod" value-ref=”pseqProdQueue” />
+        <entry key="week" value-ref=”weekQueue” />
       </list>
     </property>
   </bean>
 
-  <bean id="pseqProdQueue" class="org.renci.gate.QueueInfo">
-    <property name="name" value="pseq_prod" />
-    <property name="maxJobLimit" value="64"/>
-    <property name="maxMultipleJobsToSubmit" value="3" />
-    <property name="pendingTime" value="1440" />
-    <property name="pendingTimeUnit" value="TimeUnit.MINUTES" />
-    <property name="runTime" value="2880" />
-    <property name="runTimeUnit" value="TimeUnit.MINUTES" />
-  </bean>
-
-  <bean id="weekQueue" class="org.renci.gate.QueueInfo">
-    <property name="name" value="week" />
-    <property name="maxJobLimit" value="8"/>
-    <property name="maxMultipleJobsToSubmit" value="1" />
-    <property name="pendingTime" value="1440" />
-    <property name="pendingTimeUnit" value="TimeUnit.MINUTES" />
-    <property name="runTime" value="2880" />
-    <property name="runTimeUnit" value="TimeUnit.MINUTES" />
-  </bean>
-
   <bean id="kureGATEService" class="org.renci.gate.plugins.kure.KureGATEService">
-    <property name="siteInfo" ref="siteInfo" />
-    <property name="lsfHome" value="/nas02/apps/lsf/LSF_TOP_706/7.0/linux2.6-glibc2.3-x86_64/" />
+    <property name="collectorHost" value="biodev1.its.unc.edu" />
+    <property name="site" ref="site" />
   </bean>
 
   <service ref="kureGATEService" interface="org.renci.gate.GATEService" />
