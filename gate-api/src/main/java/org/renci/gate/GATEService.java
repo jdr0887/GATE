@@ -1,6 +1,9 @@
 package org.renci.gate;
 
-import java.util.List;
+import java.util.Map;
+
+import org.renci.jlrm.Queue;
+import org.renci.jlrm.Site;
 
 
 
@@ -10,12 +13,14 @@ import java.util.List;
  */
 public interface GATEService {
 
-    public SiteInfo getSiteInfo();
+    public Site getSite();
 
-    public List<GlideinMetric> lookupMetrics();
+    public Map<String, GlideinMetric> lookupMetrics();
 
-    public void postGlidein(SiteInfo site, QueueInfo queue);
+    public String getCollectorHost();
+    
+    public void createGlidein(Queue queue);
 
-    public void deleteGlidein(SiteInfo site, QueueInfo queue);
+    public void deleteGlidein(Queue queue);
 
 }
