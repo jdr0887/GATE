@@ -38,9 +38,9 @@
     <property name="maxTotalRunning" value="30" />
     <property name="queueInfoMap">
       <map>
-        <entry key="pseq_prod" value-ref=”pseqProdQueue” />
-        <entry key="week" value-ref=”weekQueue” />
-      </list>
+        <entry key="pseq_prod" value-ref="pseqProdQueue" />
+        <entry key="week" value-ref="weekQueue" />
+      </map>
     </property>
   </bean>
 

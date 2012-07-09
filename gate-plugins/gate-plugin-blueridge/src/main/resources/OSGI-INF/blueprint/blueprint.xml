@@ -20,8 +20,8 @@
     <property name="project" value="TCGA" />
     <property name="queueInfoMap">
       <map>
-        <entry key="serial" value-ref=serialQueue />
-      </list>
+        <entry key="serial" value-ref="serialQueue" />
+      </map>
     </property>
   </bean>
 

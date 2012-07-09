@@ -20,8 +20,8 @@
     <property name="maxTotalRunning" value="30" />
     <property name="queueInfoMap">
       <map>
-        <entry key="week" value-ref=”weekQueue” />
-      </list>
+        <entry key="week" value-ref="weekQueue" />
+      </map>
     </property>
   </bean>
 
