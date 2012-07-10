@@ -35,7 +35,7 @@
         <configuration>
           <instructions>
             <Import-Package>*</Import-Package>
-            <Private-Package>org.renci.gate.plugins.lineberger.*</Private-Package>
+            <Private-Package>org.renci.gate.plugin.lineberger.*</Private-Package>
           </instructions>
         </configuration>
       </plugin>
