@@ -10,7 +10,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <karaf.version>2.2.8</karaf.version>
     <rrd4j.version>2.1.1</rrd4j.version>
-    <renci.jlrm.version>0.1.1</renci.jlrm.version>
+    <renci.jlrm.version>0.1.2</renci.jlrm.version>
     <renci.commons.version>0.1.12</renci.commons.version>
   </properties>
   <url>http://beluga.renci.org/m2/gate/project-info.html</url>
@@ -126,6 +126,11 @@
 	<version>2.0.1</version>
       </dependency>
       <dependency>
+	<groupId>org.osgi</groupId>
+	<artifactId>org.osgi.compendium</artifactId>
+	<version>4.3.0</version>
+      </dependency>
+      <dependency>
 	<groupId>org.apache.karaf</groupId>
 	<artifactId>apache-karaf</artifactId>
 	<version>${karaf.version}</version>
@@ -189,11 +194,6 @@
 	<version>0.0.3-SNAPSHOT</version>
 	<type>xml</type>
 	<classifier>features</classifier>
-      </dependency>            
-      <dependency>
-	<groupId>org.renci.gate</groupId>
-	<artifactId>gate-config</artifactId>
-	<version>0.0.3-SNAPSHOT</version>
       </dependency>            
       <dependency>
 	<groupId>org.rrd4j</groupId>
@@ -379,7 +379,6 @@
     </plugins>
   </build>
   <modules>
-    <module>gate-config</module>
     <module>gate-bundles</module>
     <module>gate-plugins</module>
     <module>gate-api</module>
