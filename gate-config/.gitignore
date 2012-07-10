@@ -1,5 +1,0 @@
-.classpath
-.project
-.settings
-target
-src/main/resources/org/renci/gate/config/*.properties
