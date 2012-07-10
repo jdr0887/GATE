@@ -28,7 +28,6 @@
     <bundle>mvn:org.renci.jlrm.jlrm-lsf/jlrm-lsf-cli/${renci.jlrm.version}</bundle>
     <bundle>mvn:org.renci.jlrm.jlrm-lsf/jlrm-lsf-ssh/${renci.jlrm.version}</bundle>
     <bundle>mvn:org.renci.gate/gate-api/${project.version}</bundle>
-    <bundle>mvn:org.renci.gate/gate-config/${project.version}</bundle>
   </feature>
 
   <feature name="gate-engine" version="${project.version}" resolver="(obr)">
