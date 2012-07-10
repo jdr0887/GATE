@@ -86,8 +86,14 @@ public class SubmitGlideinRunnable implements Runnable {
                 totalPendingGlideinJobs += metrics.getPending();
             }
 
+            logger.info("totalRunningGlideinJobs: {}", totalRunningGlideinJobs);
+            logger.info("totalPendingGlideinJobs: {}", totalPendingGlideinJobs);
+
             int maxTotal = siteInfo.getMaxTotalPending() + siteInfo.getMaxTotalRunning();
             int totalSiteJobs = totalRunningGlideinJobs + totalPendingGlideinJobs;
+
+            logger.info("maxTotal: {}", maxTotal);
+            logger.info("totalSiteJobs: {}", totalSiteJobs);
 
             if (totalSiteJobs >= maxTotal) {
                 logger.info("Total number of glideins has reached the limit of " + maxTotal);
@@ -113,6 +119,7 @@ public class SubmitGlideinRunnable implements Runnable {
 
         List<SiteQueueScore> siteQueueScoreInfoList = new ArrayList<SiteQueueScore>();
 
+        logger.info("gateServiceMap.size(): {}", gateServiceMap.size());
         for (String siteName : gateServiceMap.keySet()) {
             GATEService gateService = gateServiceMap.get(siteName);
             Site siteInfo = gateService.getSite();
@@ -157,18 +164,30 @@ public class SubmitGlideinRunnable implements Runnable {
 
     }
 
-    private List<SiteQueueScore> calculate(Site siteInfo, Map<String, GlideinMetric> metricsMap,
-            int runningCondorJobs, int idleCondorJobs) {
+    private List<SiteQueueScore> calculate(Site siteInfo, Map<String, GlideinMetric> metricsMap, int runningCondorJobs,
+            int idleCondorJobs) {
+        logger.info("ENTERING calculate(Site siteInfo, Map<String, GlideinMetric> metricsMap, int runningCondorJobs, int idleCondorJobs)");
         List<SiteQueueScore> ret = new ArrayList<SiteQueueScore>();
-
-        for (String queue : metricsMap.keySet()) {
-
-            Queue queueInfo = siteInfo.getQueueInfoMap().get(queue);
-            GlideinMetric metrics = metricsMap.get(queue);
+        
+        for (String queueName : siteInfo.getQueueInfoMap().keySet()) {
 
             SiteQueueScore siteScoreInfo = new SiteQueueScore();
             siteScoreInfo.setSiteName(siteInfo.getName());
-            siteScoreInfo.setQueueName(queue);
+            siteScoreInfo.setQueueName(queueName);
+
+            Queue queueInfo = siteInfo.getQueueInfoMap().get(queueName);
+            GlideinMetric metrics = metricsMap.get(queueName);
+            
+            if (metrics == null) {
+                siteScoreInfo.setMessage("GlideinMetric is null...meaning no jobs have been submitted");
+                siteScoreInfo.setScore(100);
+                siteScoreInfo.setNumberToSubmit(queueInfo.getMaxMultipleJobsToSubmit());
+                ret.add(siteScoreInfo);
+                continue;
+            }
+            
+            logger.info(metrics.toString());
+
             Integer numberToSubmit = calculateNumberToSubmit(siteInfo, queueInfo, metrics, runningCondorJobs,
                     idleCondorJobs);
             siteScoreInfo.setNumberToSubmit(numberToSubmit);
@@ -207,6 +226,7 @@ public class SubmitGlideinRunnable implements Runnable {
 
             siteScoreInfo.setMessage("Total number of glideins: " + metrics.getTotal());
             siteScoreInfo.setScore(score);
+            logger.info(siteScoreInfo.toString());
             ret.add(siteScoreInfo);
 
         }
