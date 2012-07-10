@@ -10,7 +10,6 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.renci.gate.GATEService;
 import org.renci.gate.GlideinMetric;
-import org.renci.gate.config.GATEConfigurationService;
 import org.renci.jlrm.JLRMException;
 import org.renci.jlrm.condor.ClassAdvertisement;
 import org.renci.jlrm.condor.cli.CondorCLIFactory;
@@ -23,19 +22,18 @@ public class MainTask extends TimerTask {
 
     private ServiceTracker tracker;
 
-    private GATEConfigurationService configService;
+    private String condorHome;
 
-    public MainTask(ServiceTracker tracker, GATEConfigurationService configService) {
+    public MainTask(ServiceTracker tracker, String condorHome) {
         super();
         this.tracker = tracker;
-        this.configService = configService;
+        this.condorHome = condorHome;
     }
 
     @Override
     public void run() {
-
-        String condorHome = configService.getCoreProperties().getProperty(GATEConfigurationService.CONDOR_HOME);
-
+        logger.info("ENTERING run()");
+        logger.info("condorHome: {}", condorHome);
         Map<String, GATEService> gateServiceMap = new HashMap<String, GATEService>();
 
         ServiceReference[] siteSelectorServiceRefArray = tracker.getServiceReferences();
