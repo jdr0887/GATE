@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  default-activation="lazy">
+  xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0" default-activation="lazy">
 
   <bean id="pseqProdQueue" class="org.renci.jlrm.Queue">
     <property name="name" value="pseq_prod" />
@@ -44,9 +44,17 @@
     </property>
   </bean>
 
-  <bean id="kureGATEService" class="org.renci.gate.plugins.kure.KureGATEService">
+  <cm:property-placeholder persistent-id="org.renci.gate.plugin.kure" update-strategy="reload">
+    <cm:default-properties>
+      <cm:property name="active_queues" value="pseq_prod,week" />
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <bean id="kureGATEService" class="org.renci.gate.plugin.kure.KureGATEService">
     <property name="collectorHost" value="biodev1.its.unc.edu" />
     <property name="site" ref="site" />
+    <cm:managed-properties persistent-id="org.renci.gate.plugin.kure" update-strategy="container-managed"
+      update-method="setProperties" />
   </bean>
 
   <service ref="kureGATEService" interface="org.renci.gate.GATEService" />

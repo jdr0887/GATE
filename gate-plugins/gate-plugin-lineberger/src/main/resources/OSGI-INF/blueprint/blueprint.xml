@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  default-activation="lazy">
+  xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0" default-activation="lazy">
 
   <bean id="all.q" class="org.renci.gate.QueueInfo">
     <property name="name" value="all.q" />
@@ -34,9 +34,17 @@
     </property>
   </bean>
 
-  <bean id="linebergerGATEService" class="org.renci.gate.plugins.lineberger.LinebergerGATEService">
+  <cm:property-placeholder persistent-id="org.renci.gate.plugin.lineberger" update-strategy="reload">
+    <cm:default-properties>
+      <cm:property name="active_queues" value="all.q" />
+    </cm:default-properties>
+  </cm:property-placeholder>
+
+  <bean id="linebergerGATEService" class="org.renci.gate.plugin.lineberger.LinebergerGATEService">
     <property name="collectorHost" value="biodev1.its.unc.edu" />
     <property name="siteInfo" ref="siteInfo" />
+    <cm:managed-properties persistent-id="org.renci.gate.plugin.lineberger" update-strategy="container-managed"
+      update-method="setProperties" />
   </bean>
 
   <service ref="linebergerGATEService" interface="org.renci.gate.GATEService" />
