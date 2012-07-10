@@ -11,26 +11,24 @@
   <version>0.0.3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <build>
+    <resources>
+      <resource>
+	<directory>src/main/resources</directory>
+	<filtering>true</filtering>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-resources-plugin</artifactId>
 	<version>2.4.3</version>
 	<executions>
 	  <execution>
-	    <id>copy-resources</id>
-	    <phase>package</phase>
+	    <id>filter</id>
+	    <phase>generate-resources</phase>
 	    <goals>
-	      <goal>copy-resources</goal>
+	      <goal>resources</goal>
 	    </goals>
-	    <configuration>
-	      <outputDirectory>${basedir}/target</outputDirectory>
-	      <resources>
-		<resource>
-		  <directory>src/main/resources</directory>
-		  <filtering>true</filtering>
-		</resource>
-	      </resources>
-	    </configuration>
 	  </execution>
 	</executions>
       </plugin>
@@ -41,14 +39,14 @@
 	<executions>
 	  <execution>
 	    <id>attach-artifacts</id>
-	    <phase>install</phase>
+	    <phase>package</phase>
 	    <goals>
 	      <goal>attach-artifact</goal>
 	    </goals>
 	    <configuration>
 	      <artifacts>
 		<artifact>
-		  <file>target/features.xml</file>
+		  <file>target/classes/features.xml</file>
 		  <type>xml</type>
 		  <classifier>features</classifier>
 		</artifact>
