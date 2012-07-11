@@ -22,13 +22,13 @@ public class SubmitGlideinRunnable implements Runnable {
 
     private final Logger logger = LoggerFactory.getLogger(SubmitGlideinRunnable.class);
 
+    private final Random random = new Random();
+
     private Map<String, List<ClassAdvertisement>> jobMap;
 
     private Map<String, GATEService> gateServiceMap;
 
     private Map<String, Map<String, GlideinMetric>> siteQueueGlideinMetricsMap;
-
-    private final Random random = new Random();
 
     public SubmitGlideinRunnable(Map<String, List<ClassAdvertisement>> jobMap, Map<String, GATEService> gateServiceMap,
             Map<String, Map<String, GlideinMetric>> siteQueueGlideinMetricsMap) {
@@ -64,7 +64,7 @@ public class SubmitGlideinRunnable implements Runnable {
         }
 
         logger.info("runningCondorJobs: {}", runningCondorJobs);
-        logger.info("totalCondorJobs: {}", totalCondorJobs);
+        logger.info("idleCondorJobs: {}", idleCondorJobs);
 
         // assume we need new glideins, and then run some tests to negate the assumptions
         boolean needGlidein = true;
@@ -89,22 +89,28 @@ public class SubmitGlideinRunnable implements Runnable {
             logger.info("totalRunningGlideinJobs: {}", totalRunningGlideinJobs);
             logger.info("totalPendingGlideinJobs: {}", totalPendingGlideinJobs);
 
-            int maxTotal = siteInfo.getMaxTotalPending() + siteInfo.getMaxTotalRunning();
-            int totalSiteJobs = totalRunningGlideinJobs + totalPendingGlideinJobs;
+            int maxAllowableJobs = siteInfo.getMaxTotalPending() + siteInfo.getMaxTotalRunning();
+            int totalCurrentlySubmitted = totalRunningGlideinJobs + totalPendingGlideinJobs;
 
-            logger.info("maxTotal: {}", maxTotal);
-            logger.info("totalSiteJobs: {}", totalSiteJobs);
+            logger.info("maxAllowableJobs: {}", maxAllowableJobs);
+            logger.info("totalSiteJobs: {}", totalCurrentlySubmitted);
 
-            if (totalSiteJobs >= maxTotal) {
-                logger.info("Total number of glideins has reached the limit of " + maxTotal);
+            if (totalCurrentlySubmitted >= maxAllowableJobs) {
+                logger.info("Total number of glideins has reached the limit of " + maxAllowableJobs);
                 needGlidein = false;
-            } else if (totalCondorJobs > 100 && (totalRunningGlideinJobs > (totalCondorJobs * 0.5))) {
+            }
+
+            if (totalRunningGlideinJobs > (totalCondorJobs * 0.6)) {
                 logger.info("Number of running glideins is probably enough for the workload.");
                 needGlidein = false;
-            } else if (runningCondorJobs > (totalCondorJobs * 0.75)) {
+            }
+
+            if (runningCondorJobs > (totalCondorJobs * 0.6)) {
                 logger.info("Number of running jobs is high compared to idle jobs.");
                 needGlidein = false;
-            } else if (totalPendingGlideinJobs >= siteInfo.getMaxTotalPending()) {
+            }
+
+            if (totalPendingGlideinJobs >= siteInfo.getMaxTotalPending()) {
                 logger.info("Pending job threshold has been met: {} of {}", totalPendingGlideinJobs,
                         siteInfo.getMaxTotalPending());
                 needGlidein = false;
@@ -168,7 +174,7 @@ public class SubmitGlideinRunnable implements Runnable {
             int idleCondorJobs) {
         logger.info("ENTERING calculate(Site siteInfo, Map<String, GlideinMetric> metricsMap, int runningCondorJobs, int idleCondorJobs)");
         List<SiteQueueScore> ret = new ArrayList<SiteQueueScore>();
-        
+
         for (String queueName : siteInfo.getQueueInfoMap().keySet()) {
 
             SiteQueueScore siteScoreInfo = new SiteQueueScore();
@@ -177,7 +183,7 @@ public class SubmitGlideinRunnable implements Runnable {
 
             Queue queueInfo = siteInfo.getQueueInfoMap().get(queueName);
             GlideinMetric metrics = metricsMap.get(queueName);
-            
+
             if (metrics == null) {
                 siteScoreInfo.setMessage("GlideinMetric is null...meaning no jobs have been submitted");
                 siteScoreInfo.setScore(100);
@@ -185,14 +191,12 @@ public class SubmitGlideinRunnable implements Runnable {
                 ret.add(siteScoreInfo);
                 continue;
             }
-            
             logger.info(metrics.toString());
 
             Integer numberToSubmit = calculateNumberToSubmit(siteInfo, queueInfo, metrics, runningCondorJobs,
                     idleCondorJobs);
             siteScoreInfo.setNumberToSubmit(numberToSubmit);
-
-            logger.info(metrics.toString());
+            
             int totalJobs = metrics.getRunning() + metrics.getPending();
 
             if (totalJobs == 0) {
