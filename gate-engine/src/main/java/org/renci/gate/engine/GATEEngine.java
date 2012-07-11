@@ -51,11 +51,9 @@ public class GATEEngine {
 
     public void stop() throws Exception {
         logger.debug("ENTERING stop()");
-
         mainTimer.purge();
         mainTimer.cancel();
         this.tracker.close();
-
     }
 
     public BundleContext getBundleContext() {
