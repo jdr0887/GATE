@@ -31,6 +31,9 @@
   </feature>
 
   <feature name="gate-engine" version="${project.version}" resolver="(obr)">
+    <config name="org.renci.gate.engine">
+      condor_home=/usr/bin
+    </config>
     <bundle start-level="100">mvn:org.renci.gate/gate-engine/${project.version}</bundle>
   </feature>
 
@@ -38,7 +41,8 @@
     <bundle>mvn:org.renci.gate.gate-plugins/gate-plugin-kure/${project.version}</bundle>
   </feature>
 
-  <feature name="gate" version="${project.version}" resolver="(obr)">
+  <feature name="gate" version="${project.version}" resolver="(obr)">    
+    <feature>spring</feature>
     <feature>eventadmin</feature>
     <feature>transaction</feature>
     <feature>jndi</feature>
