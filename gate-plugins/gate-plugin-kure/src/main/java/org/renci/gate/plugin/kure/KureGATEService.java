@@ -59,45 +59,61 @@ public class KureGATEService implements GATEService {
             Set<String> queueSet = new HashSet<String>();
             if (jobStatusSet != null && jobStatusSet.size() > 0) {
                 for (LSFJobStatusInfo info : jobStatusSet) {
-                    logger.info("info: {}", info.toString());
                     queueSet.add(info.getQueue());
+                }
+                for (LSFSSHJob job : jobCache) {
+                    queueSet.add(job.getQueueName());
+                }
+            }
+
+            Set<String> alreadyTalliedJobIdSet = new HashSet<String>();
+
+            if (jobStatusSet != null && jobStatusSet.size() > 0) {
+                for (LSFJobStatusInfo info : jobStatusSet) {
+                    if (!metricsMap.containsKey(info.getQueue())) {
+                        metricsMap.put(info.getQueue(), new GlideinMetric(0, 0, info.getQueue()));
+                    }
+                    alreadyTalliedJobIdSet.add(info.getJobId());
+                }
+
+                for (LSFJobStatusInfo info : jobStatusSet) {
+                    GlideinMetric metric = metricsMap.get(info.getQueue());
+                    switch (info.getType()) {
+                        case PENDING:
+                            metric.setPending(metric.getPending() + 1);
+                            break;
+                        case RUNNING:
+                            metric.setRunning(metric.getRunning() + 1);
+                            break;
+                    }
                 }
             }
 
             Iterator<LSFSSHJob> jobCacheIter = jobCache.iterator();
             while (jobCacheIter.hasNext()) {
-                LSFSSHJob job = jobCacheIter.next();
-                for (String queue : queueSet) {
-                    int running = 0;
-                    int pending = 0;
-                    for (LSFJobStatusInfo info : jobStatusSet) {
-                        GlideinMetric metrics = new GlideinMetric();
-                        if (info.getQueue().equals(queue) && job.getId().equals(info.getJobId())) {
-                            switch (info.getType()) {
-                                case PENDING:
-                                    ++pending;
-                                    break;
-                                case RUNNING:
-                                    ++running;
-                                    break;
-                                case EXIT:
-                                case UNKNOWN:
-                                case ZOMBIE:
-                                case DONE:
-                                    jobCacheIter.remove();
-                                    break;
-                                case SUSPENDED_BY_SYSTEM:
-                                case SUSPENDED_BY_USER:
-                                case SUSPENDED_FROM_PENDING:
-                                default:
-                                    break;
-                            }
+                LSFSSHJob nextJob = jobCacheIter.next();
+                for (LSFJobStatusInfo info : jobStatusSet) {
+                    if (!alreadyTalliedJobIdSet.contains(nextJob.getId()) && nextJob.getId().equals(info.getJobId())) {
+                        GlideinMetric metric = metricsMap.get(info.getQueue());
+                        switch (info.getType()) {
+                            case PENDING:
+                                metric.setPending(metric.getPending() + 1);
+                                break;
+                            case RUNNING:
+                                metric.setRunning(metric.getRunning() + 1);
+                                break;
+                            case EXIT:
+                            case UNKNOWN:
+                            case ZOMBIE:
+                            case DONE:
+                                jobCacheIter.remove();
+                                break;
+                            case SUSPENDED_BY_SYSTEM:
+                            case SUSPENDED_BY_USER:
+                            case SUSPENDED_FROM_PENDING:
+                            default:
+                                break;
                         }
-                        metrics.setQueue(queue);
-                        metrics.setPending(pending);
-                        metrics.setRunning(running);
-                        logger.info("metrics: {}", metrics.toString());
-                        metricsMap.put(queue, metrics);
                     }
                 }
             }
