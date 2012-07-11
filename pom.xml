@@ -11,9 +11,15 @@
     <karaf.version>2.2.8</karaf.version>
     <rrd4j.version>2.1.1</rrd4j.version>
     <renci.jlrm.version>0.1.2</renci.jlrm.version>
-    <renci.commons.version>0.1.12</renci.commons.version>
+    <renci.commons.version>0.1.12</renci.commons.version>    
+    <maven.project.info.reports.plugin>2.4</maven.project.info.reports.plugin>
+    <maven.site.plugin>3.1</maven.site.plugin>
+    <maven.javadoc.plugin>2.8</maven.javadoc.plugin>
+    <maven.jxr.plugin>2.3</maven.jxr.plugin>
+    <maven.surefire.report.plugin>2.9</maven.surefire.report.plugin>
+    <maven.checkstyle.plugin>2.8</maven.checkstyle.plugin>
   </properties>
-  <url>http://beluga.renci.org/m2/gate/project-info.html</url>
+  <url>http://ci-dev.renci.org/site/gate/project-info.html</url>
   <issueManagement>
     <system>gForge</system>
     <url>https://code.renci.org/gf/project/gate/tracker/</url>
@@ -340,7 +346,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.0</version>
+        <version>${maven.site.plugin}</version>
 	<executions>
 	  <execution>
             <id>attach-descriptor</id>
@@ -376,14 +382,6 @@
 	  </reportPlugins>
 	</configuration>
       </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <version>2.3.2</version>
-        <configuration>
-          <preparationGoals>clean install</preparationGoals>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
   <modules>
@@ -392,6 +390,6 @@
     <module>gate-api</module>
     <module>gate-features</module>
     <module>gate-engine</module>
-    <module>gate-distribution</module>
+    <!-- <module>gate-distribution</module> -->
   </modules>
 </project>
