@@ -4,12 +4,12 @@
   <parent>
     <groupId>org.renci.gate</groupId>
     <artifactId>gate-bundles</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.4-SNAPSHOT</version>
   </parent>
   <name>GATE :: Bundles :: RRD4J</name>
   <groupId>org.renci.gate.gate-bundles</groupId>
   <artifactId>gate-bundle-rrd4j</artifactId>
-  <version>0.0.3</version>
+  <version>0.0.4-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <dependencies>
     <dependency>
