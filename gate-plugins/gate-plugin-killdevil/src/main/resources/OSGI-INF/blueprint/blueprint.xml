@@ -34,8 +34,8 @@
   <bean id="killDevilGATEService" class="org.renci.gate.plugin.killdevil.KillDevilGATEService">
     <property name="collectorHost" value="biodev1.its.unc.edu" />
     <property name="site" ref="site" />
-    <cm:managed-properties persistent-id="org.renci.gate.plugin.killdevil" update-strategy="container-managed"
-      update-method="setProperties" />
+    <property name="activeQueues" ref="{active_queues}" />
+    <cm:managed-properties persistent-id="org.renci.gate.plugin.killdevil" update-strategy="container-managed" />
   </bean>
 
   <service ref="killDevilGATEService" interface="org.renci.gate.GATEService" />

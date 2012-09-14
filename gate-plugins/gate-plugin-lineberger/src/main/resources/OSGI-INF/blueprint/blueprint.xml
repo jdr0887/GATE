@@ -42,9 +42,9 @@
 
   <bean id="linebergerGATEService" class="org.renci.gate.plugin.lineberger.LinebergerGATEService">
     <property name="collectorHost" value="biodev1.its.unc.edu" />
-    <property name="siteInfo" ref="siteInfo" />
-    <cm:managed-properties persistent-id="org.renci.gate.plugin.lineberger" update-strategy="container-managed"
-      update-method="setProperties" />
+    <property name="site" ref="site" />
+    <property name="activeQueues" value="{active_queues}" />
+    <cm:managed-properties persistent-id="org.renci.gate.plugin.lineberger" update-strategy="container-managed" />
   </bean>
 
   <service ref="linebergerGATEService" interface="org.renci.gate.GATEService" />
