@@ -1,12 +1,14 @@
 package org.renci.gate.engine;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.commons.lang.StringUtils;
 import org.renci.gate.GATEService;
 import org.renci.gate.GlideinMetric;
 import org.renci.gate.SiteQueueScore;
@@ -130,7 +132,8 @@ public class SubmitGlideinRunnable implements Runnable {
             GATEService gateService = gateServiceMap.get(siteName);
             Site siteInfo = gateService.getSite();
             Map<String, GlideinMetric> metricsMap = siteQueueGlideinMetricsMap.get(siteInfo.getName());
-            siteQueueScoreInfoList.addAll(calculate(siteInfo, metricsMap, runningCondorJobs, idleCondorJobs));
+            siteQueueScoreInfoList.addAll(calculate(gateService, siteInfo, metricsMap, runningCondorJobs,
+                    idleCondorJobs));
         }
 
         logger.info("siteQueueScoreInfoList.size(): {}", siteQueueScoreInfoList.size());
@@ -170,12 +173,20 @@ public class SubmitGlideinRunnable implements Runnable {
 
     }
 
-    private List<SiteQueueScore> calculate(Site siteInfo, Map<String, GlideinMetric> metricsMap, int runningCondorJobs,
-            int idleCondorJobs) {
-        logger.info("ENTERING calculate(Site siteInfo, Map<String, GlideinMetric> metricsMap, int runningCondorJobs, int idleCondorJobs)");
+    private List<SiteQueueScore> calculate(GATEService gateService, Site siteInfo,
+            Map<String, GlideinMetric> metricsMap, int runningCondorJobs, int idleCondorJobs) {
+        logger.info("ENTERING calculate(GATEService gateService, Site siteInfo, Map<String, GlideinMetric> metricsMap, int runningCondorJobs, int idleCondorJobs)");
         List<SiteQueueScore> ret = new ArrayList<SiteQueueScore>();
 
         for (String queueName : siteInfo.getQueueInfoMap().keySet()) {
+
+            if (StringUtils.isNotEmpty(gateService.getActiveQueues())) {
+                List<String> activeQueueList = Arrays.asList(gateService.getActiveQueues().split(","));
+                if (!activeQueueList.contains(queueName)) {
+                    logger.info("excluding \"{}\" queue due to not being active", queueName);
+                    continue;
+                }
+            }
 
             SiteQueueScore siteScoreInfo = new SiteQueueScore();
             siteScoreInfo.setSiteName(siteInfo.getName());
@@ -196,7 +207,7 @@ public class SubmitGlideinRunnable implements Runnable {
             Integer numberToSubmit = calculateNumberToSubmit(siteInfo, queueInfo, metrics, runningCondorJobs,
                     idleCondorJobs);
             siteScoreInfo.setNumberToSubmit(numberToSubmit);
-            
+
             int totalJobs = metrics.getRunning() + metrics.getPending();
 
             if (totalJobs == 0) {
