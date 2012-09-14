@@ -1,10 +1,7 @@
 package org.renci.gate.plugin.blueridge;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.renci.gate.GATEService;
 import org.renci.gate.GlideinMetric;
 import org.renci.jlrm.Queue;
@@ -24,7 +21,7 @@ public class BlueRidgeGATEService implements GATEService {
 
     private String collectorHost;
 
-    private Map<String, Object> properties;
+    private String activeQueues;
 
     public BlueRidgeGATEService() {
         super();
@@ -32,20 +29,15 @@ public class BlueRidgeGATEService implements GATEService {
 
     @Override
     public Map<String, GlideinMetric> lookupMetrics() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void createGlidein(Queue queue) {
         logger.info("ENTERING createGlidein(Queue)");
-        if (properties != null && properties.containsKey("active_queues")) {
-            String[] activeQueues = StringUtils.split(properties.get("active_queues").toString(), ',');
-            List<String> activeQueueList = Arrays.asList(activeQueues);
-            if (!activeQueueList.contains(queue.getName())) {
-                logger.warn("queue name is not in active queue list...see etc/org.renci.gate.plugin.blueridge.cfg");
-                return;
-            }
+        if (!activeQueues.contains(queue.getName())) {
+            logger.warn("queue name is not in active queue list...see etc/org.renci.gate.plugin.killdevil.cfg");
+            return;
         }
 
     }
@@ -72,12 +64,12 @@ public class BlueRidgeGATEService implements GATEService {
         this.collectorHost = collectorHost;
     }
 
-    public Map<String, Object> getProperties() {
-        return properties;
+    public String getActiveQueues() {
+        return activeQueues;
     }
 
-    public void setProperties(Map<String, Object> properties) {
-        this.properties = properties;
+    public void setActiveQueues(String activeQueues) {
+        this.activeQueues = activeQueues;
     }
 
 }
