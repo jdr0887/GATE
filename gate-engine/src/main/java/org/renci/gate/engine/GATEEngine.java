@@ -1,8 +1,8 @@
 package org.renci.gate.engine;
 
-import java.util.Map;
 import java.util.Timer;
 
+import org.apache.commons.lang.StringUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 import org.renci.gate.GATEService;
@@ -21,11 +21,7 @@ public class GATEEngine {
 
     private BundleContext bundleContext;
 
-    private String condorHome;
-
     private ServiceTracker tracker;
-
-    private Map<String, Object> properties;
 
     public GATEEngine() {
         super();
@@ -41,11 +37,12 @@ public class GATEEngine {
         // run every 5 minutes
         long period = 5 * 60 * 1000;
 
-        if (properties != null && properties.containsKey("condor_home")) {
-            condorHome = properties.get("condor_home").toString();
+        String condorHome = System.getenv("CONDOR_HOME");
+        if (StringUtils.isEmpty(condorHome)) {
+            logger.error("CONDOR_HOME is not set");
+        } else {
+            mainTimer.scheduleAtFixedRate(new MainTask(tracker, condorHome), delay, period);
         }
-        
-        mainTimer.scheduleAtFixedRate(new MainTask(tracker, condorHome), delay, period);
 
     }
 
@@ -62,22 +59,6 @@ public class GATEEngine {
 
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
-    }
-
-    public String getCondorHome() {
-        return condorHome;
-    }
-
-    public void setCondorHome(String condorHome) {
-        this.condorHome = condorHome;
-    }
-
-    public Map<String, Object> getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Map<String, Object> properties) {
-        this.properties = properties;
     }
 
 }
