@@ -60,7 +60,7 @@ public class LookupMetricsTest {
         if (jobStatusSet != null && jobStatusSet.size() > 0) {
             for (LSFJobStatusInfo info : jobStatusSet) {
                 if (!jobTallyMap.containsKey(info.getQueue())) {
-                    jobTallyMap.put(info.getQueue(), new GlideinMetric(0,0,info.getQueue()));
+                    jobTallyMap.put(info.getQueue(), new GlideinMetric(0, 0, info.getQueue()));
                 }
                 alreadyTalliedJobIdSet.add(info.getJobId());
             }
@@ -111,7 +111,7 @@ public class LookupMetricsTest {
                 }
             }
         }
-        
+
         int totalRunningGlideinJobs = 0;
         int totalPendingGlideinJobs = 0;
 
