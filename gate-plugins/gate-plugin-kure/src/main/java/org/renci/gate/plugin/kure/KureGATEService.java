@@ -2,7 +2,6 @@ package org.renci.gate.plugin.kure;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -36,7 +35,7 @@ public class KureGATEService implements GATEService {
 
     private String collectorHost;
 
-    private Map<String, Object> properties;
+    private String activeQueues;
 
     public KureGATEService() {
         super();
@@ -129,13 +128,9 @@ public class KureGATEService implements GATEService {
     public void createGlidein(Queue queue) {
         logger.info("ENTERING createGlidein(Queue)");
 
-        if (properties != null && properties.containsKey("active_queues")) {
-            String[] activeQueues = StringUtils.split(properties.get("active_queues").toString(), ',');
-            List<String> activeQueueList = Arrays.asList(activeQueues);
-            if (!activeQueueList.contains(queue.getName())) {
-                logger.warn("queue name is not in active queue list...see etc/org.renci.gate.plugin.kure.cfg");
-                return;
-            }
+        if (StringUtils.isNotEmpty(activeQueues) && !activeQueues.contains(queue.getName())) {
+            logger.warn("queue name is not in active queue list...see etc/org.renci.gate.plugin.kure.cfg");
+            return;
         }
 
         File submitDir = new File("/tmp", System.getProperty("user.name"));
@@ -189,12 +184,12 @@ public class KureGATEService implements GATEService {
         this.site = site;
     }
 
-    public Map<String, Object> getProperties() {
-        return properties;
+    public String getActiveQueues() {
+        return activeQueues;
     }
 
-    public void setProperties(Map<String, Object> properties) {
-        this.properties = properties;
+    public void setActiveQueues(String activeQueues) {
+        this.activeQueues = activeQueues;
     }
 
 }
