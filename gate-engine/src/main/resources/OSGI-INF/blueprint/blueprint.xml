@@ -4,16 +4,13 @@
 
   <cm:property-placeholder persistent-id="org.renci.gate.engine" update-strategy="reload">
     <cm:default-properties>
-      <cm:property name="condor_home" value="/usr/bin" />
     </cm:default-properties>
   </cm:property-placeholder>
 
   <bean id="gateEngine" class="org.renci.gate.engine.GATEEngine" init-method="start" destroy-method="stop"
     activation="eager">
-    <property name="condorHome" value="${condor_home}" />
     <property name="bundleContext" ref="blueprintBundleContext" />
-    <cm:managed-properties persistent-id="org.renci.gate.engine" update-strategy="container-managed"
-      update-method="setProperties" />
+    <cm:managed-properties persistent-id="org.renci.gate.engine" update-strategy="container-managed" />
   </bean>
 
 </blueprint>
