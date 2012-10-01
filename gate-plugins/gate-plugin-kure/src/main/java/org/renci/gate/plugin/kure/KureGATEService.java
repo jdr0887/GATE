@@ -147,7 +147,7 @@ public class KureGATEService implements GATEService {
                 jobCache.add(job);
             }
         } catch (JLRMException e) {
-            e.printStackTrace();
+            logger.error("Problem submitting: ", e);
         }
     }
 
