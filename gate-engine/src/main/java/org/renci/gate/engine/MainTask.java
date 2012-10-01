@@ -22,18 +22,14 @@ public class MainTask extends TimerTask {
 
     private ServiceTracker tracker;
 
-    private String condorHome;
-
-    public MainTask(ServiceTracker tracker, String condorHome) {
+    public MainTask(ServiceTracker tracker) {
         super();
         this.tracker = tracker;
-        this.condorHome = condorHome;
     }
 
     @Override
     public void run() {
         logger.info("ENTERING run()");
-        logger.info("condorHome: {}", condorHome);
         Map<String, GATEService> gateServiceMap = new HashMap<String, GATEService>();
 
         ServiceReference[] siteSelectorServiceRefArray = tracker.getServiceReferences();
@@ -62,7 +58,7 @@ public class MainTask extends TimerTask {
         }
 
         // go get a snapshot of local jobs
-        CondorCLIFactory condorCLIFactory = CondorCLIFactory.getInstance(new File(condorHome));
+        CondorCLIFactory condorCLIFactory = CondorCLIFactory.getInstance();
         Map<String, List<ClassAdvertisement>> jobMap = null;
         try {
             jobMap = condorCLIFactory.lookupJobsByOwner(System.getProperty("user.name"));
