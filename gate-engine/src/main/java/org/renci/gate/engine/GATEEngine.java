@@ -2,7 +2,6 @@ package org.renci.gate.engine;
 
 import java.util.Timer;
 
-import org.apache.commons.lang.StringUtils;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 import org.renci.gate.GATEService;
@@ -37,12 +36,7 @@ public class GATEEngine {
         // run every 5 minutes
         long period = 5 * 60 * 1000;
 
-        String condorHome = System.getenv("CONDOR_HOME");
-        if (StringUtils.isEmpty(condorHome)) {
-            logger.error("CONDOR_HOME is not set");
-        } else {
-            mainTimer.scheduleAtFixedRate(new MainTask(tracker, condorHome), delay, period);
-        }
+        mainTimer.scheduleAtFixedRate(new MainTask(tracker), delay, period);
 
     }
 
