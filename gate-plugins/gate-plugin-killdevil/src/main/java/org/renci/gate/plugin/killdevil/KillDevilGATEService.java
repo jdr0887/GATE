@@ -97,7 +97,6 @@ public class KillDevilGATEService implements GATEService {
             }
 
         } catch (JLRMException e) {
-            e.printStackTrace();
             logger.error("Error:", e);
         }
         return metricsMap;
