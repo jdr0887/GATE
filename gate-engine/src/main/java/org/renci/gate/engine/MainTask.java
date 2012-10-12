@@ -1,6 +1,5 @@
 package org.renci.gate.engine;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,9 +57,9 @@ public class MainTask extends TimerTask {
         }
 
         // go get a snapshot of local jobs
-        CondorCLIFactory condorCLIFactory = CondorCLIFactory.getInstance();
         Map<String, List<ClassAdvertisement>> jobMap = null;
         try {
+            CondorCLIFactory condorCLIFactory = CondorCLIFactory.getInstance();
             jobMap = condorCLIFactory.lookupJobsByOwner(System.getProperty("user.name"));
         } catch (JLRMException e) {
             e.printStackTrace();
