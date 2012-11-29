@@ -131,13 +131,31 @@ public class LinebergerGATEService implements GATEService {
     public void deleteGlidein(Queue queue) {
         if (jobCache.size() > 0) {
             try {
-                SGESSHFactory lsfSSHFactory = SGESSHFactory.getInstance(this.site, System.getProperty("user.name"));
+                SGESSHFactory sgeSSHFactory = SGESSHFactory.getInstance(this.site, System.getProperty("user.name"));
                 SGESSHJob job = jobCache.get(0);
-                lsfSSHFactory.killGlidein(job);
+                sgeSSHFactory.killGlidein(job);
                 jobCache.remove(0);
             } catch (JLRMException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    @Override
+    public void deletePendingGlideins() {
+        try {
+            SGESSHFactory lsfSSHFactory = SGESSHFactory.getInstance(this.site, System.getProperty("user.name"));
+            Set<SGEJobStatusInfo> jobStatusSet = lsfSSHFactory.lookupStatus(jobCache.toArray(new SGESSHJob[jobCache
+                    .size()]));
+            for (SGEJobStatusInfo info : jobStatusSet) {
+                switch (info.getType()) {
+                    case WAITING:
+                        deleteGlidein(site.getQueueInfoMap().get(info.getQueue()));
+                        break;
+                }
+            }
+        } catch (JLRMException e) {
+            e.printStackTrace();
         }
     }
 

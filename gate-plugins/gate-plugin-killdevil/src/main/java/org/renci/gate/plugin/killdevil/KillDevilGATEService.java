@@ -145,6 +145,24 @@ public class KillDevilGATEService implements GATEService {
         }
     }
 
+    @Override
+    public void deletePendingGlideins() {
+        try {
+            LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(this.site, System.getProperty("user.name"));
+            Set<LSFJobStatusInfo> jobStatusSet = lsfSSHFactory.lookupStatus(jobCache.toArray(new LSFSSHJob[jobCache
+                    .size()]));
+            for (LSFJobStatusInfo info : jobStatusSet) {
+                switch (info.getType()) {
+                    case PENDING:
+                        deleteGlidein(site.getQueueInfoMap().get(info.getQueue()));
+                        break;
+                }
+            }
+        } catch (JLRMException e) {
+            e.printStackTrace();
+        }
+    }
+
     public String getCollectorHost() {
         return collectorHost;
     }

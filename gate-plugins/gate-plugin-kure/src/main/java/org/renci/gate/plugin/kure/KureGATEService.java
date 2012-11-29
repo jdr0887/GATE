@@ -69,9 +69,10 @@ public class KureGATEService implements GATEService {
 
             if (jobStatusSet != null && jobStatusSet.size() > 0) {
                 for (LSFJobStatusInfo info : jobStatusSet) {
-                    if (!metricsMap.containsKey(info.getQueue())) {
-                        metricsMap.put(info.getQueue(), new GlideinMetric(0, 0, info.getQueue()));
+                    if (metricsMap.containsKey(info.getQueue())) {
+                        continue;
                     }
+                    metricsMap.put(info.getQueue(), new GlideinMetric(0, 0, info.getQueue()));
                     alreadyTalliedJobIdSet.add(info.getJobId());
                 }
 
@@ -165,6 +166,30 @@ public class KureGATEService implements GATEService {
             } catch (JLRMException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    @Override
+    public void deletePendingGlideins() {
+        try {
+            LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(this.site, System.getProperty("user.name"));
+            Set<LSFJobStatusInfo> jobStatusSet = lsfSSHFactory.lookupStatus(jobCache.toArray(new LSFSSHJob[jobCache
+                    .size()]));
+            for (LSFJobStatusInfo info : jobStatusSet) {
+                switch (info.getType()) {
+                    case PENDING:
+                        deleteGlidein(site.getQueueInfoMap().get(info.getQueue()));
+                        break;
+                }
+                try {
+                    // throttle the deleteGlidein calls such that SSH doesn't complain
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (JLRMException e) {
+            e.printStackTrace();
         }
     }
 
