@@ -68,8 +68,7 @@
               <features>
                 <feature>gate</feature>
               </features>
-	      <includeMvnBasedDescriptors>true</includeMvnBasedDescriptors>
-      	      <repository>${basedir}/target/features-repo</repository>
+      	      <repository>target/features-repo</repository>
       	    </configuration>
           </execution>
         </executions>
