@@ -251,14 +251,14 @@ public class SubmitGlideinRunnable implements Runnable {
 
     private Integer calculateScore(GlideinMetric metrics, Double queueWeight) {
         double score = 100;
-        double pendingWeight = 9;
+        double pendingWeight = 9.5;
         // penalize for pending jobs
         for (int i = 1; i < metrics.getPending() + 1; ++i) {
             score -= i * pendingWeight;
         }
         logger.info("score = {}", score);
 
-        double runningWeight = 4.5;
+        double runningWeight = 5;
         // reward for pending jobs
         for (int i = 1; i < metrics.getRunning() + 1; ++i) {
             score += i * runningWeight;
