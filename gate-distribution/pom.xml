@@ -68,6 +68,7 @@
               <features>
                 <feature>gate</feature>
               </features>
+      	      <repository>${basedir}/target/features-repo</repository>
       	    </configuration>
           </execution>
         </executions>
