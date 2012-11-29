@@ -21,6 +21,8 @@ public interface GATEService {
 
     public void deleteGlidein(Queue queue);
 
+    public void deletePendingGlideins();
+
     public String getActiveQueues();
 
 }
