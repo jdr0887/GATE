@@ -389,6 +389,6 @@
     <module>gate-api</module>
     <module>gate-features</module>
     <module>gate-engine</module>
-    <!-- <module>gate-distribution</module> -->
+    <module>gate-distribution</module>
   </modules>
 </project>
