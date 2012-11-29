@@ -48,6 +48,10 @@ public class BlueRidgeGATEService implements GATEService {
 
     }
 
+    @Override
+    public void deletePendingGlideins() {
+    }
+
     public Site getSite() {
         return site;
     }
