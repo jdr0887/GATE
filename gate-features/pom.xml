@@ -9,7 +9,7 @@
   <groupId>org.renci.gate</groupId>
   <artifactId>gate-features</artifactId>
   <version>0.0.9-SNAPSHOT</version>
-  <packaging>pom</packaging>
+  <packaging>bundle</packaging>
   <build>
     <resources>
       <resource>
