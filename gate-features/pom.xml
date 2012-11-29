@@ -9,7 +9,7 @@
   <groupId>org.renci.gate</groupId>
   <artifactId>gate-features</artifactId>
   <version>0.0.9-SNAPSHOT</version>
-  <packaging>bundle</packaging>
+  <packaging>pom</packaging>
   <build>
     <resources>
       <resource>
@@ -60,4 +60,32 @@
       </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>validate</id>
+      <build>
+	<plugins>
+	  <plugin>
+	    <groupId>org.apache.karaf.tooling</groupId>
+	    <artifactId>features-maven-plugin</artifactId>
+	    <version>${cxf.karaf.version}</version>
+	    <configuration>
+	      <file>${project.build.directory}/classes/features.xml</file>
+	      <karafConfig>${project.build.directory}/classes/config.properties</karafConfig>
+	      <jreVersion>jre-1.6</jreVersion>
+	    </configuration>
+	    <executions>
+	      <execution>
+		<id>validate</id>
+		<phase>process-resources</phase>
+		<goals>
+		  <goal>validate</goal>
+		</goals>
+	      </execution>
+	    </executions>
+	  </plugin>
+	</plugins>
+      </build>
+    </profile>
+  </profiles>    
 </project>
