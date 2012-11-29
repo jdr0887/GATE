@@ -2,13 +2,13 @@
   <parent>
     <groupId>org.renci.gate</groupId>
     <artifactId>gate-plugins</artifactId>
-    <version>0.0.10-SNAPSHOT</version>
+    <version>0.0.9-SNAPSHOT</version>
   </parent>
   <name>GATE :: Plugins :: KillDevil</name>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.renci.gate.gate-plugins</groupId>
   <artifactId>gate-plugin-killdevil</artifactId>
-  <version>0.0.10-SNAPSHOT</version>
+  <version>0.0.9-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <dependencies>
     <dependency>
