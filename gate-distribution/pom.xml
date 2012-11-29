@@ -68,7 +68,6 @@
               <features>
                 <feature>gate</feature>
               </features>
-      	      <repository>target/features-repo</repository>
       	    </configuration>
           </execution>
         </executions>
