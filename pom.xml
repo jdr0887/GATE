@@ -7,7 +7,7 @@
   <packaging>pom</packaging>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <karaf.version>2.2.8</karaf.version>
+    <karaf.version>2.2.9</karaf.version>
     <rrd4j.version>2.1.1</rrd4j.version>
     <renci.jlrm.version>0.1.9</renci.jlrm.version>
     <renci.commons.version>0.1.12</renci.commons.version>    
