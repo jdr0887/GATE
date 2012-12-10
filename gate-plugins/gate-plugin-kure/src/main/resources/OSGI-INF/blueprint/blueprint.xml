@@ -46,14 +46,15 @@
 
   <cm:property-placeholder persistent-id="org.renci.gate.plugin.kure" update-strategy="reload">
     <cm:default-properties>
-      <cm:property name="active_queues" value="pseq_prod,week" />
+      <cm:property name="activeQueues" value="pseq_prod,week" />
+      <cm:property name="collectorHost" value="biodev1.its.unc.edu" />
     </cm:default-properties>
   </cm:property-placeholder>
 
   <bean id="kureGATEService" class="org.renci.gate.plugin.kure.KureGATEService">
-    <property name="collectorHost" value="biodev1.its.unc.edu" />
     <property name="site" ref="site" />
-    <property name="activeQueues" value="{active_queues}" />
+    <property name="collectorHost" value="${collectorHost}" />
+    <property name="activeQueues" value="${activeQueues}" />
     <cm:managed-properties persistent-id="org.renci.gate.plugin.kure" update-strategy="container-managed" />
   </bean>
 
