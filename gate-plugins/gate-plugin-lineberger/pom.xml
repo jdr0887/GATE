@@ -2,13 +2,13 @@
   <parent>
     <groupId>org.renci.gate</groupId>
     <artifactId>gate-plugins</artifactId>
-    <version>0.0.11</version>
+    <version>0.0.12-SNAPSHOT</version>
   </parent>
   <name>GATE :: Plugins :: Lineberger</name>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.renci.gate.gate-plugins</groupId>
   <artifactId>gate-plugin-lineberger</artifactId>
-  <version>0.0.11</version>
+  <version>0.0.12-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <dependencies>
     <dependency>
