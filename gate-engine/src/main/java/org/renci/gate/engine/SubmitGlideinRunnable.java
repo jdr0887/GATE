@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.renci.gate.GATEService;
 import org.renci.gate.GlideinMetric;
 import org.renci.gate.SiteQueueScore;
