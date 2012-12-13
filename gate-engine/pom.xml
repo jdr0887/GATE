@@ -51,6 +51,7 @@
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
+        <version>${maven.bundle.plugin.version}</version>
         <configuration>
           <instructions>
             <Import-Package>!org.renci.gate.engine*,*</Import-Package>
@@ -61,7 +62,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>${maven.site.plugin}</version>
+        <version>${maven.site.plugin.version}</version>
         <configuration>
 	  <reportPlugins>
 	    <plugin>
