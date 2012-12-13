@@ -161,6 +161,7 @@ public class KureGATEService implements GATEService {
                 logger.info("queueInfo: {}", queue);
                 LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(this.site, System.getProperty("user.name"));
                 LSFSSHJob job = jobCache.get(0);
+                logger.info("job: {}", job.toString());
                 lsfSSHFactory.killGlidein(job);
                 jobCache.remove(0);
             } catch (JLRMException e) {
@@ -171,6 +172,7 @@ public class KureGATEService implements GATEService {
 
     @Override
     public void deletePendingGlideins() {
+        logger.info("ENTERING deletePendingGlideins()");
         try {
             LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(this.site, System.getProperty("user.name"));
             Set<LSFJobStatusInfo> jobStatusSet = lsfSSHFactory.lookupStatus(jobCache.toArray(new LSFSSHJob[jobCache
