@@ -42,7 +42,7 @@ public class KillGlideinRunnable implements Runnable {
                     .getName());
             for (String queue : glideinMetricMap.keySet()) {
                 GlideinMetric metric = glideinMetricMap.get(queue);
-
+                logger.debug("metric: {}", metric.toString());
                 if (metric.getPending() > 0) {
                     // remove all pending glideins
                     gateService.deletePendingGlideins();
