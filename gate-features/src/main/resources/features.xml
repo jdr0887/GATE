@@ -1,13 +1,10 @@
 <features name="gate-${project.version}">
 
   <feature name="gate-common" version="${project.version}" resolver="(obr)">
-    <bundle>mvn:commons-collections/commons-collections/3.2.1</bundle>
-    <bundle>mvn:commons-io/commons-io/2.1</bundle>
-    <bundle>mvn:commons-cli/commons-cli/1.2</bundle>
-    <bundle>mvn:commons-pool/commons-pool/1.5.4</bundle>
-    <bundle>mvn:commons-dbcp/commons-dbcp/1.4</bundle>
-    <bundle>mvn:commons-lang/commons-lang/2.4</bundle>
-    <bundle>mvn:commons-beanutils/commons-beanutils/1.8.3</bundle>
+    <bundle>mvn:commons-io/commons-io/${commons.io.version}</bundle>
+    <bundle>mvn:commons-cli/commons-cli/${commons.cli.version}</bundle>
+    <bundle>mvn:org.apache.commons/commons-lang/${commons.lang.version}</bundle>
+    <bundle>mvn:commons-beanutils/commons-beanutils/${commons.beanutils.version}</bundle>
     <bundle>mvn:org.mongodb/mongo-java-driver/2.3</bundle>
     <bundle>mvn:org.bouncycastle/com.springsource.org.bouncycastle.jce/1.39.0</bundle>
     <bundle>mvn:com.sleepycat.je/com.springsource.com.sleepycat.je/3.3.87</bundle>
