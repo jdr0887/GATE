@@ -1,17 +1,17 @@
 <features name="gate-${project.version}">
 
   <feature name="gate-common" version="${project.version}" resolver="(obr)">
+    <bundle>mvn:commons-collections/commons-collections/${commons.collections.version}</bundle>
     <bundle>mvn:commons-io/commons-io/${commons.io.version}</bundle>
-    <bundle>mvn:commons-cli/commons-cli/${commons.cli.version}</bundle>
+    <bundle>mvn:commons-lang/commons-lang/2.4</bundle>
+    <bundle>mvn:org.mongodb/mongo-java-driver/2.3</bundle>
+    <bundle>mvn:com.sleepycat.je/com.springsource.com.sleepycat.je/3.3.87</bundle>
     <bundle>mvn:org.apache.commons/commons-lang3/${commons.lang.version}</bundle>
     <bundle>mvn:commons-beanutils/commons-beanutils/${commons.beanutils.version}</bundle>
-    <bundle>mvn:org.mongodb/mongo-java-driver/2.3</bundle>
     <bundle>mvn:org.bouncycastle/com.springsource.org.bouncycastle.jce/1.39.0</bundle>
-    <bundle>mvn:com.sleepycat.je/com.springsource.com.sleepycat.je/3.3.87</bundle>
     <bundle>mvn:com.jcraft.jzlib/com.springsource.com.jcraft.jzlib/1.0.7</bundle>
     <bundle>mvn:com.jcraft.jsch/com.springsource.com.jcraft.jsch/0.1.41</bundle>
     <bundle>mvn:org.apache.log4j/com.springsource.org.apache.log4j/1.2.15</bundle>
-    <bundle>mvn:org.apache.openjpa/openjpa/2.1.1</bundle>
     <bundle>mvn:org.apache.geronimo.specs/geronimo-validation_1.0_spec/1.1</bundle>
     <bundle>mvn:org.codehaus.jettison/jettison/1.3.1</bundle>
     <bundle>mvn:org.apache.velocity/com.springsource.org.apache.velocity/1.6.2</bundle>
@@ -41,9 +41,8 @@
   <feature name="gate" version="${project.version}" resolver="(obr)">    
     <feature>spring</feature>
     <feature>eventadmin</feature>
-    <feature>transaction</feature>
     <feature>jndi</feature>
-    <feature>jpa</feature>
+    <feature>transaction</feature>
     <feature version="${project.version}">gate-common</feature>
     <feature version="${project.version}">gate-plugins</feature>
     <feature version="${project.version}">gate-engine</feature>
