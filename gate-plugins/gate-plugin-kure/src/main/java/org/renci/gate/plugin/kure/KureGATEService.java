@@ -16,6 +16,7 @@ import org.renci.jlrm.JLRMException;
 import org.renci.jlrm.Queue;
 import org.renci.jlrm.Site;
 import org.renci.jlrm.lsf.LSFJobStatusInfo;
+import org.renci.jlrm.lsf.LSFJobStatusType;
 import org.renci.jlrm.lsf.ssh.LSFSSHFactory;
 import org.renci.jlrm.lsf.ssh.LSFSSHJob;
 import org.slf4j.Logger;
@@ -43,7 +44,7 @@ public class KureGATEService implements GATEService {
 
     @Override
     public Map<String, GlideinMetric> lookupMetrics() {
-        logger.debug("ENTERING lookupMetrics()");
+        logger.info("ENTERING lookupMetrics()");
         Map<String, GlideinMetric> metricsMap = new HashMap<String, GlideinMetric>();
         LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(this.site, System.getProperty("user.name"));
 
@@ -52,7 +53,7 @@ public class KureGATEService implements GATEService {
             Set<LSFJobStatusInfo> jobStatusSet = lsfSSHFactory.lookupStatus(jobCache.toArray(new LSFSSHJob[jobCache
                     .size()]));
 
-            logger.info("jobStatusSet.size(): {}", jobStatusSet.size());
+            logger.debug("jobStatusSet.size(): {}", jobStatusSet.size());
 
             // get unique list of queues
             Set<String> queueSet = new HashSet<String>();
@@ -86,6 +87,7 @@ public class KureGATEService implements GATEService {
                             metric.setRunning(metric.getRunning() + 1);
                             break;
                     }
+                    logger.debug("metric: {}", metric.toString());
                 }
             }
 
@@ -114,6 +116,7 @@ public class KureGATEService implements GATEService {
                             default:
                                 break;
                         }
+                        logger.debug("metric: {}", metric.toString());
                     }
                 }
             }
@@ -162,7 +165,7 @@ public class KureGATEService implements GATEService {
                 LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(this.site, System.getProperty("user.name"));
                 LSFSSHJob job = jobCache.get(0);
                 logger.info("job: {}", job.toString());
-                lsfSSHFactory.killGlidein(job);
+                lsfSSHFactory.killGlidein(job.getId());
                 jobCache.remove(0);
             } catch (JLRMException e) {
                 e.printStackTrace();
@@ -178,10 +181,8 @@ public class KureGATEService implements GATEService {
             Set<LSFJobStatusInfo> jobStatusSet = lsfSSHFactory.lookupStatus(jobCache.toArray(new LSFSSHJob[jobCache
                     .size()]));
             for (LSFJobStatusInfo info : jobStatusSet) {
-                switch (info.getType()) {
-                    case PENDING:
-                        deleteGlidein(site.getQueueInfoMap().get(info.getQueue()));
-                        break;
+                if (info.getType().equals(LSFJobStatusType.PENDING)) {
+                    lsfSSHFactory.killGlidein(info.getJobId());
                 }
                 try {
                     // throttle the deleteGlidein calls such that SSH doesn't complain
