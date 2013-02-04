@@ -160,7 +160,7 @@ public class SubmitGlideinRunnable implements Runnable {
             logger.info(winner.toString());
             for (int i = 0; i < winner.getNumberToSubmit(); ++i) {
                 logger.info(String.format("Submitting %d of %d glideins for %s to %s:%s", i + 1,
-                        winner.getNumberToSubmit(), System.getProperty("user.name"), winner.getSiteName(),
+                        winner.getNumberToSubmit(), gateService.getUsername(), winner.getSiteName(),
                         winner.getQueueName()));
                 gateService.createGlidein(queueInfo);
                 try {
