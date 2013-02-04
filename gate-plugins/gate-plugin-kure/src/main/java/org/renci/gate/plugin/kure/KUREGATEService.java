@@ -40,12 +40,11 @@ public class KUREGATEService extends AbstractGATEService {
         logger.info("ENTERING lookupMetrics()");
         Map<String, GlideinMetric> metricsMap = new HashMap<String, GlideinMetric>();
 
-        LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(getSite(), getUsername());
+        LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(getSite());
 
         try {
 
-            Set<LSFJobStatusInfo> jobStatusSet = lsfSSHFactory.lookupStatus(jobCache.toArray(new LSFSSHJob[jobCache
-                    .size()]));
+            Set<LSFJobStatusInfo> jobStatusSet = lsfSSHFactory.lookupStatus(jobCache);
 
             logger.debug("jobStatusSet.size(): {}", jobStatusSet.size());
 
@@ -138,7 +137,7 @@ public class KUREGATEService extends AbstractGATEService {
         try {
             logger.info("siteInfo: {}", getSite());
             logger.info("queueInfo: {}", queue);
-            LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(getSite(), getUsername());
+            LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(getSite());
             job = lsfSSHFactory.submitGlidein(submitDir, getCollectorHost(), queue, 40);
             if (job != null && StringUtils.isNotEmpty(job.getId())) {
                 logger.info("job.getId(): {}", job.getId());
@@ -156,7 +155,7 @@ public class KUREGATEService extends AbstractGATEService {
             try {
                 logger.info("siteInfo: {}", getSite());
                 logger.info("queueInfo: {}", queue);
-                LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(getSite(), getUsername());
+                LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(getSite());
                 LSFSSHJob job = jobCache.get(0);
                 logger.info("job: {}", job.toString());
                 lsfSSHFactory.killGlidein(job.getId());
@@ -171,9 +170,8 @@ public class KUREGATEService extends AbstractGATEService {
     public void deletePendingGlideins() {
         logger.info("ENTERING deletePendingGlideins()");
         try {
-            LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(getSite(), getUsername());
-            Set<LSFJobStatusInfo> jobStatusSet = lsfSSHFactory.lookupStatus(jobCache.toArray(new LSFSSHJob[jobCache
-                    .size()]));
+            LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(getSite());
+            Set<LSFJobStatusInfo> jobStatusSet = lsfSSHFactory.lookupStatus(jobCache);
             for (LSFJobStatusInfo info : jobStatusSet) {
                 if (info.getType().equals(LSFJobStatusType.PENDING)) {
                     lsfSSHFactory.killGlidein(info.getJobId());

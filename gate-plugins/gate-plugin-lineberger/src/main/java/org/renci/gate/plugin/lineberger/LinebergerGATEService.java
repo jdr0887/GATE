@@ -37,13 +37,11 @@ public class LinebergerGATEService extends AbstractGATEService {
     @Override
     public Map<String, GlideinMetric> lookupMetrics() {
         Map<String, GlideinMetric> metricsMap = new HashMap<String, GlideinMetric>();
-        SGESSHFactory lsfSSHFactory = SGESSHFactory.getInstance(getSite(),
-                StringUtils.isNotEmpty(getUsername()) ? getUsername() : System.getProperty("user.name"));
+        SGESSHFactory lsfSSHFactory = SGESSHFactory.getInstance(getSite());
 
         try {
 
-            Set<SGEJobStatusInfo> jobStatusSet = lsfSSHFactory.lookupStatus(jobCache.toArray(new SGESSHJob[jobCache
-                    .size()]));
+            Set<SGEJobStatusInfo> jobStatusSet = lsfSSHFactory.lookupStatus(jobCache);
 
             // get unique list of queues
             Set<String> queueSet = new HashSet<String>();
@@ -110,7 +108,7 @@ public class LinebergerGATEService extends AbstractGATEService {
         submitDir.mkdirs();
         SGESSHJob job = null;
         try {
-            SGESSHFactory lsfSSHFactory = SGESSHFactory.getInstance(getSite(), System.getProperty("user.name"));
+            SGESSHFactory lsfSSHFactory = SGESSHFactory.getInstance(getSite());
             job = lsfSSHFactory.submitGlidein(submitDir, getCollectorHost(), queue, 40);
             if (job != null && StringUtils.isNotEmpty(job.getId())) {
                 logger.info("job.getId(): {}", job.getId());
@@ -125,7 +123,7 @@ public class LinebergerGATEService extends AbstractGATEService {
     public void deleteGlidein(Queue queue) {
         if (jobCache.size() > 0) {
             try {
-                SGESSHFactory sgeSSHFactory = SGESSHFactory.getInstance(getSite(), System.getProperty("user.name"));
+                SGESSHFactory sgeSSHFactory = SGESSHFactory.getInstance(getSite());
                 SGESSHJob job = jobCache.get(0);
                 sgeSSHFactory.killGlidein(job);
                 jobCache.remove(0);
@@ -138,9 +136,8 @@ public class LinebergerGATEService extends AbstractGATEService {
     @Override
     public void deletePendingGlideins() {
         try {
-            SGESSHFactory lsfSSHFactory = SGESSHFactory.getInstance(getSite(), System.getProperty("user.name"));
-            Set<SGEJobStatusInfo> jobStatusSet = lsfSSHFactory.lookupStatus(jobCache.toArray(new SGESSHJob[jobCache
-                    .size()]));
+            SGESSHFactory lsfSSHFactory = SGESSHFactory.getInstance(getSite());
+            Set<SGEJobStatusInfo> jobStatusSet = lsfSSHFactory.lookupStatus(jobCache);
             for (SGEJobStatusInfo info : jobStatusSet) {
                 switch (info.getType()) {
                     case WAITING:
