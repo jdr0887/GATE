@@ -10,8 +10,6 @@ public abstract class AbstractGATEService implements GATEService {
 
     private String activeQueues;
 
-    private String username;
-
     public AbstractGATEService() {
         super();
     }
@@ -38,14 +36,6 @@ public abstract class AbstractGATEService implements GATEService {
 
     public void setActiveQueues(String activeQueues) {
         this.activeQueues = activeQueues;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
 }
