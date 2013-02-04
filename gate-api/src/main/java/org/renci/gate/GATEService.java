@@ -11,11 +11,7 @@ import org.renci.jlrm.Site;
  */
 public interface GATEService {
 
-    public Site getSite();
-
     public Map<String, GlideinMetric> lookupMetrics();
-
-    public String getCollectorHost();
 
     public void createGlidein(Queue queue);
 
@@ -23,6 +19,12 @@ public interface GATEService {
 
     public void deletePendingGlideins();
 
+    public Site getSite();
+
     public String getActiveQueues();
+
+    public String getCollectorHost();
+
+    public String getUsername();
 
 }
