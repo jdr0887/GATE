@@ -156,12 +156,12 @@ public class SubmitGlideinRunnable implements Runnable {
 
             GATEService gateService = gateServiceMap.get(winner.getSiteName());
             Site siteInfo = gateService.getSite();
+            logger.debug(siteInfo.toString());
             Queue queueInfo = siteInfo.getQueueInfoMap().get(winner.getQueueName());
-            logger.info(winner.toString());
+            logger.debug(queueInfo.toString());
             for (int i = 0; i < winner.getNumberToSubmit(); ++i) {
                 logger.info(String.format("Submitting %d of %d glideins for %s to %s:%s", i + 1,
-                        winner.getNumberToSubmit(), gateService.getUsername(), winner.getSiteName(),
-                        winner.getQueueName()));
+                        winner.getNumberToSubmit(), siteInfo.getUsername(), winner.getSiteName(), winner.getQueueName()));
                 gateService.createGlidein(queueInfo);
                 try {
                     Thread.sleep(3000);
