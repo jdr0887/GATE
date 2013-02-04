@@ -8,9 +8,10 @@
       <cm:property name="maxTotalRunning" value="30" />
       <cm:property name="activeQueues" value="pseq_prod,week" />
       <cm:property name="collectorHost" value="biodev1.its.unc.edu" />
+      <cm:property name="username" value="" />
     </cm:default-properties>
   </cm:property-placeholder>
-  
+
   <bean id="pRENCIQueue" class="org.renci.jlrm.Queue">
     <property name="name" value="prenci" />
     <property name="weight" value="1" />
@@ -68,6 +69,7 @@
     <property name="site" ref="site" />
     <property name="collectorHost" value="${collectorHost}" />
     <property name="activeQueues" value="${activeQueues}" />
+    <property name="username" value="${username}" />
     <cm:managed-properties persistent-id="org.renci.gate.plugin.kure" update-strategy="container-managed" />
   </bean>
 

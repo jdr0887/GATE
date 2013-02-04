@@ -2,6 +2,14 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0" default-activation="lazy">
 
+  <cm:property-placeholder persistent-id="org.renci.gate.plugin.lineberger" update-strategy="reload">
+    <cm:default-properties>
+      <cm:property name="collectorHost" value="biodev1.its.unc.edu" />
+      <cm:property name="activeQueues" value="all.q" />
+      <cm:property name="username" value="" />
+    </cm:default-properties>
+  </cm:property-placeholder>
+
   <bean id="all.q" class="org.renci.gate.QueueInfo">
     <property name="name" value="all.q" />
     <property name="weight" value="1" />
@@ -34,16 +42,11 @@
     </property>
   </bean>
 
-  <cm:property-placeholder persistent-id="org.renci.gate.plugin.lineberger" update-strategy="reload">
-    <cm:default-properties>
-      <cm:property name="active_queues" value="all.q" />
-    </cm:default-properties>
-  </cm:property-placeholder>
-
   <bean id="linebergerGATEService" class="org.renci.gate.plugin.lineberger.LinebergerGATEService">
-    <property name="collectorHost" value="biodev1.its.unc.edu" />
     <property name="site" ref="site" />
-    <property name="activeQueues" value="{active_queues}" />
+    <property name="collectorHost" value="${collectorHost}" />
+    <property name="activeQueues" value="${activeQueues}" />
+    <property name="username" value="${username}" />
     <cm:managed-properties persistent-id="org.renci.gate.plugin.lineberger" update-strategy="container-managed" />
   </bean>
 
