@@ -38,11 +38,9 @@ public class KillDevilGATEService extends AbstractGATEService {
     @Override
     public Map<String, GlideinMetric> lookupMetrics() {
         Map<String, GlideinMetric> metricsMap = new HashMap<String, GlideinMetric>();
-        LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(getSite(),
-                StringUtils.isNotEmpty(getUsername()) ? getUsername() : System.getProperty("user.name"));
+        LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(getSite());
         try {
-            Set<LSFJobStatusInfo> jobStatusSet = lsfSSHFactory.lookupStatus(jobCache.toArray(new LSFSSHJob[jobCache
-                    .size()]));
+            Set<LSFJobStatusInfo> jobStatusSet = lsfSSHFactory.lookupStatus(jobCache);
             // get unique list of queues
             Set<String> queueSet = new HashSet<String>();
             if (jobStatusSet != null) {
@@ -109,7 +107,7 @@ public class KillDevilGATEService extends AbstractGATEService {
         try {
             logger.info("siteInfo: {}", getSite());
             logger.info("queueInfo: {}", queue);
-            LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(getSite(), System.getProperty("user.name"));
+            LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(getSite());
             job = lsfSSHFactory.submitGlidein(submitDir, this.getCollectorHost(), queue, 40);
             if (job != null && StringUtils.isNotEmpty(job.getId())) {
                 logger.info("job.getId(): {}", job.getId());
@@ -127,7 +125,7 @@ public class KillDevilGATEService extends AbstractGATEService {
             try {
                 logger.info("siteInfo: {}", getSite());
                 logger.info("queueInfo: {}", queue);
-                LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(getSite(), System.getProperty("user.name"));
+                LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(getSite());
                 LSFSSHJob job = jobCache.get(0);
                 lsfSSHFactory.killGlidein(job.getId());
                 jobCache.remove(0);
@@ -140,9 +138,8 @@ public class KillDevilGATEService extends AbstractGATEService {
     @Override
     public void deletePendingGlideins() {
         try {
-            LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(getSite(), System.getProperty("user.name"));
-            Set<LSFJobStatusInfo> jobStatusSet = lsfSSHFactory.lookupStatus(jobCache.toArray(new LSFSSHJob[jobCache
-                    .size()]));
+            LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(getSite());
+            Set<LSFJobStatusInfo> jobStatusSet = lsfSSHFactory.lookupStatus(jobCache);
             for (LSFJobStatusInfo info : jobStatusSet) {
                 if (info.getType().equals(LSFJobStatusType.PENDING)) {
                     lsfSSHFactory.killGlidein(info.getJobId());
