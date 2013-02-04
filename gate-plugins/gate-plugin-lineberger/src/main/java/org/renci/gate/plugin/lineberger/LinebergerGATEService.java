@@ -10,11 +10,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.renci.gate.GATEService;
+import org.renci.gate.AbstractGATEService;
 import org.renci.gate.GlideinMetric;
 import org.renci.jlrm.JLRMException;
 import org.renci.jlrm.Queue;
-import org.renci.jlrm.Site;
 import org.renci.jlrm.sge.SGEJobStatusInfo;
 import org.renci.jlrm.sge.ssh.SGESSHFactory;
 import org.renci.jlrm.sge.ssh.SGESSHJob;
@@ -25,17 +24,11 @@ import org.slf4j.LoggerFactory;
  * 
  * @author jdr0887
  */
-public class LinebergerGATEService implements GATEService {
+public class LinebergerGATEService extends AbstractGATEService {
 
     private final Logger logger = LoggerFactory.getLogger(LinebergerGATEService.class);
 
     private final List<SGESSHJob> jobCache = new ArrayList<SGESSHJob>();
-
-    private Site site;
-
-    private String collectorHost;
-
-    private String activeQueues;
 
     public LinebergerGATEService() {
         super();
@@ -44,7 +37,8 @@ public class LinebergerGATEService implements GATEService {
     @Override
     public Map<String, GlideinMetric> lookupMetrics() {
         Map<String, GlideinMetric> metricsMap = new HashMap<String, GlideinMetric>();
-        SGESSHFactory lsfSSHFactory = SGESSHFactory.getInstance(site, System.getProperty("user.name"));
+        SGESSHFactory lsfSSHFactory = SGESSHFactory.getInstance(getSite(),
+                StringUtils.isNotEmpty(getUsername()) ? getUsername() : System.getProperty("user.name"));
 
         try {
 
@@ -107,7 +101,7 @@ public class LinebergerGATEService implements GATEService {
     public void createGlidein(Queue queue) {
         logger.info("ENTERING createGlidein(Queue)");
 
-        if (StringUtils.isNotEmpty(activeQueues) && !activeQueues.contains(queue.getName())) {
+        if (StringUtils.isNotEmpty(getActiveQueues()) && !getActiveQueues().contains(queue.getName())) {
             logger.warn("queue name is not in active queue list...see etc/org.renci.gate.plugin.kure.cfg");
             return;
         }
@@ -116,8 +110,8 @@ public class LinebergerGATEService implements GATEService {
         submitDir.mkdirs();
         SGESSHJob job = null;
         try {
-            SGESSHFactory lsfSSHFactory = SGESSHFactory.getInstance(this.site, System.getProperty("user.name"));
-            job = lsfSSHFactory.submitGlidein(submitDir, this.collectorHost, queue, 40);
+            SGESSHFactory lsfSSHFactory = SGESSHFactory.getInstance(getSite(), System.getProperty("user.name"));
+            job = lsfSSHFactory.submitGlidein(submitDir, getCollectorHost(), queue, 40);
             if (job != null && StringUtils.isNotEmpty(job.getId())) {
                 logger.info("job.getId(): {}", job.getId());
                 jobCache.add(job);
@@ -131,7 +125,7 @@ public class LinebergerGATEService implements GATEService {
     public void deleteGlidein(Queue queue) {
         if (jobCache.size() > 0) {
             try {
-                SGESSHFactory sgeSSHFactory = SGESSHFactory.getInstance(this.site, System.getProperty("user.name"));
+                SGESSHFactory sgeSSHFactory = SGESSHFactory.getInstance(getSite(), System.getProperty("user.name"));
                 SGESSHJob job = jobCache.get(0);
                 sgeSSHFactory.killGlidein(job);
                 jobCache.remove(0);
@@ -144,43 +138,19 @@ public class LinebergerGATEService implements GATEService {
     @Override
     public void deletePendingGlideins() {
         try {
-            SGESSHFactory lsfSSHFactory = SGESSHFactory.getInstance(this.site, System.getProperty("user.name"));
+            SGESSHFactory lsfSSHFactory = SGESSHFactory.getInstance(getSite(), System.getProperty("user.name"));
             Set<SGEJobStatusInfo> jobStatusSet = lsfSSHFactory.lookupStatus(jobCache.toArray(new SGESSHJob[jobCache
                     .size()]));
             for (SGEJobStatusInfo info : jobStatusSet) {
                 switch (info.getType()) {
                     case WAITING:
-                        deleteGlidein(site.getQueueInfoMap().get(info.getQueue()));
+                        deleteGlidein(getSite().getQueueInfoMap().get(info.getQueue()));
                         break;
                 }
             }
         } catch (JLRMException e) {
             e.printStackTrace();
         }
-    }
-
-    public Site getSite() {
-        return site;
-    }
-
-    public void setSite(Site site) {
-        this.site = site;
-    }
-
-    public String getCollectorHost() {
-        return collectorHost;
-    }
-
-    public void setCollectorHost(String collectorHost) {
-        this.collectorHost = collectorHost;
-    }
-
-    public String getActiveQueues() {
-        return activeQueues;
-    }
-
-    public void setActiveQueues(String activeQueues) {
-        this.activeQueues = activeQueues;
     }
 
 }

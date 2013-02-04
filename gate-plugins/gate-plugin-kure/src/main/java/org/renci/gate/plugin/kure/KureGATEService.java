@@ -10,11 +10,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
-import org.renci.gate.GATEService;
+import org.renci.gate.AbstractGATEService;
 import org.renci.gate.GlideinMetric;
 import org.renci.jlrm.JLRMException;
 import org.renci.jlrm.Queue;
-import org.renci.jlrm.Site;
 import org.renci.jlrm.lsf.LSFJobStatusInfo;
 import org.renci.jlrm.lsf.LSFJobStatusType;
 import org.renci.jlrm.lsf.ssh.LSFSSHFactory;
@@ -26,17 +25,11 @@ import org.slf4j.LoggerFactory;
  * 
  * @author jdr0887
  */
-public class KureGATEService implements GATEService {
+public class KureGATEService extends AbstractGATEService {
 
     private final Logger logger = LoggerFactory.getLogger(KureGATEService.class);
 
     private final List<LSFSSHJob> jobCache = new ArrayList<LSFSSHJob>();
-
-    private Site site;
-
-    private String collectorHost;
-
-    private String activeQueues;
 
     public KureGATEService() {
         super();
@@ -46,7 +39,9 @@ public class KureGATEService implements GATEService {
     public Map<String, GlideinMetric> lookupMetrics() {
         logger.info("ENTERING lookupMetrics()");
         Map<String, GlideinMetric> metricsMap = new HashMap<String, GlideinMetric>();
-        LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(this.site, System.getProperty("user.name"));
+
+        LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(getSite(),
+                StringUtils.isNotEmpty(getUsername()) ? getUsername() : System.getProperty("user.name"));
 
         try {
 
@@ -132,7 +127,7 @@ public class KureGATEService implements GATEService {
     public void createGlidein(Queue queue) {
         logger.info("ENTERING createGlidein(Queue)");
 
-        if (StringUtils.isNotEmpty(activeQueues) && !activeQueues.contains(queue.getName())) {
+        if (StringUtils.isNotEmpty(getActiveQueues()) && !getActiveQueues().contains(queue.getName())) {
             logger.warn("queue name is not in active queue list...see etc/org.renci.gate.plugin.kure.cfg");
             return;
         }
@@ -142,10 +137,10 @@ public class KureGATEService implements GATEService {
         LSFSSHJob job = null;
 
         try {
-            logger.info("siteInfo: {}", this.site);
+            logger.info("siteInfo: {}", getSite());
             logger.info("queueInfo: {}", queue);
-            LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(this.site, System.getProperty("user.name"));
-            job = lsfSSHFactory.submitGlidein(submitDir, this.getCollectorHost(), queue, 40);
+            LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(getSite(), System.getProperty("user.name"));
+            job = lsfSSHFactory.submitGlidein(submitDir, getCollectorHost(), queue, 40);
             if (job != null && StringUtils.isNotEmpty(job.getId())) {
                 logger.info("job.getId(): {}", job.getId());
                 jobCache.add(job);
@@ -160,9 +155,9 @@ public class KureGATEService implements GATEService {
         logger.info("ENTERING deleteGlidein(QueueInfo)");
         if (jobCache.size() > 0) {
             try {
-                logger.info("siteInfo: {}", this.site);
+                logger.info("siteInfo: {}", getSite());
                 logger.info("queueInfo: {}", queue);
-                LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(this.site, System.getProperty("user.name"));
+                LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(getSite(), System.getProperty("user.name"));
                 LSFSSHJob job = jobCache.get(0);
                 logger.info("job: {}", job.toString());
                 lsfSSHFactory.killGlidein(job.getId());
@@ -177,7 +172,7 @@ public class KureGATEService implements GATEService {
     public void deletePendingGlideins() {
         logger.info("ENTERING deletePendingGlideins()");
         try {
-            LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(this.site, System.getProperty("user.name"));
+            LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(getSite(), System.getProperty("user.name"));
             Set<LSFJobStatusInfo> jobStatusSet = lsfSSHFactory.lookupStatus(jobCache.toArray(new LSFSSHJob[jobCache
                     .size()]));
             for (LSFJobStatusInfo info : jobStatusSet) {
@@ -194,30 +189,6 @@ public class KureGATEService implements GATEService {
         } catch (JLRMException e) {
             e.printStackTrace();
         }
-    }
-
-    public String getCollectorHost() {
-        return collectorHost;
-    }
-
-    public void setCollectorHost(String collectorHost) {
-        this.collectorHost = collectorHost;
-    }
-
-    public Site getSite() {
-        return site;
-    }
-
-    public void setSite(Site site) {
-        this.site = site;
-    }
-
-    public String getActiveQueues() {
-        return activeQueues;
-    }
-
-    public void setActiveQueues(String activeQueues) {
-        this.activeQueues = activeQueues;
     }
 
 }
