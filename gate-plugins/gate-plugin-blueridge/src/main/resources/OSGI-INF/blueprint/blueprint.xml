@@ -26,6 +26,7 @@
     <property name="maxTotalRunning" value="30" />
     <property name="name" value="BlueRidge" />
     <property name="project" value="TCGA" />
+    <property name="username" value="${username}" />
     <property name="queueInfoMap">
       <map>
         <entry key="serial" value-ref="serialQueue" />
@@ -37,7 +38,6 @@
     <property name="site" ref="site" />
     <property name="collectorHost" value="${collectorHost}" />
     <property name="activeQueues" value="${activeQueues}" />
-    <property name="username" value="${username}" />
     <cm:managed-properties persistent-id="org.renci.gate.plugin.blueridge" update-strategy="container-managed" />
   </bean>
 

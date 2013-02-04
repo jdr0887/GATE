@@ -31,6 +31,7 @@
   <bean id="site" class="org.renci.jlrm.Site">
     <property name="name" value="Lineberger" />
     <property name="project" value="TCGA" />
+    <property name="username" value="${username}" />
     <property name="submitHost" value="swprod.bioinf.unc.edu" />
     <property name="LRMBinDirectory" value="/opt/gridengine/bin/lx26-amd64" />
     <property name="maxTotalPending" value="6" />
@@ -46,7 +47,6 @@
     <property name="site" ref="site" />
     <property name="collectorHost" value="${collectorHost}" />
     <property name="activeQueues" value="${activeQueues}" />
-    <property name="username" value="${username}" />
     <cm:managed-properties persistent-id="org.renci.gate.plugin.lineberger" update-strategy="container-managed" />
   </bean>
 

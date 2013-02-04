@@ -51,6 +51,7 @@
   <bean id="site" class="org.renci.jlrm.Site">
     <property name="name" value="Kure" />
     <property name="project" value="TCGA" />
+    <property name="username" value="${username}" />
     <property name="submitHost" value="${collectorHost}" />
     <property name="LRMBinDirectory" value="/nas02/apps/lsf/LSF_TOP_706/7.0/linux2.6-glibc2.3-x86_64/bin" />
     <property name="maxTotalPending" value="${maxTotalPending}" />
@@ -65,11 +66,10 @@
     </property>
   </bean>
 
-  <bean id="kureGATEService" class="org.renci.gate.plugin.kure.KureGATEService">
+  <bean id="kureGATEService" class="org.renci.gate.plugin.kure.KUREGATEService">
     <property name="site" ref="site" />
     <property name="collectorHost" value="${collectorHost}" />
     <property name="activeQueues" value="${activeQueues}" />
-    <property name="username" value="${username}" />
     <cm:managed-properties persistent-id="org.renci.gate.plugin.kure" update-strategy="container-managed" />
   </bean>
 

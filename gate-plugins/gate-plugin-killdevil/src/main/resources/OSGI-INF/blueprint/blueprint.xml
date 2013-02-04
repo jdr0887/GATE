@@ -22,6 +22,7 @@
   <bean id="site" class="org.renci.jlrm.Site">
     <property name="name" value="KillDevil" />
     <property name="project" value="TCGA" />
+    <property name="username" value="${username}" />
     <property name="submitHost" value="killdevil.its.unc.edu" />
     <property name="LRMBinDirectory" value="/opt/lsf/8.0/linux2.6-glibc2.3-x86_64/bin" />
     <property name="maxTotalPending" value="6" />
@@ -37,7 +38,6 @@
     <property name="site" ref="site" />
     <property name="collectorHost" value="${collectorHost}" />
     <property name="activeQueues" value="${activeQueues}" />
-    <property name="username" value="${username}" />
     <cm:managed-properties persistent-id="org.renci.gate.plugin.killdevil" update-strategy="container-managed" />
   </bean>
 
