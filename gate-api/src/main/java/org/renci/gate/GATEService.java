@@ -25,6 +25,4 @@ public interface GATEService {
 
     public String getCollectorHost();
 
-    public String getUsername();
-
 }
