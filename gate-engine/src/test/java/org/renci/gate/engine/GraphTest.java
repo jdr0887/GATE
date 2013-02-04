@@ -65,7 +65,7 @@ public class GraphTest {
             sample.setValue("registeredGlideIns", 3);
             System.out.println(sample.dump());
             sample.update();
-            
+
             sample.setTime(endTime - 1200);
             sample.setValue("runningJobs", 20);
             sample.setValue("idleJobs", 7);
