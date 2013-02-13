@@ -28,19 +28,19 @@ public class LookupMetricsTest {
         Set<LSFJobStatusInfo> jobStatusSet = new HashSet<LSFJobStatusInfo>();
         Random r = new Random();
         for (int i = 0; i < 30; ++i) {
-            jobStatusSet.add(new LSFJobStatusInfo(r.nextInt() + "", RUNNING, "pseq_prod"));
+            jobStatusSet.add(new LSFJobStatusInfo(r.nextInt() + "", RUNNING, "pseq_prod", "asdf"));
         }
 
         for (int i = 0; i < 10; ++i) {
-            jobStatusSet.add(new LSFJobStatusInfo(r.nextInt() + "", PENDING, "pseq_prod"));
+            jobStatusSet.add(new LSFJobStatusInfo(r.nextInt() + "", PENDING, "pseq_prod", "asdf"));
         }
 
         for (int i = 0; i < 20; ++i) {
-            jobStatusSet.add(new LSFJobStatusInfo(r.nextInt() + "", RUNNING, "week"));
+            jobStatusSet.add(new LSFJobStatusInfo(r.nextInt() + "", RUNNING, "week", "asdf"));
         }
 
         for (int i = 0; i < 6; ++i) {
-            jobStatusSet.add(new LSFJobStatusInfo(r.nextInt() + "", PENDING, "week"));
+            jobStatusSet.add(new LSFJobStatusInfo(r.nextInt() + "", PENDING, "week", "asdf"));
         }
 
         // get unique list of queues
