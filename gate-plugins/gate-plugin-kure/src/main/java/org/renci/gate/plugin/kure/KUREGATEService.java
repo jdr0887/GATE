@@ -88,6 +88,11 @@ public class KUREGATEService extends AbstractGATEService {
             while (jobCacheIter.hasNext()) {
                 LSFSSHJob nextJob = jobCacheIter.next();
                 for (LSFJobStatusInfo info : jobStatusSet) {
+
+                    if (!nextJob.getName().equals(info.getJobName())) {
+                        continue;
+                    }
+
                     if (!alreadyTalliedJobIdSet.contains(nextJob.getId()) && nextJob.getId().equals(info.getJobId())) {
                         GlideinMetric metric = metricsMap.get(info.getQueue());
                         switch (info.getType()) {
