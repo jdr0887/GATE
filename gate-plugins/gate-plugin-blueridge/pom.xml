@@ -2,13 +2,13 @@
   <parent>
     <groupId>org.renci.gate</groupId>
     <artifactId>gate-plugins</artifactId>
-    <version>0.1.2-SNAPSHOT</version>
+    <version>0.1.2</version>
   </parent>
   <name>GATE :: Plugins :: BlueRidge</name>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.renci.gate.gate-plugins</groupId>
   <artifactId>gate-plugin-blueridge</artifactId>
-  <version>0.1.2-SNAPSHOT</version>
+  <version>0.1.2</version>
   <packaging>bundle</packaging>
   <dependencies>
     <dependency>
