@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.renci</groupId>
   <artifactId>gate</artifactId>
-  <version>0.1.4-SNAPSHOT</version>
+  <version>0.1.4</version>
   <packaging>pom</packaging>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -133,7 +133,7 @@
       <dependency>
 	<groupId>org.renci.gate.gate-plugins</groupId>
 	<artifactId>gate-plugin-kure</artifactId>
-	<version>0.1.4-SNAPSHOT</version>      
+	<version>0.1.4</version>      
       </dependency>     
       <dependency>
 	<groupId>org.apache.felix</groupId>
@@ -196,17 +196,17 @@
       <dependency>
 	<groupId>org.renci.gate</groupId>
 	<artifactId>gate-api</artifactId>
-	<version>0.1.4-SNAPSHOT</version>
+	<version>0.1.4</version>
       </dependency>
       <dependency>
 	<groupId>org.renci.gate.gate-bundles</groupId>
 	<artifactId>gate-bundle-rrd4j</artifactId>
-	<version>0.1.4-SNAPSHOT</version>
+	<version>0.1.4</version>
       </dependency>            
       <dependency>
 	<groupId>org.renci.gate</groupId>
 	<artifactId>gate-features</artifactId>
-	<version>0.1.4-SNAPSHOT</version>
+	<version>0.1.4</version>
 	<type>xml</type>
 	<classifier>features</classifier>
       </dependency>            
