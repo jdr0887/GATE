@@ -108,7 +108,7 @@ public class KillDevilGATEService extends AbstractGATEService {
             logger.info("siteInfo: {}", getSite());
             logger.info("queueInfo: {}", queue);
             LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(getSite());
-            job = lsfSSHFactory.submitGlidein(submitDir, this.getCollectorHost(), queue, 40);
+            job = lsfSSHFactory.submitGlidein(submitDir, this.getCollectorHost(), queue, 40, "glidein");
             if (job != null && StringUtils.isNotEmpty(job.getId())) {
                 logger.info("job.getId(): {}", job.getId());
                 jobCache.add(job);

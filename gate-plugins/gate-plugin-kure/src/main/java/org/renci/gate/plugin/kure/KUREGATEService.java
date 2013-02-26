@@ -66,6 +66,9 @@ public class KUREGATEService extends AbstractGATEService {
                     if (metricsMap.containsKey(info.getQueue())) {
                         continue;
                     }
+                    if (!"glidein".equals(info.getJobName())) {
+                        continue;
+                    }
                     metricsMap.put(info.getQueue(), new GlideinMetric(0, 0, info.getQueue()));
                     alreadyTalliedJobIdSet.add(info.getJobId());
                 }
@@ -143,7 +146,7 @@ public class KUREGATEService extends AbstractGATEService {
             logger.info("siteInfo: {}", getSite());
             logger.info("queueInfo: {}", queue);
             LSFSSHFactory lsfSSHFactory = LSFSSHFactory.getInstance(getSite());
-            job = lsfSSHFactory.submitGlidein(submitDir, getCollectorHost(), queue, 40);
+            job = lsfSSHFactory.submitGlidein(submitDir, getCollectorHost(), queue, 40, "glidein");
             if (job != null && StringUtils.isNotEmpty(job.getId())) {
                 logger.info("job.getId(): {}", job.getId());
                 jobCache.add(job);
