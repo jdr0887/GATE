@@ -74,6 +74,11 @@ public class KUREGATEService extends AbstractGATEService {
                 }
 
                 for (LSFJobStatusInfo info : jobStatusSet) {
+                    
+                    if (!"glidein".equals(info.getJobName())) {
+                        continue;
+                    }
+
                     GlideinMetric metric = metricsMap.get(info.getQueue());
                     switch (info.getType()) {
                         case PENDING:
