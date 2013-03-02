@@ -154,9 +154,9 @@ public class SubmitGlideinRunnable implements Runnable {
                 winner = siteQueueScoreInfoList.get(random.nextInt(3));
             }
 
+            logger.info(winner.toString());
+            
             if (winner.getScore() > 0) {
-
-                logger.info(winner.toString());
 
                 GATEService gateService = gateServiceMap.get(winner.getSiteName());
                 Site siteInfo = gateService.getSite();
