@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <name>GATE</name>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.renci</groupId>
@@ -23,10 +24,10 @@
     <commons.collections.version>3.2.1</commons.collections.version>
     <commons.dbcp.version>1.4</commons.dbcp.version>
     <commons.pool.version>1.5.6</commons.pool.version>
-    <karaf.version>2.3.0</karaf.version>
-    <rrd4j.version>2.1.1</rrd4j.version>
-    <renci.jlrm.version>0.2.11</renci.jlrm.version>
+    <karaf.version>2.3.1</karaf.version>
+    <renci.jlrm.version>0.2.12</renci.jlrm.version>
     <renci.commons.version>0.2.0</renci.commons.version>
+    <slf4j.version>1.7.2</slf4j.version>
   </properties>
   <url>http://ci-dev.renci.org/site/gate/project-info.html</url>
   <issueManagement>
@@ -126,15 +127,15 @@
   <dependencyManagement>
     <dependencies>
       <dependency>
+	<groupId>org.renci.osgi.bundles</groupId>
+	<artifactId>rrd4j-2.1.1-bundle</artifactId>
+	<version>0.0.2</version>
+      </dependency>
+      <dependency>
 	<groupId>org.apache.felix</groupId>
 	<artifactId>org.apache.felix.framework</artifactId>
 	<version>2.0.1</version>
       </dependency>
-      <dependency>
-	<groupId>org.renci.gate.gate-plugins</groupId>
-	<artifactId>gate-plugin-kure</artifactId>
-	<version>0.1.6-SNAPSHOT</version>      
-      </dependency>     
       <dependency>
 	<groupId>org.apache.felix</groupId>
 	<artifactId>org.apache.felix.main</artifactId>
@@ -143,7 +144,7 @@
       <dependency>
 	<groupId>org.osgi</groupId>
 	<artifactId>org.osgi.compendium</artifactId>
-	<version>4.3.0</version>
+	<version>4.3.1</version>
       </dependency>
       <dependency>
 	<groupId>org.apache.karaf</groupId>
@@ -199,11 +200,6 @@
 	<version>0.1.6-SNAPSHOT</version>
       </dependency>
       <dependency>
-	<groupId>org.renci.gate.gate-bundles</groupId>
-	<artifactId>gate-bundle-rrd4j</artifactId>
-	<version>0.1.6-SNAPSHOT</version>
-      </dependency>            
-      <dependency>
 	<groupId>org.renci.gate</groupId>
 	<artifactId>gate-features</artifactId>
 	<version>0.1.6-SNAPSHOT</version>
@@ -211,19 +207,14 @@
 	<classifier>features</classifier>
       </dependency>            
       <dependency>
-	<groupId>org.rrd4j</groupId>
-	<artifactId>rrd4j</artifactId>
-	<version>${rrd4j.version}</version>
-      </dependency>      
-      <dependency>
 	<groupId>org.ops4j.pax.logging</groupId>
 	<artifactId>pax-logging-service</artifactId>
-	<version>1.6.3</version>
+	<version>1.6.10</version>
       </dependency>
       <dependency>
 	<groupId>org.ops4j.pax.logging</groupId>
 	<artifactId>pax-logging-api</artifactId>
-	<version>1.6.3</version>
+	<version>1.6.10</version>
       </dependency>
       <dependency>
 	<groupId>org.renci.commons</groupId>
@@ -248,12 +239,12 @@
       <dependency>
 	<groupId>org.slf4j</groupId>
 	<artifactId>slf4j-api</artifactId>
-	<version>1.6.2</version>
+	<version>${slf4j.version}</version>
       </dependency>
       <dependency>
 	<groupId>org.slf4j</groupId>
 	<artifactId>slf4j-simple</artifactId>
-	<version>1.6.2</version>
+	<version>${slf4j.version}</version>
       </dependency>
       <dependency>
 	<groupId>commons-io</groupId>
@@ -264,11 +255,6 @@
 	<groupId>org.apache.commons</groupId>
 	<artifactId>commons-lang3</artifactId>
 	<version>${commons.lang.version}</version>
-      </dependency>
-      <dependency>
-	<groupId>org.jgrapht</groupId>
-	<artifactId>jgrapht-jdk1.6</artifactId>
-	<version>0.8.3</version>
       </dependency>
       <dependency>
 	<groupId>graphlayout</groupId>
@@ -318,8 +304,8 @@
 	<artifactId>maven-compiler-plugin</artifactId>
 	<version>${maven.compiler.plugin.version}</version>
 	<configuration>
-	  <source>1.6</source>
-	  <target>1.6</target>
+	  <source>1.7</source>
+	  <target>1.7</target>
 	</configuration>
       </plugin>
       <plugin>
@@ -393,11 +379,9 @@
     </plugins>
   </build>
   <modules>
-    <module>gate-bundles</module>
-    <module>gate-plugins</module>
     <module>gate-api</module>
-    <module>gate-features</module>
     <module>gate-engine</module>
+    <module>gate-features</module>
     <!-- <module>gate-distribution</module> -->
   </modules>
 </project>
