@@ -12,8 +12,8 @@
   <packaging>bundle</packaging>
   <dependencies>
     <dependency>
-      <groupId>org.rrd4j</groupId>
-      <artifactId>rrd4j</artifactId>
+      <groupId>org.renci.osgi.bundles</groupId>
+      <artifactId>rrd4j-2.1.1-bundle</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
