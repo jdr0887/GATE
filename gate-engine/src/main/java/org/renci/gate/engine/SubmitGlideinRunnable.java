@@ -70,7 +70,7 @@ public class SubmitGlideinRunnable implements Runnable {
 
         // assume we need new glideins, and then run some tests to negate the assumptions
         boolean needGlidein = true;
-
+        
         for (String siteName : gateServiceMap.keySet()) {
 
             GATEService gateService = gateServiceMap.get(siteName);
@@ -100,22 +100,26 @@ public class SubmitGlideinRunnable implements Runnable {
             if (totalCurrentlySubmitted >= maxAllowableJobs) {
                 logger.info("Total number of glideins has reached the limit of " + maxAllowableJobs);
                 needGlidein = false;
+                continue;
             }
 
             if (totalRunningGlideinJobs > (totalCondorJobs * 0.6)) {
                 logger.info("Number of running glideins is probably enough for the workload.");
                 needGlidein = false;
+                continue;
             }
 
-            if (runningCondorJobs > (totalCondorJobs * 0.6)) {
+            if (runningCondorJobs > (totalCondorJobs * 0.6) && totalCurrentlySubmitted > 0) {
                 logger.info("Number of running jobs is high compared to idle jobs.");
                 needGlidein = false;
+                continue;
             }
 
             if (totalPendingGlideinJobs >= siteInfo.getMaxTotalPending()) {
                 logger.info("Pending job threshold has been met: {} of {}", totalPendingGlideinJobs,
                         siteInfo.getMaxTotalPending());
                 needGlidein = false;
+                continue;
             }
 
         }
