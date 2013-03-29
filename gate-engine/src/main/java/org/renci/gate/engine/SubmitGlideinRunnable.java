@@ -75,7 +75,7 @@ public class SubmitGlideinRunnable implements Runnable {
 
             if (!needGlidein) {
                 // some other site already established that we don't need more glideins
-                continue;
+                break;
             }
 
             GATEService gateService = gateServiceMap.get(siteName);
