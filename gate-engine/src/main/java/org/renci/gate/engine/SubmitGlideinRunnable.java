@@ -70,8 +70,13 @@ public class SubmitGlideinRunnable implements Runnable {
 
         // assume we need new glideins, and then run some tests to negate the assumptions
         boolean needGlidein = true;
-        
+
         for (String siteName : gateServiceMap.keySet()) {
+
+            if (!needGlidein) {
+                // some other site already established that we don't need more glideins
+                continue;
+            }
 
             GATEService gateService = gateServiceMap.get(siteName);
             Site siteInfo = gateService.getSite();
@@ -159,7 +164,7 @@ public class SubmitGlideinRunnable implements Runnable {
             }
 
             logger.info(winner.toString());
-            
+
             if (winner.getScore() > 0) {
 
                 GATEService gateService = gateServiceMap.get(winner.getSiteName());
