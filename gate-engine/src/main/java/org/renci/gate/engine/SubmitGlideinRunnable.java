@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.renci.gate.GATEService;
@@ -48,6 +51,8 @@ public class SubmitGlideinRunnable implements Runnable {
         int idleCondorJobs = 0;
         int runningCondorJobs = 0;
 
+        Map<String, Integer> requiredSiteMetrics = new HashMap<String, Integer>();
+
         for (String job : jobMap.keySet()) {
             logger.debug("job: {}", job);
             List<ClassAdvertisement> classAdList = jobMap.get(job);
@@ -61,6 +66,24 @@ public class SubmitGlideinRunnable implements Runnable {
                     if (statusCode == CondorJobStatusType.RUNNING.getCode()) {
                         ++runningCondorJobs;
                     }
+                }
+                if (ClassAdvertisementFactory.CLASS_AD_KEY_REQUIREMENTS.equals(classAd.getKey())) {
+
+                    String requirements = classAd.getValue();
+                    if (requirements.contains("TARGET.JLRM_SITE_NAME")) {
+                        Pattern pattern = Pattern.compile("^.+JLRM_SITE_NAME == \"([\\S]+)\".+$");
+                        Matcher matcher = pattern.matcher(requirements);
+                        if (matcher.matches()) {
+                            String requiredSiteName = matcher.group(1);
+                            if (!requiredSiteMetrics.containsKey(requiredSiteName)) {
+                                requiredSiteMetrics.put(requiredSiteName, 0);
+                            } else {
+                                requiredSiteMetrics
+                                        .put(requiredSiteName, requiredSiteMetrics.get(requiredSiteName) + 1);
+                            }
+                        }
+                    }
+
                 }
             }
         }
@@ -136,13 +159,25 @@ public class SubmitGlideinRunnable implements Runnable {
 
         List<SiteQueueScore> siteQueueScoreInfoList = new ArrayList<SiteQueueScore>();
 
+        Map<String, Double> percentSiteRequiredJobOccuranceMap = new HashMap<String, Double>();
+        Double percentSiteRequiredJobOccuranceScore = 0.0;
+        for (String siteName : gateServiceMap.keySet()) {
+            if (requiredSiteMetrics.containsKey(siteName)) {
+                percentSiteRequiredJobOccuranceScore = (double) (requiredSiteMetrics.get(siteName) / requiredSiteMetrics
+                        .size());
+                percentSiteRequiredJobOccuranceMap.put(siteName, percentSiteRequiredJobOccuranceScore);
+            }
+        }
+
         logger.info("gateServiceMap.size(): {}", gateServiceMap.size());
         for (String siteName : gateServiceMap.keySet()) {
             GATEService gateService = gateServiceMap.get(siteName);
             Site siteInfo = gateService.getSite();
             Map<String, GlideinMetric> metricsMap = siteQueueGlideinMetricsMap.get(siteInfo.getName());
-            siteQueueScoreInfoList.addAll(calculate(gateService, siteInfo, metricsMap, runningCondorJobs,
-                    idleCondorJobs));
+            LocalCondorMetric localCondorMetrics = new LocalCondorMetric(siteName, idleCondorJobs, runningCondorJobs,
+                    percentSiteRequiredJobOccuranceMap.get(siteName));
+            logger.info(localCondorMetrics.toString());
+            siteQueueScoreInfoList.addAll(calculate(gateService, siteInfo, metricsMap, localCondorMetrics));
         }
 
         logger.info("siteQueueScoreInfoList.size(): {}", siteQueueScoreInfoList.size());
@@ -191,8 +226,8 @@ public class SubmitGlideinRunnable implements Runnable {
     }
 
     private List<SiteQueueScore> calculate(GATEService gateService, Site siteInfo,
-            Map<String, GlideinMetric> metricsMap, int runningCondorJobs, int idleCondorJobs) {
-        logger.info("ENTERING calculate(GATEService gateService, Site siteInfo, Map<String, GlideinMetric> metricsMap, int runningCondorJobs, int idleCondorJobs)");
+            Map<String, GlideinMetric> metricsMap, LocalCondorMetric localCondorMetrics) {
+        logger.info("ENTERING calculate(GATEService, Site, Map<String, GlideinMetric>, LocalCondorMetrics)");
         List<SiteQueueScore> ret = new ArrayList<SiteQueueScore>();
 
         for (String queueName : siteInfo.getQueueInfoMap().keySet()) {
@@ -221,8 +256,8 @@ public class SubmitGlideinRunnable implements Runnable {
             }
             logger.info(metrics.toString());
 
-            Integer numberToSubmit = calculateNumberToSubmit(siteInfo, queueInfo, metrics, runningCondorJobs,
-                    idleCondorJobs);
+            Integer numberToSubmit = calculateNumberToSubmit(siteInfo, queueInfo, metrics,
+                    localCondorMetrics.getRunning(), localCondorMetrics.getIdle());
             siteScoreInfo.setNumberToSubmit(numberToSubmit);
 
             int totalJobs = metrics.getRunning() + metrics.getPending();
@@ -245,7 +280,7 @@ public class SubmitGlideinRunnable implements Runnable {
                 continue;
             }
 
-            Integer score = calculateScore(metrics, queueInfo.getWeight());
+            Integer score = calculateScore(metrics, localCondorMetrics, queueInfo.getWeight());
 
             // when a lot of glideins are running, lower the score to spread the
             // jobs out between the sites
@@ -266,23 +301,27 @@ public class SubmitGlideinRunnable implements Runnable {
         return ret;
     }
 
-    private Integer calculateScore(GlideinMetric metrics, Double queueWeight) {
+    private Integer calculateScore(GlideinMetric metrics, LocalCondorMetric localCondorMetric, Double queueWeight) {
         double score = 100;
-        double pendingWeight = 9.5;
-        // penalize for pending jobs
+        double pendingWeight = 6.5;
+        // penalize pending jobs
         for (int i = 1; i < metrics.getPending() + 1; ++i) {
             score -= i * pendingWeight;
         }
-        logger.info("score = {}", score);
+        logger.info("penalized = {}", score);
 
-        double runningWeight = 5;
+        double runningWeight = 4.5;
         // reward for pending jobs
         for (int i = 1; i < metrics.getRunning() + 1; ++i) {
             score += i * runningWeight;
         }
+        logger.info("rewarded = {}", score);
         score *= queueWeight;
-        logger.info("score = {}", score);
-        return Double.valueOf(score).intValue();
+        logger.info("adjusted by queue weight = {}", score);
+        score *= Math.max(localCondorMetric.getSiteRequiredJobOccurancePercentile(), 0.1) * 2;
+        logger.info("adjusted by siteRequiredJobOccurancePercentile = {}", score);
+
+        return Long.valueOf(Math.round(score)).intValue();
     }
 
     private Integer calculateNumberToSubmit(Site siteInfo, Queue queueInfo, GlideinMetric metrics,
