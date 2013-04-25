@@ -11,7 +11,7 @@ import org.renci.gate.GATEService;
 import org.renci.gate.GlideinMetric;
 import org.renci.jlrm.JLRMException;
 import org.renci.jlrm.condor.ClassAdvertisement;
-import org.renci.jlrm.condor.cli.CondorCLIFactory;
+import org.renci.jlrm.condor.cli.CondorLookupJobsByOwnerCallable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,8 +59,8 @@ public class MainTask extends TimerTask {
         // go get a snapshot of local jobs
         Map<String, List<ClassAdvertisement>> jobMap = null;
         try {
-            CondorCLIFactory condorCLIFactory = CondorCLIFactory.getInstance();
-            jobMap = condorCLIFactory.lookupJobsByOwner(System.getProperty("user.name"));
+            CondorLookupJobsByOwnerCallable callable = new CondorLookupJobsByOwnerCallable(System.getProperty("user.name"));
+            jobMap = callable.call();
         } catch (JLRMException e) {
             e.printStackTrace();
         }
