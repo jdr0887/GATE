@@ -16,11 +16,13 @@ public class GATEEngine {
 
     private final Logger logger = LoggerFactory.getLogger(GATEEngine.class);
 
-    private Timer mainTimer = new Timer();
+    private final Timer mainTimer = new Timer();
 
     private BundleContext bundleContext;
 
     private ServiceTracker tracker;
+
+    private Long period;
 
     public GATEEngine() {
         super();
@@ -28,22 +30,16 @@ public class GATEEngine {
 
     public void start() throws Exception {
         logger.debug("ENTERING start()");
-
         this.tracker = new ServiceTracker(bundleContext, GATEService.class.getName(), null);
         this.tracker.open();
-
-        long delay = 15 * 1000;
-        // run every 5 minutes
-        long period = 5 * 60 * 1000;
-
-        mainTimer.scheduleAtFixedRate(new MainTask(tracker), delay, period);
-
+        long delay = 1 * 60 * 1000;
+        this.mainTimer.scheduleAtFixedRate(new MainTask(tracker), delay, this.period * 60 * 1000);
     }
 
     public void stop() throws Exception {
         logger.debug("ENTERING stop()");
-        mainTimer.purge();
-        mainTimer.cancel();
+        this.mainTimer.purge();
+        this.mainTimer.cancel();
         this.tracker.close();
     }
 
@@ -53,6 +49,14 @@ public class GATEEngine {
 
     public void setBundleContext(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
+    }
+
+    public Long getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(Long period) {
+        this.period = period;
     }
 
 }
