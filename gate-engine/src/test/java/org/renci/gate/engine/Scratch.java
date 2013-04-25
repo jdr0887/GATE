@@ -8,10 +8,13 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.junit.Test;
 import org.renci.gate.GlideinMetric;
 import org.renci.gate.SiteQueueScore;
+import org.renci.jlrm.JLRMException;
 import org.renci.jlrm.Queue;
 import org.renci.jlrm.Site;
 import org.slf4j.Logger;
@@ -195,8 +198,9 @@ public class Scratch {
     @Test
     public void testScoring() {
 
-        Site siteInfo = new Site();
-        siteInfo.setMaxNoClaimTime(60);
+        Site kureSiteInfo = new Site();
+        kureSiteInfo.setName("Kure");
+        kureSiteInfo.setMaxNoClaimTime(60);
         Map<String, Queue> queueMap = new HashMap<String, Queue>();
 
         Queue pseqProdQueueInfo = new Queue();
@@ -216,65 +220,73 @@ public class Scratch {
         weekQueueInfo.setPendingTime(1440);
         weekQueueInfo.setRunTime(2880);
         queueMap.put("week", weekQueueInfo);
-        siteInfo.setQueueInfoMap(queueMap);
+        kureSiteInfo.setQueueInfoMap(queueMap);
 
-        SiteQueueScore siteScoreInfo = calculateScore(siteInfo, pseqProdQueueInfo, new GlideinMetric(0, 0, "pseq_prod"));
-        logger.info(siteScoreInfo.toString());
+        Site topsailSiteInfo = new Site();
+        topsailSiteInfo.setName("Topsail");
+        topsailSiteInfo.setMaxNoClaimTime(60);
+        queueMap = new HashMap<String, Queue>();
 
-        siteScoreInfo = calculateScore(siteInfo, pseqProdQueueInfo, new GlideinMetric(0, 2, "pseq_prod"));
-        logger.info(siteScoreInfo.toString());
+        Queue queue16QueueInfo = new Queue();
+        queue16QueueInfo.setName("queue16");
+        queue16QueueInfo.setWeight(1D);
+        queue16QueueInfo.setMaxJobLimit(30);
+        queue16QueueInfo.setMaxMultipleJobsToSubmit(2);
+        queue16QueueInfo.setPendingTime(1440);
+        queue16QueueInfo.setRunTime(2880);
+        queueMap.put("queue16", queue16QueueInfo);
+        topsailSiteInfo.setQueueInfoMap(queueMap);
 
-        siteScoreInfo = calculateScore(siteInfo, pseqProdQueueInfo, new GlideinMetric(2, 0, "pseq_prod"));
-        logger.info(siteScoreInfo.toString());
-
-        siteScoreInfo = calculateScore(siteInfo, pseqProdQueueInfo, new GlideinMetric(2, 2, "pseq_prod"));
-        logger.info(siteScoreInfo.toString());
-
-        siteScoreInfo = calculateScore(siteInfo, pseqProdQueueInfo, new GlideinMetric(4, 0, "pseq_prod"));
-        logger.info(siteScoreInfo.toString());
-
-        siteScoreInfo = calculateScore(siteInfo, pseqProdQueueInfo, new GlideinMetric(4, 2, "pseq_prod"));
-        logger.info(siteScoreInfo.toString());
-
-        siteScoreInfo = calculateScore(siteInfo, pseqProdQueueInfo, new GlideinMetric(4, 4, "pseq_prod"));
-        logger.info(siteScoreInfo.toString());
-
-        siteScoreInfo = calculateScore(siteInfo, pseqProdQueueInfo, new GlideinMetric(4, 5, "pseq_prod"));
-        logger.info(siteScoreInfo.toString());
-
-        siteScoreInfo = calculateScore(siteInfo, pseqProdQueueInfo, new GlideinMetric(4, 6, "pseq_prod"));
-        logger.info(siteScoreInfo.toString());
-
-        siteScoreInfo = calculateScore(siteInfo, pseqProdQueueInfo, new GlideinMetric(12, 8, "pseq_prod"));
-        logger.info(siteScoreInfo.toString());
-
-        siteScoreInfo = calculateScore(siteInfo, pseqProdQueueInfo, new GlideinMetric(12, 0, "pseq_prod"));
-        logger.info(siteScoreInfo.toString());
+        calculateScore(kureSiteInfo, pseqProdQueueInfo, new GlideinMetric(0, 2, pseqProdQueueInfo.getName()), 0.2);
+        calculateScore(topsailSiteInfo, queue16QueueInfo, new GlideinMetric(0, 2, queue16QueueInfo.getName()), 0.0);
+        calculateScore(kureSiteInfo, pseqProdQueueInfo, new GlideinMetric(2, 0, pseqProdQueueInfo.getName()), 0.25);
+        calculateScore(topsailSiteInfo, queue16QueueInfo, new GlideinMetric(2, 0, queue16QueueInfo.getName()), 0.0);
+        calculateScore(kureSiteInfo, pseqProdQueueInfo, new GlideinMetric(2, 2, pseqProdQueueInfo.getName()), 0.3);
+        calculateScore(topsailSiteInfo, queue16QueueInfo, new GlideinMetric(2, 2, queue16QueueInfo.getName()), 0.0);
+        calculateScore(kureSiteInfo, pseqProdQueueInfo, new GlideinMetric(4, 0, pseqProdQueueInfo.getName()), 0.35);
+        calculateScore(topsailSiteInfo, queue16QueueInfo, new GlideinMetric(4, 0, queue16QueueInfo.getName()), 0.0);
+        calculateScore(kureSiteInfo, pseqProdQueueInfo, new GlideinMetric(4, 2, pseqProdQueueInfo.getName()), 0.4);
+        calculateScore(topsailSiteInfo, queue16QueueInfo, new GlideinMetric(4, 2, queue16QueueInfo.getName()), 0.0);
+        calculateScore(kureSiteInfo, pseqProdQueueInfo, new GlideinMetric(4, 4, pseqProdQueueInfo.getName()), 0.45);
+        calculateScore(topsailSiteInfo, queue16QueueInfo, new GlideinMetric(4, 4, queue16QueueInfo.getName()), 0.0);
+        calculateScore(kureSiteInfo, pseqProdQueueInfo, new GlideinMetric(4, 5, pseqProdQueueInfo.getName()), 0.5);
+        calculateScore(topsailSiteInfo, queue16QueueInfo, new GlideinMetric(4, 5, queue16QueueInfo.getName()), 0.0);
+        calculateScore(kureSiteInfo, pseqProdQueueInfo, new GlideinMetric(4, 6, pseqProdQueueInfo.getName()), 0.55);
+        calculateScore(topsailSiteInfo, queue16QueueInfo, new GlideinMetric(4, 6, queue16QueueInfo.getName()), 0.0);
+        calculateScore(kureSiteInfo, pseqProdQueueInfo, new GlideinMetric(4, 6, pseqProdQueueInfo.getName()), 0.0);
+        calculateScore(topsailSiteInfo, queue16QueueInfo, new GlideinMetric(4, 6, queue16QueueInfo.getName()), 0.0);
+        calculateScore(kureSiteInfo, pseqProdQueueInfo, new GlideinMetric(12, 8, pseqProdQueueInfo.getName()), 0.6);
+        calculateScore(topsailSiteInfo, queue16QueueInfo, new GlideinMetric(12, 8, queue16QueueInfo.getName()), 0.0);
+        calculateScore(kureSiteInfo, pseqProdQueueInfo, new GlideinMetric(12, 0, pseqProdQueueInfo.getName()), 0.65);
+        calculateScore(topsailSiteInfo, queue16QueueInfo, new GlideinMetric(12, 0, queue16QueueInfo.getName()), 0.0);
 
     }
 
-    private SiteQueueScore calculateScore(Site siteInfo, Queue queueInfo, GlideinMetric metrics) {
+    private SiteQueueScore calculateScore(Site siteInfo, Queue queueInfo, GlideinMetric metrics,
+            Double siteRequiredJobOccurancePercentile) {
         logger.info("---------------");
-        logger.info(metrics.toString());
         SiteQueueScore siteScoreInfo = new SiteQueueScore();
         siteScoreInfo.setSiteName(siteInfo.getName());
         siteScoreInfo.setQueueName(queueInfo.getName());
 
         double score = 100;
-        double pendingWeight = 9.5;
-        // penalize for pending jobs
+        double pendingWeight = 6.5;
+        // penalize pending jobs
         for (int i = 1; i < metrics.getPending() + 1; ++i) {
             score -= i * pendingWeight;
         }
-        logger.info("score = {}", score);
+        logger.info("penalized = {}", score);
 
-        double runningWeight = 5;
+        double runningWeight = 4.5;
         // reward for pending jobs
         for (int i = 1; i < metrics.getRunning() + 1; ++i) {
             score += i * runningWeight;
         }
+        logger.info("rewarded = {}", score);
         score *= queueInfo.getWeight();
-        logger.info("score = {}", score);
+        logger.info("adjusted by queue weight = {}", score);
+        score *= Math.max(siteRequiredJobOccurancePercentile, 0.1) * 2;
+        logger.info("adjusted by siteRequiredJobOccurancePercentile = {}", score);
 
         // double proportionPending = remainingPending / siteInfo.getMaxIdleCount();
         // double proportionRunning = metrics.getRunning() / siteInfo.getMaxRunningCount();
@@ -283,13 +295,30 @@ public class Scratch {
         if (score > 100) {
             siteScoreInfo.setMessage("Score lowered to spread jobs out on available sites");
             siteScoreInfo.setScore(100);
+            logger.info(metrics.toString());
+            logger.info(siteScoreInfo.toString());
             return siteScoreInfo;
         }
 
         siteScoreInfo.setMessage("Total number of glideins: " + metrics.getTotal());
-        siteScoreInfo.setScore(Double.valueOf(score).intValue());
+        siteScoreInfo.setScore(Long.valueOf(Math.round(score)).intValue());
+        logger.info(metrics.toString());
+        logger.info(siteScoreInfo.toString());
 
         return siteScoreInfo;
+    }
+
+    @Test
+    public void testParseRequirements() {
+        String line = "ClusterId=397494,JobStatus=2,Requirements=( ( Arch == \"X86_64\" ) && ( OpSys == \"LINUX\" ) && ( Memory >= 500 ) && ( Disk >= 0 ) && ( TARGET.JLRM_SITE_NAME == \"Kure\" ) && ( TARGET.JLRM_USER == \"rc_renci.svc\" ) && ( TARGET.IS_GLIDEIN == true ) ) && ( TARGET.Disk >= RequestDisk ) && ( TARGET.Memory >= RequestMemory ) && ( TARGET.HasFileTransfer )";
+        Pattern pattern = Pattern.compile("^.+JLRM_SITE_NAME == \"([\\S]+)\".+$");
+        Matcher matcher = pattern.matcher(line);
+        if (!matcher.matches()) {
+            System.out.println("No match");
+        } else {
+            System.out.println(matcher.group(1));
+        }
+
     }
 
 }
