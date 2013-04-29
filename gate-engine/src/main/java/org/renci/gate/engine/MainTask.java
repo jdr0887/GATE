@@ -4,12 +4,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
 
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.renci.gate.GATEService;
 import org.renci.gate.GlideinMetric;
 import org.renci.jlrm.JLRMException;
+import org.renci.jlrm.Site;
 import org.renci.jlrm.condor.ClassAdvertisement;
 import org.renci.jlrm.condor.cli.CondorLookupJobsByOwnerCallable;
 import org.slf4j.Logger;
@@ -35,16 +37,20 @@ public class MainTask extends TimerTask {
 
         if (siteSelectorServiceRefArray != null) {
             for (ServiceReference serviceRef : siteSelectorServiceRefArray) {
-                logger.info(serviceRef.toString());
-                GATEService gateService = (GATEService) tracker.getService(serviceRef);
-                if (gateService != null) {
-                    gateServiceMap.put(gateService.getSite().getName(), gateService);
+                if (serviceRef instanceof GATEService) {
+                    GATEService gateService = (GATEService) tracker.getService(serviceRef);
+                    if (gateService != null) {
+                        Site site = gateService.getSite();
+                        logger.info(site.toString());
+                        gateServiceMap.put(site.getName(), gateService);
+                    }
                 }
             }
         }
 
         // get a snapshot of jobs across sites across queues
         Map<String, Map<String, GlideinMetric>> siteQueueGlideinMetricsMap = new HashMap<String, Map<String, GlideinMetric>>();
+        logger.info("gateServiceMap.size() == {}", gateServiceMap.size());
         for (String siteName : gateServiceMap.keySet()) {
             try {
                 GATEService gateService = gateServiceMap.get(siteName);
@@ -59,27 +65,21 @@ public class MainTask extends TimerTask {
         // go get a snapshot of local jobs
         Map<String, List<ClassAdvertisement>> jobMap = null;
         try {
-            CondorLookupJobsByOwnerCallable callable = new CondorLookupJobsByOwnerCallable(System.getProperty("user.name"));
+            CondorLookupJobsByOwnerCallable callable = new CondorLookupJobsByOwnerCallable(
+                    System.getProperty("user.name"));
             jobMap = callable.call();
         } catch (JLRMException e) {
             e.printStackTrace();
         }
 
         if (jobMap != null) {
-
+            Runnable runnable = null;
             if (jobMap.size() > 0) {
-
-                SubmitGlideinRunnable runnable = new SubmitGlideinRunnable(jobMap, gateServiceMap,
-                        siteQueueGlideinMetricsMap);
-                runnable.run();
-
+                runnable = new SubmitGlideinRunnable(jobMap, gateServiceMap, siteQueueGlideinMetricsMap);
             } else {
-
-                KillGlideinRunnable runnable = new KillGlideinRunnable(jobMap, gateServiceMap,
-                        siteQueueGlideinMetricsMap);
-                runnable.run();
-
+                runnable = new KillGlideinRunnable(jobMap, gateServiceMap, siteQueueGlideinMetricsMap);
             }
+            Executors.newSingleThreadExecutor().execute(runnable);
         }
 
     }
