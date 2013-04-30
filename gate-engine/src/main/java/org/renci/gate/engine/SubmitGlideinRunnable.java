@@ -58,7 +58,7 @@ public class SubmitGlideinRunnable implements Runnable {
             List<ClassAdvertisement> classAdList = jobMap.get(job);
             for (ClassAdvertisement classAd : classAdList) {
                 logger.info("classAd.getKey() = {}", classAd.getKey());
-                if (ClassAdvertisementFactory.CLASS_AD_KEY_JOB_STATUS.equals(classAd.getKey())) {
+                if (ClassAdvertisementFactory.CLASS_AD_KEY_JOB_STATUS.equalsIgnoreCase(classAd.getKey())) {
                     int statusCode = Integer.valueOf(classAd.getValue().trim());
                     if (statusCode == CondorJobStatusType.IDLE.getCode()) {
                         ++idleCondorJobs;
@@ -67,7 +67,7 @@ public class SubmitGlideinRunnable implements Runnable {
                         ++runningCondorJobs;
                     }
                 }
-                if (ClassAdvertisementFactory.CLASS_AD_KEY_REQUIREMENTS.equals(classAd.getKey())) {
+                if (ClassAdvertisementFactory.CLASS_AD_KEY_REQUIREMENTS.equalsIgnoreCase(classAd.getKey())) {
 
                     String requirements = classAd.getValue();
                     logger.info("requirements = {}", requirements);
