@@ -7,7 +7,6 @@ import java.util.TimerTask;
 import java.util.concurrent.Executors;
 
 import org.osgi.framework.ServiceReference;
-import org.osgi.util.tracker.ServiceTracker;
 import org.renci.gate.GATEService;
 import org.renci.gate.GlideinMetric;
 import org.renci.jlrm.JLRMException;
@@ -21,29 +20,31 @@ public class MainTask extends TimerTask {
 
     private final Logger logger = LoggerFactory.getLogger(MainTask.class);
 
-    private ServiceTracker tracker;
+    private GATEServiceTracker serviceTracker;
 
-    public MainTask(ServiceTracker tracker) {
+    public MainTask(GATEServiceTracker serviceTracker) {
         super();
-        this.tracker = tracker;
+        this.serviceTracker = serviceTracker;
     }
 
     @Override
     public void run() {
         logger.info("ENTERING run()");
+
         Map<String, GATEService> gateServiceMap = new HashMap<String, GATEService>();
 
-        ServiceReference[] siteSelectorServiceRefArray = tracker.getServiceReferences();
+        ServiceReference[] siteSelectorServiceRefArray = serviceTracker.getServiceReferences();
 
         if (siteSelectorServiceRefArray != null) {
             for (ServiceReference serviceRef : siteSelectorServiceRefArray) {
-                if (serviceRef instanceof GATEService) {
-                    GATEService gateService = (GATEService) tracker.getService(serviceRef);
-                    if (gateService != null) {
-                        Site site = gateService.getSite();
-                        logger.info(site.toString());
-                        gateServiceMap.put(site.getName(), gateService);
-                    }
+                logger.info("serviceRef.getBundle().getLocation() = {}", serviceRef.getBundle().getLocation());
+                Object service = serviceTracker.getService(serviceRef);
+                logger.info("service.getClass().getName() = {}", service.getClass().getName());
+                if (service instanceof GATEService) {
+                    GATEService gateService = (GATEService) service;
+                    Site site = gateService.getSite();
+                    logger.info(site.toString());
+                    gateServiceMap.put(site.getName(), gateService);
                 }
             }
         }
