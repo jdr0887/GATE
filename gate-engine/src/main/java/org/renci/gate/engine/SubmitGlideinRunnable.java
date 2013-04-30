@@ -57,7 +57,7 @@ public class SubmitGlideinRunnable implements Runnable {
             logger.info("job: {}", job);
             List<ClassAdvertisement> classAdList = jobMap.get(job);
             for (ClassAdvertisement classAd : classAdList) {
-                logger.debug("classAd: {}", classAd);
+                logger.info("classAd.getKey() = {}", classAd.getKey());
                 if (ClassAdvertisementFactory.CLASS_AD_KEY_JOB_STATUS.equals(classAd.getKey())) {
                     int statusCode = Integer.valueOf(classAd.getValue().trim());
                     if (statusCode == CondorJobStatusType.IDLE.getCode()) {
@@ -70,6 +70,7 @@ public class SubmitGlideinRunnable implements Runnable {
                 if (ClassAdvertisementFactory.CLASS_AD_KEY_REQUIREMENTS.equals(classAd.getKey())) {
 
                     String requirements = classAd.getValue();
+                    logger.info("requirements = {}", requirements);
                     if (requirements.contains("TARGET.JLRM_SITE_NAME")) {
                         Pattern pattern = Pattern.compile("^.+JLRM_SITE_NAME == \"([\\S]+)\".+$");
                         Matcher matcher = pattern.matcher(requirements);
