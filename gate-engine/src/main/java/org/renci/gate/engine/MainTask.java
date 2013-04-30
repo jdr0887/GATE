@@ -37,7 +37,6 @@ public class MainTask extends TimerTask {
 
         if (siteSelectorServiceRefArray != null) {
             for (ServiceReference serviceRef : siteSelectorServiceRefArray) {
-                logger.info("serviceRef.getBundle().getLocation() = {}", serviceRef.getBundle().getLocation());
                 Object service = serviceTracker.getService(serviceRef);
                 logger.info("service.getClass().getName() = {}", service.getClass().getName());
                 if (service instanceof GATEService) {
