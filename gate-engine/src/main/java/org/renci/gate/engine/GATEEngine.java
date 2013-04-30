@@ -3,8 +3,6 @@ package org.renci.gate.engine;
 import java.util.Timer;
 
 import org.osgi.framework.BundleContext;
-import org.osgi.util.tracker.ServiceTracker;
-import org.renci.gate.GATEService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,27 +18,28 @@ public class GATEEngine {
 
     private BundleContext bundleContext;
 
-    private ServiceTracker tracker;
-
     private Long period;
 
+    private GATEServiceTracker serviceTracker;
+    
     public GATEEngine() {
         super();
     }
 
     public void start() throws Exception {
-        logger.debug("ENTERING start()");
-        this.tracker = new ServiceTracker(bundleContext, GATEService.class.getName(), null);
-        this.tracker.open();
+        logger.info("ENTERING start()");
         long delay = 1 * 60 * 1000;
-        this.mainTimer.scheduleAtFixedRate(new MainTask(tracker), delay, this.period * 60 * 1000);
+        this.serviceTracker = new GATEServiceTracker(bundleContext);
+        this.serviceTracker.open();
+        MainTask mainTask = new MainTask(this.serviceTracker);
+        this.mainTimer.scheduleAtFixedRate(mainTask, delay, this.period * 60 * 1000);
     }
 
     public void stop() throws Exception {
-        logger.debug("ENTERING stop()");
+        logger.info("ENTERING stop()");
         this.mainTimer.purge();
         this.mainTimer.cancel();
-        this.tracker.close();
+        this.serviceTracker.close();
     }
 
     public BundleContext getBundleContext() {
