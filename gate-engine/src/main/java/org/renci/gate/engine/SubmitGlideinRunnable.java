@@ -182,8 +182,12 @@ public class SubmitGlideinRunnable implements Runnable {
             GATEService gateService = gateServiceMap.get(siteName);
             Site siteInfo = gateService.getSite();
             Map<String, GlideinMetric> metricsMap = siteQueueGlideinMetricsMap.get(siteInfo.getName());
+            Double percentSiteRequiredJobOccurance = 0D;
+            if (percentSiteRequiredJobOccuranceMap.get(siteName) != null) {
+                percentSiteRequiredJobOccurance = percentSiteRequiredJobOccuranceMap.get(siteName);
+            }
             LocalCondorMetric localCondorMetrics = new LocalCondorMetric(siteName, idleCondorJobs, runningCondorJobs,
-                    percentSiteRequiredJobOccuranceMap.get(siteName));
+                    percentSiteRequiredJobOccurance);
             logger.info(localCondorMetrics.toString());
             siteQueueScoreInfoList.addAll(calculate(gateService, siteInfo, metricsMap, localCondorMetrics));
         }
