@@ -51,10 +51,10 @@ public class SubmitGlideinRunnable implements Runnable {
         int idleCondorJobs = 0;
         int runningCondorJobs = 0;
 
-        Map<String, Integer> requiredSiteMetrics = new HashMap<String, Integer>();
+        Map<String, Integer> requiredSiteMetricsMap = new HashMap<String, Integer>();
 
         for (String job : jobMap.keySet()) {
-            logger.debug("job: {}", job);
+            logger.info("job: {}", job);
             List<ClassAdvertisement> classAdList = jobMap.get(job);
             for (ClassAdvertisement classAd : classAdList) {
                 logger.debug("classAd: {}", classAd);
@@ -75,11 +75,12 @@ public class SubmitGlideinRunnable implements Runnable {
                         Matcher matcher = pattern.matcher(requirements);
                         if (matcher.matches()) {
                             String requiredSiteName = matcher.group(1);
-                            if (!requiredSiteMetrics.containsKey(requiredSiteName)) {
-                                requiredSiteMetrics.put(requiredSiteName, 0);
+                            logger.info("requiredSiteName = {}", requiredSiteName);
+                            if (!requiredSiteMetricsMap.containsKey(requiredSiteName)) {
+                                requiredSiteMetricsMap.put(requiredSiteName, 0);
                             } else {
-                                requiredSiteMetrics
-                                        .put(requiredSiteName, requiredSiteMetrics.get(requiredSiteName) + 1);
+                                requiredSiteMetricsMap.put(requiredSiteName,
+                                        requiredSiteMetricsMap.get(requiredSiteName) + 1);
                             }
                         }
                     }
@@ -166,9 +167,11 @@ public class SubmitGlideinRunnable implements Runnable {
         Map<String, Double> percentSiteRequiredJobOccuranceMap = new HashMap<String, Double>();
         Double percentSiteRequiredJobOccuranceScore = 0.0;
         for (String siteName : gateServiceMap.keySet()) {
-            if (requiredSiteMetrics.containsKey(siteName)) {
-                percentSiteRequiredJobOccuranceScore = (double) (requiredSiteMetrics.get(siteName) / requiredSiteMetrics
+            logger.info("siteName = {}", siteName);
+            if (requiredSiteMetricsMap.containsKey(siteName)) {
+                percentSiteRequiredJobOccuranceScore = (double) (requiredSiteMetricsMap.get(siteName) / requiredSiteMetricsMap
                         .size());
+                logger.info("percentSiteRequiredJobOccuranceScore = {}", percentSiteRequiredJobOccuranceScore);
                 percentSiteRequiredJobOccuranceMap.put(siteName, percentSiteRequiredJobOccuranceScore);
             }
         }
