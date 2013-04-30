@@ -261,7 +261,12 @@ public class SubmitGlideinRunnable implements Runnable {
 
             if (metrics == null) {
                 siteScoreInfo.setMessage("GlideinMetric is null...meaning no jobs have been submitted");
-                siteScoreInfo.setScore(100);
+                //but still give preferential treatment to non site agnostic jobs
+                double score = 100;
+                if (localCondorMetrics.getSiteRequiredJobOccurancePercentile() != 0D) {
+                    score += localCondorMetrics.getSiteRequiredJobOccurancePercentile() * 2;
+                }
+                siteScoreInfo.setScore(Double.valueOf(Math.round(score)).intValue());
                 siteScoreInfo.setNumberToSubmit(queueInfo.getMaxMultipleJobsToSubmit());
                 ret.add(siteScoreInfo);
                 continue;
@@ -321,7 +326,6 @@ public class SubmitGlideinRunnable implements Runnable {
             score -= i * pendingWeight;
         }
         logger.info("penalized = {}", score);
-
         double runningWeight = 4.5;
         // reward for pending jobs
         for (int i = 1; i < metrics.getRunning() + 1; ++i) {
