@@ -94,62 +94,66 @@ public class SubmitGlideinRunnable implements Runnable {
         // assume we need new glideins, and then run some tests to negate the assumptions
         boolean needGlidein = true;
 
-        for (String siteName : gateServiceMap.keySet()) {
+        try {
+            for (String siteName : gateServiceMap.keySet()) {
 
-            if (!needGlidein) {
-                // some other site already established that we don't need more glideins
-                break;
+                if (!needGlidein) {
+                    // some other site already established that we don't need more glideins
+                    break;
+                }
+
+                GATEService gateService = gateServiceMap.get(siteName);
+                Site siteInfo = gateService.getSite();
+                logger.info(siteInfo.toString());
+                Map<String, GlideinMetric> metricsMap = siteQueueGlideinMetricsMap.get(siteInfo.getName());
+
+                int totalRunningGlideinJobs = 0;
+                int totalPendingGlideinJobs = 0;
+
+                for (String queue : metricsMap.keySet()) {
+                    GlideinMetric metrics = metricsMap.get(queue);
+                    logger.info(metrics.toString());
+                    totalRunningGlideinJobs += metrics.getRunning();
+                    totalPendingGlideinJobs += metrics.getPending();
+                }
+
+                logger.info("totalRunningGlideinJobs: {}", totalRunningGlideinJobs);
+                logger.info("totalPendingGlideinJobs: {}", totalPendingGlideinJobs);
+
+                int maxAllowableJobs = siteInfo.getMaxTotalPending() + siteInfo.getMaxTotalRunning();
+                int totalCurrentlySubmitted = totalRunningGlideinJobs + totalPendingGlideinJobs;
+
+                logger.info("maxAllowableJobs: {}", maxAllowableJobs);
+                logger.info("totalSiteJobs: {}", totalCurrentlySubmitted);
+
+                if (totalCurrentlySubmitted >= maxAllowableJobs) {
+                    logger.info("Total number of glideins has reached the limit of " + maxAllowableJobs);
+                    needGlidein = false;
+                    continue;
+                }
+
+                if (totalRunningGlideinJobs > (totalCondorJobs * 0.6)) {
+                    logger.info("Number of running glideins is probably enough for the workload.");
+                    needGlidein = false;
+                    continue;
+                }
+
+                if (runningCondorJobs > (totalCondorJobs * 0.6) && totalCurrentlySubmitted > 0) {
+                    logger.info("Number of running jobs is high compared to idle jobs.");
+                    needGlidein = false;
+                    continue;
+                }
+
+                if (totalPendingGlideinJobs >= siteInfo.getMaxTotalPending()) {
+                    logger.info("Pending job threshold has been met: {} of {}", totalPendingGlideinJobs,
+                            siteInfo.getMaxTotalPending());
+                    needGlidein = false;
+                    continue;
+                }
+
             }
-
-            GATEService gateService = gateServiceMap.get(siteName);
-            Site siteInfo = gateService.getSite();
-            logger.info(siteInfo.toString());
-            Map<String, GlideinMetric> metricsMap = siteQueueGlideinMetricsMap.get(siteInfo.getName());
-
-            int totalRunningGlideinJobs = 0;
-            int totalPendingGlideinJobs = 0;
-
-            for (String queue : metricsMap.keySet()) {
-                GlideinMetric metrics = metricsMap.get(queue);
-                logger.info(metrics.toString());
-                totalRunningGlideinJobs += metrics.getRunning();
-                totalPendingGlideinJobs += metrics.getPending();
-            }
-
-            logger.info("totalRunningGlideinJobs: {}", totalRunningGlideinJobs);
-            logger.info("totalPendingGlideinJobs: {}", totalPendingGlideinJobs);
-
-            int maxAllowableJobs = siteInfo.getMaxTotalPending() + siteInfo.getMaxTotalRunning();
-            int totalCurrentlySubmitted = totalRunningGlideinJobs + totalPendingGlideinJobs;
-
-            logger.info("maxAllowableJobs: {}", maxAllowableJobs);
-            logger.info("totalSiteJobs: {}", totalCurrentlySubmitted);
-
-            if (totalCurrentlySubmitted >= maxAllowableJobs) {
-                logger.info("Total number of glideins has reached the limit of " + maxAllowableJobs);
-                needGlidein = false;
-                continue;
-            }
-
-            if (totalRunningGlideinJobs > (totalCondorJobs * 0.6)) {
-                logger.info("Number of running glideins is probably enough for the workload.");
-                needGlidein = false;
-                continue;
-            }
-
-            if (runningCondorJobs > (totalCondorJobs * 0.6) && totalCurrentlySubmitted > 0) {
-                logger.info("Number of running jobs is high compared to idle jobs.");
-                needGlidein = false;
-                continue;
-            }
-
-            if (totalPendingGlideinJobs >= siteInfo.getMaxTotalPending()) {
-                logger.info("Pending job threshold has been met: {} of {}", totalPendingGlideinJobs,
-                        siteInfo.getMaxTotalPending());
-                needGlidein = false;
-                continue;
-            }
-
+        } catch (Exception e1) {
+            logger.error("Error", e1);
         }
 
         if (!needGlidein) {
