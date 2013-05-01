@@ -8,14 +8,14 @@ public class LocalCondorMetric {
 
     private Integer running;
 
-    private Double siteRequiredJobOccurancePercentile;
+    private Double siteRequiredJobOccurance;
 
-    public LocalCondorMetric(String siteName, Integer idle, Integer running, Double siteRequiredJobOccurancePercentile) {
+    public LocalCondorMetric(String siteName, Integer idle, Integer running, Double siteRequiredJobOccurance) {
         super();
         this.siteName = siteName;
         this.idle = idle;
         this.running = running;
-        this.siteRequiredJobOccurancePercentile = siteRequiredJobOccurancePercentile;
+        this.siteRequiredJobOccurance = siteRequiredJobOccurance;
     }
 
     public String getSiteName() {
@@ -42,19 +42,18 @@ public class LocalCondorMetric {
         this.running = running;
     }
 
-    public Double getSiteRequiredJobOccurancePercentile() {
-        return siteRequiredJobOccurancePercentile;
+    public Double getSiteRequiredJobOccurance() {
+        return siteRequiredJobOccurance;
     }
 
-    public void setSiteRequiredJobOccurancePercentile(Double siteRequiredJobOccurancePercentile) {
-        this.siteRequiredJobOccurancePercentile = siteRequiredJobOccurancePercentile;
+    public void setSiteRequiredJobOccurance(Double siteRequiredJobOccurance) {
+        this.siteRequiredJobOccurance = siteRequiredJobOccurance;
     }
 
     @Override
     public String toString() {
-        return String.format(
-                "LocalCondorMetric [siteName=%s, idle=%s, running=%s, siteRequiredJobOccurancePercentile=%s]",
-                siteName, idle, running, siteRequiredJobOccurancePercentile);
+        return String.format("LocalCondorMetric [siteName=%s, idle=%s, running=%s, siteRequiredJobOccurance=%s]",
+                siteName, idle, running, siteRequiredJobOccurance);
     }
 
 }
