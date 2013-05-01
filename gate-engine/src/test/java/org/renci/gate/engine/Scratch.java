@@ -14,7 +14,6 @@ import java.util.regex.Pattern;
 import org.junit.Test;
 import org.renci.gate.GlideinMetric;
 import org.renci.gate.SiteQueueScore;
-import org.renci.jlrm.JLRMException;
 import org.renci.jlrm.Queue;
 import org.renci.jlrm.Site;
 import org.slf4j.Logger;
@@ -125,6 +124,8 @@ public class Scratch {
         siteInfo.setMaxTotalRunning(40);
         siteInfo.setQueueInfoMap(queueMap);
 
+        logger.info("Number To submit: {}", calculateNumberToSubmit(2, 0, siteInfo, pseqProdQueueInfo, null));
+        logger.info("Number To submit: {}", calculateNumberToSubmit(20, 0, siteInfo, pseqProdQueueInfo, null));
         logger.info("Number To submit: {}",
                 calculateNumberToSubmit(20, 0, siteInfo, pseqProdQueueInfo, new GlideinMetric(0, 0, "pseq_prod")));
         logger.info("Number To submit: {}",
@@ -176,16 +177,18 @@ public class Scratch {
     private Integer calculateNumberToSubmit(int idleCondorJobs, int runningCondorJobs, Site siteInfo, Queue queueInfo,
             GlideinMetric metrics) {
         logger.info("idleCondorJobs: {}, runningCondorJobs: {}", idleCondorJobs, runningCondorJobs);
-        logger.info("metrics.getPending(): {}, metrics.getRunning(): {}", metrics.getPending(), metrics.getRunning());
         double numToSubmit = 1;
-
         numToSubmit = queueInfo.getMaxMultipleJobsToSubmit();
-        numToSubmit -= metrics.getPending() * 0.4;
-        numToSubmit -= metrics.getRunning() * 0.4;
+        if (metrics != null) {
+            logger.info("metrics.getPending(): {}, metrics.getRunning(): {}", metrics.getPending(),
+                    metrics.getRunning());
+            numToSubmit -= metrics.getPending() * 0.4;
+            numToSubmit -= metrics.getRunning() * 0.4;
+        }
         numToSubmit -= runningCondorJobs * 0.005;
         numToSubmit += idleCondorJobs * 0.005;
 
-        if (numToSubmit <= 1 && metrics.getRunning() <= siteInfo.getMaxTotalRunning()) {
+        if (numToSubmit <= 1 && (metrics != null && metrics.getRunning() <= siteInfo.getMaxTotalRunning())) {
             numToSubmit = 1;
         }
 
@@ -237,10 +240,19 @@ public class Scratch {
         queueMap.put("queue16", queue16QueueInfo);
         topsailSiteInfo.setQueueInfoMap(queueMap);
 
+        calculateScore(kureSiteInfo, pseqProdQueueInfo, new GlideinMetric(0, 2, pseqProdQueueInfo.getName()), 1.0);
+        calculateScore(topsailSiteInfo, queue16QueueInfo, new GlideinMetric(0, 2, queue16QueueInfo.getName()), 0.0);
+        calculateScore(topsailSiteInfo, queue16QueueInfo, new GlideinMetric(2, 2, queue16QueueInfo.getName()), 0.0);
+        calculateScore(topsailSiteInfo, queue16QueueInfo, new GlideinMetric(2, 0, queue16QueueInfo.getName()), 0.0);
+        calculateScore(topsailSiteInfo, queue16QueueInfo, new GlideinMetric(4, 0, queue16QueueInfo.getName()), 0.0);
+        calculateScore(topsailSiteInfo, queue16QueueInfo, new GlideinMetric(6, 0, queue16QueueInfo.getName()), 0.0);
+
         calculateScore(kureSiteInfo, pseqProdQueueInfo, new GlideinMetric(0, 2, pseqProdQueueInfo.getName()), 0.2);
         calculateScore(topsailSiteInfo, queue16QueueInfo, new GlideinMetric(0, 2, queue16QueueInfo.getName()), 0.0);
+
         calculateScore(kureSiteInfo, pseqProdQueueInfo, new GlideinMetric(2, 0, pseqProdQueueInfo.getName()), 0.25);
         calculateScore(topsailSiteInfo, queue16QueueInfo, new GlideinMetric(2, 0, queue16QueueInfo.getName()), 0.0);
+
         calculateScore(kureSiteInfo, pseqProdQueueInfo, new GlideinMetric(2, 2, pseqProdQueueInfo.getName()), 0.3);
         calculateScore(topsailSiteInfo, queue16QueueInfo, new GlideinMetric(2, 2, queue16QueueInfo.getName()), 0.0);
         calculateScore(kureSiteInfo, pseqProdQueueInfo, new GlideinMetric(4, 0, pseqProdQueueInfo.getName()), 0.35);
@@ -263,7 +275,7 @@ public class Scratch {
     }
 
     private SiteQueueScore calculateScore(Site siteInfo, Queue queueInfo, GlideinMetric metrics,
-            Double siteRequiredJobOccurancePercentile) {
+            Double siteRequiredJobOccurance) {
         logger.info("---------------");
         SiteQueueScore siteScoreInfo = new SiteQueueScore();
         siteScoreInfo.setSiteName(siteInfo.getName());
@@ -285,16 +297,18 @@ public class Scratch {
         logger.info("rewarded = {}", score);
         score *= queueInfo.getWeight();
         logger.info("adjusted by queue weight = {}", score);
-        score *= Math.max(siteRequiredJobOccurancePercentile, 0.1) * 2;
-        logger.info("adjusted by siteRequiredJobOccurancePercentile = {}", score);
+        if (siteRequiredJobOccurance > 0) {
+            score += siteRequiredJobOccurance * 140;
+            logger.info("adjusted by siteRequiredJobOccurancePercentile = {}", score);
+        }
 
         // double proportionPending = remainingPending / siteInfo.getMaxIdleCount();
         // double proportionRunning = metrics.getRunning() / siteInfo.getMaxRunningCount();
         // score = (proportionPending + proportionRunning) * 100;
 
-        if (score > 100) {
+        if (score > 200) {
             siteScoreInfo.setMessage("Score lowered to spread jobs out on available sites");
-            siteScoreInfo.setScore(100);
+            siteScoreInfo.setScore(200);
             logger.info(metrics.toString());
             logger.info(siteScoreInfo.toString());
             return siteScoreInfo;
