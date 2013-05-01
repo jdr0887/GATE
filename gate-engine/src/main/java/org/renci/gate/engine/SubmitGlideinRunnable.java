@@ -126,7 +126,7 @@ public class SubmitGlideinRunnable implements Runnable {
                 int totalCurrentlySubmitted = totalRunningGlideinJobs + totalPendingGlideinJobs;
 
                 logger.info("maxAllowableJobs: {}", maxAllowableJobs);
-                logger.info("totalSiteJobs: {}", totalCurrentlySubmitted);
+                logger.info("totalCurrentlySubmitted: {}", totalCurrentlySubmitted);
 
                 if (totalCurrentlySubmitted >= maxAllowableJobs) {
                     logger.info("Total number of glideins has reached the limit of " + maxAllowableJobs);
@@ -189,6 +189,13 @@ public class SubmitGlideinRunnable implements Runnable {
             LocalCondorMetric localCondorMetrics = new LocalCondorMetric(siteName, idleCondorJobs, runningCondorJobs,
                     percentSiteRequiredJobOccurance);
             logger.info(localCondorMetrics.toString());
+            
+            if (localCondorMetrics.getSiteRequiredJobOccurance() == 1.0) {
+                siteQueueScoreInfoList.clear();
+                siteQueueScoreInfoList.addAll(calculate(gateService, siteInfo, metricsMap, localCondorMetrics));
+                break;
+            }
+
             siteQueueScoreInfoList.addAll(calculate(gateService, siteInfo, metricsMap, localCondorMetrics));
         }
 
@@ -262,15 +269,6 @@ public class SubmitGlideinRunnable implements Runnable {
             Integer numberToSubmit = calculateNumberToSubmit(siteInfo, queueInfo, metrics,
                     localCondorMetrics.getRunning(), localCondorMetrics.getIdle());
             siteScoreInfo.setNumberToSubmit(numberToSubmit);
-
-            if (localCondorMetrics.getSiteRequiredJobOccurance() == 1.0) {
-                // 100% of the jobs are requesting one site
-                siteScoreInfo.setMessage("100% of the jobs are requesting one site");
-                siteScoreInfo.setScore(200);
-                ret.clear();
-                ret.add(siteScoreInfo);
-                return ret;
-            }
 
             if (metrics == null) {
                 siteScoreInfo.setMessage("No glideins have been submitted yet");
