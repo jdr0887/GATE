@@ -259,23 +259,27 @@ public class SubmitGlideinRunnable implements Runnable {
             Queue queueInfo = siteInfo.getQueueInfoMap().get(queueName);
             GlideinMetric metrics = metricsMap.get(queueName);
 
-            if (metrics == null) {
-                siteScoreInfo.setMessage("GlideinMetric is null...meaning no jobs have been submitted");
-                //but still give preferential treatment to non site agnostic jobs
-                double score = 100;
-                if (localCondorMetrics.getSiteRequiredJobOccurancePercentile() != 0D) {
-                    score += localCondorMetrics.getSiteRequiredJobOccurancePercentile() * 2;
-                }
-                siteScoreInfo.setScore(Double.valueOf(Math.round(score)).intValue());
-                siteScoreInfo.setNumberToSubmit(queueInfo.getMaxMultipleJobsToSubmit());
-                ret.add(siteScoreInfo);
-                continue;
-            }
-            logger.info(metrics.toString());
-
             Integer numberToSubmit = calculateNumberToSubmit(siteInfo, queueInfo, metrics,
                     localCondorMetrics.getRunning(), localCondorMetrics.getIdle());
             siteScoreInfo.setNumberToSubmit(numberToSubmit);
+
+            if (localCondorMetrics.getSiteRequiredJobOccurance() == 1.0) {
+                // 100% of the jobs are requesting one site
+                siteScoreInfo.setMessage("100% of the jobs are requesting one site");
+                siteScoreInfo.setScore(200);
+                ret.clear();
+                ret.add(siteScoreInfo);
+                return ret;
+            }
+
+            if (metrics == null) {
+                siteScoreInfo.setMessage("No glideins have been submitted yet");
+                siteScoreInfo.setScore(200);
+                ret.add(siteScoreInfo);
+                continue;
+            }
+
+            logger.info(metrics.toString());
 
             int totalJobs = metrics.getRunning() + metrics.getPending();
 
@@ -284,7 +288,7 @@ public class SubmitGlideinRunnable implements Runnable {
                 // all sites a chance - this helps initial startup when a user submits
                 // one or a few jobs
                 siteScoreInfo.setMessage("Total number of glideins: " + totalJobs);
-                siteScoreInfo.setScore(100);
+                siteScoreInfo.setScore(200);
                 ret.add(siteScoreInfo);
                 continue;
             }
@@ -297,19 +301,35 @@ public class SubmitGlideinRunnable implements Runnable {
                 continue;
             }
 
-            Integer score = calculateScore(metrics, localCondorMetrics, queueInfo.getWeight());
+            double score = 100;
+            double pendingWeight = 6.5;
+            for (int i = 1; i < metrics.getPending() + 1; ++i) {
+                score -= i * pendingWeight;
+            }
+            logger.info("penalized score = {}", score);
+            double runningWeight = 4.5;
+            for (int i = 1; i < metrics.getRunning() + 1; ++i) {
+                score += i * runningWeight;
+            }
+            logger.info("rewarded score = {}", score);
+            score *= queueInfo.getWeight();
+            logger.info("adjusted by queue weight = {}", score);
+            if (localCondorMetrics.getSiteRequiredJobOccurance() > 0) {
+                score += localCondorMetrics.getSiteRequiredJobOccurance() * 100;
+                logger.info("adjusted by siteRequiredJobOccurance = {}", score);
+            }
 
             // when a lot of glideins are running, lower the score to spread the
             // jobs out between the sites
-            if (score > 100) {
+            if (score > 200) {
                 siteScoreInfo.setMessage("Score lowered to spread jobs out on available sites");
-                siteScoreInfo.setScore(100);
+                siteScoreInfo.setScore(200);
                 ret.add(siteScoreInfo);
                 continue;
             }
 
             siteScoreInfo.setMessage("Total number of glideins: " + metrics.getTotal());
-            siteScoreInfo.setScore(score);
+            siteScoreInfo.setScore(Long.valueOf(Math.round(score)).intValue());
             logger.info(siteScoreInfo.toString());
             ret.add(siteScoreInfo);
 
@@ -318,40 +338,18 @@ public class SubmitGlideinRunnable implements Runnable {
         return ret;
     }
 
-    private Integer calculateScore(GlideinMetric metrics, LocalCondorMetric localCondorMetric, Double queueWeight) {
-        double score = 100;
-        double pendingWeight = 6.5;
-        // penalize pending jobs
-        for (int i = 1; i < metrics.getPending() + 1; ++i) {
-            score -= i * pendingWeight;
-        }
-        logger.info("penalized = {}", score);
-        double runningWeight = 4.5;
-        // reward for pending jobs
-        for (int i = 1; i < metrics.getRunning() + 1; ++i) {
-            score += i * runningWeight;
-        }
-        logger.info("rewarded = {}", score);
-        score *= queueWeight;
-        logger.info("adjusted by queue weight = {}", score);
-        score *= Math.max(localCondorMetric.getSiteRequiredJobOccurancePercentile(), 0.1) * 2;
-        logger.info("adjusted by siteRequiredJobOccurancePercentile = {}", score);
-
-        return Long.valueOf(Math.round(score)).intValue();
-    }
-
     private Integer calculateNumberToSubmit(Site siteInfo, Queue queueInfo, GlideinMetric metrics,
             int runningCondorJobs, int idleCondorJobs) {
-
         double numToSubmit = 1;
-
         numToSubmit = queueInfo.getMaxMultipleJobsToSubmit();
-        numToSubmit -= metrics.getPending() * 0.4;
-        numToSubmit -= metrics.getRunning() * 0.4;
+        if (metrics != null) {
+            numToSubmit -= metrics.getPending() * 0.4;
+            numToSubmit -= metrics.getRunning() * 0.4;
+        }
         numToSubmit -= runningCondorJobs * 0.005;
         numToSubmit += idleCondorJobs * 0.005;
 
-        if (numToSubmit <= 1 && metrics.getRunning() <= siteInfo.getMaxTotalRunning()) {
+        if (numToSubmit <= 1 && (metrics != null && metrics.getRunning() <= siteInfo.getMaxTotalRunning())) {
             numToSubmit = 1;
         }
 
