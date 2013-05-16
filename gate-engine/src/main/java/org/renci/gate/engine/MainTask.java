@@ -55,6 +55,10 @@ public class MainTask extends TimerTask {
             try {
                 GATEService gateService = gateServiceMap.get(siteName);
                 Map<String, GlideinMetric> glideinMetricMap = gateService.lookupMetrics();
+                for (String key : glideinMetricMap.keySet()) {
+                    GlideinMetric metric = glideinMetricMap.get(key);
+                    logger.info(metric.toString());
+                }
                 siteQueueGlideinMetricsMap.put(gateService.getSite().getName(), glideinMetricMap);
             } catch (Exception e) {
                 logger.error("There was a problem looking up metrics...doing nothing", e);
