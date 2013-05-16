@@ -129,6 +129,11 @@ public class SubmitGlideinRunnable implements Runnable {
             int totalCurrentlySubmitted = totalRunningGlideinJobs + totalPendingGlideinJobs;
             logger.info("totalCurrentlySubmitted: {}", totalCurrentlySubmitted);
 
+            if (idleCondorJobs == 0) {
+                logger.info("No more idle local Condor jobs");
+                needGlidein = false;
+            }
+
             if (totalCurrentlySubmitted >= maxAllowableJobs) {
                 logger.info("Total number of glideins has reached the limit of " + maxAllowableJobs);
                 needGlidein = false;
