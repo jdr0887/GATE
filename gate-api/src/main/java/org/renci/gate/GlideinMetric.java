@@ -31,6 +31,14 @@ public class GlideinMetric {
         return running;
     }
 
+    public void incrementRunning() {
+        ++this.running;
+    }
+
+    public void incrementPending() {
+        ++this.pending;
+    }
+
     public void setRunning(int running) {
         this.running = running;
     }
