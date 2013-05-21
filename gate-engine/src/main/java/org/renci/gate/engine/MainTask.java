@@ -101,7 +101,7 @@ public class MainTask extends TimerTask {
             logger.info("job: {}", job);
             List<ClassAdvertisement> classAdList = jobMap.get(job);
             for (ClassAdvertisement classAd : classAdList) {
-                logger.info("classAd.getKey() = {}", classAd.getKey());
+                logger.debug("classAd.getKey() = {}", classAd.getKey());
                 if (ClassAdvertisementFactory.CLASS_AD_KEY_JOB_STATUS.equalsIgnoreCase(classAd.getKey())) {
                     int statusCode = Integer.valueOf(classAd.getValue().trim());
                     if (statusCode == CondorJobStatusType.IDLE.getCode()) {
@@ -114,13 +114,13 @@ public class MainTask extends TimerTask {
                 if (ClassAdvertisementFactory.CLASS_AD_KEY_REQUIREMENTS.equalsIgnoreCase(classAd.getKey())) {
 
                     String requirements = classAd.getValue();
-                    logger.info("requirements = {}", requirements);
+                    logger.debug("requirements = {}", requirements);
                     if (requirements.contains("TARGET.JLRM_SITE_NAME")) {
                         Pattern pattern = Pattern.compile("^.+JLRM_SITE_NAME == \"([\\S]+)\".+$");
                         Matcher matcher = pattern.matcher(requirements);
                         if (matcher.matches()) {
                             String requiredSiteName = matcher.group(1);
-                            logger.info("requiredSiteName = {}", requiredSiteName);
+                            logger.debug("requiredSiteName = {}", requiredSiteName);
                             if (!requiredSiteMetricsMap.containsKey(requiredSiteName)) {
                                 requiredSiteMetricsMap.put(requiredSiteName, 0);
                             } else {
