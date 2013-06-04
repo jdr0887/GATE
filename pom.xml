@@ -181,6 +181,11 @@
 	<version>${renci.jlrm.version}</version>
       </dependency>      
       <dependency>
+	<groupId>org.renci.jlrm.jlrm-slurm</groupId>
+	<artifactId>jlrm-slurm-ssh</artifactId>
+	<version>${renci.jlrm.version}</version>
+      </dependency>      
+      <dependency>
 	<groupId>org.renci.jlrm.jlrm-sge</groupId>
 	<artifactId>jlrm-sge-ssh</artifactId>
 	<version>${renci.jlrm.version}</version>
