@@ -66,18 +66,20 @@ public class MainTask extends TimerTask {
         Map<String, Map<String, GlideinMetric>> siteQueueGlideinMetricsMap = new HashMap<String, Map<String, GlideinMetric>>();
         logger.info("gateServiceMap.size() == {}", gateServiceMap.size());
         for (String siteName : gateServiceMap.keySet()) {
+            GATEService gateService = gateServiceMap.get(siteName);
+            Map<String, GlideinMetric> glideinMetricMap = null;
             try {
-                GATEService gateService = gateServiceMap.get(siteName);
-                Map<String, GlideinMetric> glideinMetricMap = gateService.lookupMetrics();
-                for (String key : glideinMetricMap.keySet()) {
-                    GlideinMetric metric = glideinMetricMap.get(key);
-                    logger.info(metric.toString());
-                }
-                siteQueueGlideinMetricsMap.put(gateService.getSite().getName(), glideinMetricMap);
+                glideinMetricMap = gateService.lookupMetrics();
             } catch (Exception e) {
                 logger.error("There was a problem looking up metrics...doing nothing", e);
-                return;
+                continue;
             }
+
+            if (glideinMetricMap == null) {
+                continue;
+            }
+
+            siteQueueGlideinMetricsMap.put(gateService.getSite().getName(), glideinMetricMap);
         }
 
         // go get a snapshot of local jobs
