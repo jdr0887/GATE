@@ -3,6 +3,7 @@ package org.renci.gate.engine;
 import java.util.List;
 import java.util.Map;
 
+import org.renci.gate.GATEException;
 import org.renci.gate.GATEService;
 import org.renci.gate.GlideinMetric;
 import org.renci.jlrm.Queue;
@@ -43,15 +44,19 @@ public class KillGlideinRunnable implements Runnable {
             for (String queue : glideinMetricMap.keySet()) {
                 GlideinMetric metric = glideinMetricMap.get(queue);
                 logger.debug("metric: {}", metric.toString());
-                if (metric.getPending() > 0) {
-                    // remove all pending glideins
-                    gateService.deletePendingGlideins();
-                } else if (metric.getPending() == 0 && metric.getRunning() > 0) {
-                    // remove one running glidein
-                    Map<String, Queue> queueInfoMap = gateService.getSite().getQueueInfoMap();
-                    if (queueInfoMap.containsKey(metric.getQueue())) {
-                        gateService.deleteGlidein(queueInfoMap.get(metric.getQueue()));
+                try {
+                    if (metric.getPending() > 0) {
+                        // remove all pending glideins
+                        gateService.deletePendingGlideins();
+                    } else if (metric.getPending() == 0 && metric.getRunning() > 0) {
+                        // remove one running glidein
+                        Map<String, Queue> queueInfoMap = gateService.getSite().getQueueInfoMap();
+                        if (queueInfoMap.containsKey(metric.getQueue())) {
+                            gateService.deleteGlidein(queueInfoMap.get(metric.getQueue()));
+                        }
                     }
+                } catch (GATEException e) {
+                    logger.error("GATEException", e);
                 }
 
             }

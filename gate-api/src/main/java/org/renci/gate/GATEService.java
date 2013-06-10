@@ -11,13 +11,13 @@ import org.renci.jlrm.Site;
  */
 public interface GATEService {
 
-    public Map<String, GlideinMetric> lookupMetrics();
+    public Map<String, GlideinMetric> lookupMetrics() throws GATEException;
 
-    public void createGlidein(Queue queue);
+    public void createGlidein(Queue queue) throws GATEException;
 
-    public void deleteGlidein(Queue queue);
+    public void deleteGlidein(Queue queue) throws GATEException;
 
-    public void deletePendingGlideins();
+    public void deletePendingGlideins() throws GATEException;
 
     public Site getSite();
 

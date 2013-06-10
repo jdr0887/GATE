@@ -2,6 +2,7 @@ package org.renci.gate.engine;
 
 import java.util.Map;
 
+import org.renci.gate.GATEException;
 import org.renci.gate.GATEService;
 import org.renci.gate.SiteQueueScore;
 import org.renci.jlrm.Queue;
@@ -35,9 +36,11 @@ public class SubmitGlideinRunnable implements Runnable {
         for (int i = 0; i < winner.getNumberToSubmit(); ++i) {
             logger.info(String.format("Submitting %d of %d glideins for %s to %s:%s", i + 1,
                     winner.getNumberToSubmit(), siteInfo.getUsername(), winner.getSiteName(), winner.getQueueName()));
-            gateService.createGlidein(queueInfo);
             try {
+                gateService.createGlidein(queueInfo);
                 Thread.sleep(3000);
+            } catch (GATEException e) {
+                logger.error("GATEException", e);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
