@@ -62,21 +62,29 @@ public class MainTask extends TimerTask {
             }
         }
 
-        // get a snapshot of jobs across sites across queues
+        // get a snapshot of jobs across sites & queues
         Map<String, Map<String, GlideinMetric>> siteQueueGlideinMetricsMap = new HashMap<String, Map<String, GlideinMetric>>();
         logger.info("gateServiceMap.size() == {}", gateServiceMap.size());
         for (String siteName : gateServiceMap.keySet()) {
+
             GATEService gateService = gateServiceMap.get(siteName);
             Map<String, GlideinMetric> glideinMetricMap = null;
+
             try {
                 glideinMetricMap = gateService.lookupMetrics();
             } catch (Exception e) {
-                logger.error("There was a problem looking up metrics...doing nothing", e);
-                continue;
+                logger.error("There was a problem looking up metrics", e);
             }
 
-            if (glideinMetricMap == null) {
-                continue;
+            logger.info("validating metric map");
+            for (String key : glideinMetricMap.keySet()) {
+                GlideinMetric glideinMetric = glideinMetricMap.get(key);
+                if (glideinMetric == null) {
+                    logger.warn("we had null metrics for: {}", siteName);
+                    // if we don't have an accurate map of glidein jobs running across sites, then downstream job
+                    // submissions will be skewed
+                    return;
+                }
             }
 
             siteQueueGlideinMetricsMap.put(gateService.getSite().getName(), glideinMetricMap);
@@ -158,12 +166,11 @@ public class MainTask extends TimerTask {
                 Map<String, GlideinMetric> metricsMap = siteQueueGlideinMetricsMap.get(siteInfo.getName());
 
                 for (String queue : metricsMap.keySet()) {
+                    logger.debug("queue: {}", queue);
                     GlideinMetric metrics = metricsMap.get(queue);
-                    if (metrics != null) {
-                        logger.info(metrics.toString());
-                        totalRunningGlideinJobs += metrics.getRunning();
-                        totalPendingGlideinJobs += metrics.getPending();
-                    }
+                    logger.info(metrics.toString());
+                    totalRunningGlideinJobs += metrics.getRunning();
+                    totalPendingGlideinJobs += metrics.getPending();
                 }
 
             }
@@ -204,8 +211,6 @@ public class MainTask extends TimerTask {
             return;
         }
 
-        List<SiteQueueScore> siteQueueScoreInfoList = new ArrayList<SiteQueueScore>();
-
         Map<String, Double> percentSiteRequiredJobOccuranceMap = new HashMap<String, Double>();
         Double percentSiteRequiredJobOccuranceScore = 0.0;
         for (String siteName : gateServiceMap.keySet()) {
@@ -219,10 +224,14 @@ public class MainTask extends TimerTask {
         }
 
         logger.info("gateServiceMap.size(): {}", gateServiceMap.size());
+
+        List<SiteQueueScore> siteQueueScoreInfoList = new ArrayList<SiteQueueScore>();
+
         for (String siteName : gateServiceMap.keySet()) {
             GATEService gateService = gateServiceMap.get(siteName);
             Site siteInfo = gateService.getSite();
             Map<String, GlideinMetric> metricsMap = siteQueueGlideinMetricsMap.get(siteInfo.getName());
+
             Double percentSiteRequiredJobOccurance = 0D;
             if (percentSiteRequiredJobOccuranceMap.get(siteName) != null) {
                 percentSiteRequiredJobOccurance = percentSiteRequiredJobOccuranceMap.get(siteName);
@@ -295,11 +304,15 @@ public class MainTask extends TimerTask {
             Queue queueInfo = siteInfo.getQueueInfoMap().get(queueName);
             GlideinMetric metrics = metricsMap.get(queueName);
 
+            if (metrics == null) {
+                continue;
+            }
+
             Integer numberToSubmit = calculateNumberToSubmit(siteInfo, queueInfo, metrics,
                     localCondorMetrics.getRunning(), localCondorMetrics.getIdle());
             siteScoreInfo.setNumberToSubmit(numberToSubmit);
 
-            if (metrics == null) {
+            if (metrics.getTotal() == 0) {
                 siteScoreInfo.setMessage("No glideins have been submitted yet");
                 siteScoreInfo.setScore(200);
                 ret.add(siteScoreInfo);
