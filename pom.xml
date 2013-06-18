@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.renci</groupId>
   <artifactId>gate</artifactId>
-  <version>0.1.27-SNAPSHOT</version>
+  <version>0.1.27</version>
   <packaging>pom</packaging>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -58,7 +58,7 @@
   <scm>
     <developerConnection>scm:git:ssh://${user.name}@code.renci.org/gitroot/gate</developerConnection>
     <connection>scm:git:ssh://developername@code.renci.org/gitroot/gate</connection>
-    <tag>HEAD</tag>
+    <tag>gate-0.1.27</tag>
   </scm>
   <repositories>
     <repository> 
@@ -203,12 +203,12 @@
       <dependency>
 	<groupId>org.renci.gate</groupId>
 	<artifactId>gate-api</artifactId>
-	<version>0.1.27-SNAPSHOT</version>
+	<version>0.1.27</version>
       </dependency>
       <dependency>
 	<groupId>org.renci.gate</groupId>
 	<artifactId>gate-features</artifactId>
-	<version>0.1.27-SNAPSHOT</version>
+	<version>0.1.27</version>
 	<type>xml</type>
 	<classifier>features</classifier>
       </dependency>            
