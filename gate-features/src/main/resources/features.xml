@@ -21,11 +21,21 @@
     <bundle>mvn:org.renci.jlrm/jlrm-api/${renci.jlrm.version}</bundle>
     <bundle>mvn:org.renci.jlrm.jlrm-condor/jlrm-condor-api/${renci.jlrm.version}</bundle>
     <bundle>mvn:org.renci.jlrm.jlrm-condor/jlrm-condor-cli/${renci.jlrm.version}</bundle>
+    <bundle>mvn:org.renci.jlrm.jlrm-lsf/jlrm-lsf-api/${renci.jlrm.version}</bundle>
+    <bundle>mvn:org.renci.jlrm.jlrm-lsf/jlrm-lsf-cli/${renci.jlrm.version}</bundle>
+    <bundle>mvn:org.renci.jlrm.jlrm-lsf/jlrm-lsf-ssh/${renci.jlrm.version}</bundle>
+    <bundle>mvn:org.renci.jlrm.jlrm-pbs/jlrm-pbs-api/${renci.jlrm.version}</bundle>
+    <bundle>mvn:org.renci.jlrm.jlrm-pbs/jlrm-pbs-cli/${renci.jlrm.version}</bundle>
+    <bundle>mvn:org.renci.jlrm.jlrm-pbs/jlrm-pbs-ssh/${renci.jlrm.version}</bundle>
+    <bundle>mvn:org.renci.jlrm.jlrm-slurm/jlrm-slurm-api/${renci.jlrm.version}</bundle>
+    <bundle>mvn:org.renci.jlrm.jlrm-slurm/jlrm-slurm-cli/${renci.jlrm.version}</bundle>
+    <bundle>mvn:org.renci.jlrm.jlrm-slurm/jlrm-slurm-ssh/${renci.jlrm.version}</bundle>
     <bundle>mvn:org.renci.gate/gate-api/${project.version}</bundle>
   </feature>
 
   <feature name="gate-engine" version="${project.version}" resolver="(obr)">
     <bundle>mvn:org.renci.gate/gate-engine/${project.version}</bundle>
+
   </feature>
 
   <feature name="gate" version="${project.version}" resolver="(obr)">    
