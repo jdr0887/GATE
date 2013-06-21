@@ -104,10 +104,10 @@ public class Scratch {
         Queue pseqProdQueueInfo = new Queue();
         pseqProdQueueInfo.setName("pseq_prod");
         pseqProdQueueInfo.setWeight(1D);
-        pseqProdQueueInfo.setMaxJobLimit(30);
-        pseqProdQueueInfo.setMaxMultipleJobsToSubmit(4);
+        pseqProdQueueInfo.setMaxJobLimit(12);
+        pseqProdQueueInfo.setMaxMultipleJobsToSubmit(2);
         pseqProdQueueInfo.setPendingTime(1440);
-        pseqProdQueueInfo.setRunTime(2880);
+        pseqProdQueueInfo.setRunTime(5760);
         queueMap.put("pseq_prod", pseqProdQueueInfo);
 
         Queue weekQueueInfo = new Queue();
@@ -120,8 +120,8 @@ public class Scratch {
         queueMap.put("week", weekQueueInfo);
 
         Site siteInfo = new Site();
-        siteInfo.setMaxTotalPending(6);
-        siteInfo.setMaxTotalRunning(40);
+        siteInfo.setMaxTotalPending(2);
+        siteInfo.setMaxTotalRunning(20);
         siteInfo.setQueueInfoMap(queueMap);
 
         logger.info("Number To submit: {}", calculateNumberToSubmit(2, 0, siteInfo, pseqProdQueueInfo, null));
@@ -141,36 +141,9 @@ public class Scratch {
         logger.info("Number To submit: {}",
                 calculateNumberToSubmit(100, 20, siteInfo, pseqProdQueueInfo, new GlideinMetric(4, 5, "pseq_prod")));
         logger.info("Number To submit: {}",
-                calculateNumberToSubmit(100, 20, siteInfo, pseqProdQueueInfo, new GlideinMetric(4, 6, "pseq_prod")));
-        // logger.info("Number To submit: {}",
-        // calculateNumberToSubmit(100, 20, siteInfo, pseqProdQueueInfo, new GlideinMetric(4, 2, "pseq_prod")));
-        // logger.info("Number To submit: {}",
-        // calculateNumberToSubmit(100, 20, siteInfo, pseqProdQueueInfo, new GlideinMetric(4, 2, "pseq_prod")));
-
-        // logger.info("Number To submit: {}",
-        // calculateNumberToSubmit(100, 10, siteInfo, pseqProdQueueInfo, new GlideinMetric(1, 2, "pseq_prod")));
-        // logger.info("Number To submit: {}",
-        // calculateNumberToSubmit(100, 20, siteInfo, pseqProdQueueInfo, new GlideinMetric(2, 4, "pseq_prod")));
-        // logger.info("Number To submit: {}",
-        // calculateNumberToSubmit(100, 30, siteInfo, pseqProdQueueInfo, new GlideinMetric(4, 4, "pseq_prod")));
-        // logger.info("Number To submit: {}",
-        // calculateNumberToSubmit(100, 30, siteInfo, pseqProdQueueInfo, new GlideinMetric(6, 4, "pseq_prod")));
-        // logger.info("Number To submit: {}",
-        // calculateNumberToSubmit(100, 40, siteInfo, pseqProdQueueInfo, new GlideinMetric(8, 4, "pseq_prod")));
-        // logger.info("Number To submit: {}",
-        // calculateNumberToSubmit(30, 5, siteInfo, pseqProdQueueInfo, new GlideinMetric(1, 2, "pseq_prod")));
-        // logger.info("Number To submit: {}",
-        // calculateNumberToSubmit(50, 10, siteInfo, pseqProdQueueInfo, new GlideinMetric(2, 5, "pseq_prod")));
-        // logger.info("Number To submit: {}",
-        // calculateNumberToSubmit(80, 12, siteInfo, pseqProdQueueInfo, new GlideinMetric(4, 6, "pseq_prod")));
-        // logger.info("Number To submit: {}",
-        // calculateNumberToSubmit(80, 12, siteInfo, pseqProdQueueInfo, new GlideinMetric(10, 2, "pseq_prod")));
-        // logger.info("Number To submit: {}",
-        // calculateNumberToSubmit(80, 12, siteInfo, pseqProdQueueInfo, new GlideinMetric(30, 2, "pseq_prod")));
-        // logger.info("Number To submit: {}",
-        // calculateNumberToSubmit(120, 12, siteInfo, pseqProdQueueInfo, new GlideinMetric(40, 10, "pseq_prod")));
-        // logger.info("Number To submit: {}",
-        // calculateNumberToSubmit(2, 50, siteInfo, pseqProdQueueInfo, new GlideinMetric(40, 10, "pseq_prod")));
+                calculateNumberToSubmit(51, 120, siteInfo, pseqProdQueueInfo, new GlideinMetric(17, 0, "pseq_prod")));
+        logger.info("Number To submit: {}",
+                calculateNumberToSubmit(51, 120, siteInfo, pseqProdQueueInfo, new GlideinMetric(14, 0, "pseq_prod")));
 
     }
 
