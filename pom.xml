@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.renci</groupId>
   <artifactId>gate</artifactId>
-  <version>0.1.28</version>
+  <version>0.1.29-SNAPSHOT</version>
   <packaging>pom</packaging>
   <url>http://ci-dev.renci.org/site/gate/project-info.html</url>
   <issueManagement>
@@ -32,7 +32,7 @@
   <scm>
     <developerConnection>scm:git:ssh://${user.name}@code.renci.org/gitroot/gate</developerConnection>
     <connection>scm:git:ssh://developername@code.renci.org/gitroot/gate</connection>
-    <tag>gate-0.1.28</tag>
+    <tag>HEAD</tag>
   </scm>
   <dependencies>
     <dependency>
