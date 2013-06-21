@@ -72,6 +72,7 @@ public class GATEEngineRunnable implements Runnable {
 
             try {
                 glideinMetricMap = gateService.lookupMetrics();
+                Thread.sleep(3000);
             } catch (Exception e) {
                 logger.error("There was a problem looking up metrics", e);
             }
