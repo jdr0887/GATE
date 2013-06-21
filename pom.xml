@@ -1,4 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.renci</groupId>
+    <artifactId>renci</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
   <name>GATE</name>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.renci</groupId>
@@ -6,16 +11,6 @@
   <version>0.1.28-SNAPSHOT</version>
   <packaging>pom</packaging>
   <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.project.info.reports.plugin.version>2.4</maven.project.info.reports.plugin.version>
-    <maven.javadoc.plugin.version>2.8</maven.javadoc.plugin.version>
-    <maven.bundle.plugin.version>2.1.0</maven.bundle.plugin.version>
-    <maven.jxr.plugin.version>2.3</maven.jxr.plugin.version>
-    <maven.compiler.plugin.version>2.5</maven.compiler.plugin.version>
-    <maven.surefire.plugin.version>2.9</maven.surefire.plugin.version>
-    <maven.checkstyle.plugin.version>2.8</maven.checkstyle.plugin.version>
-    <maven.site.plugin.version>3.1</maven.site.plugin.version>
-    <maven.release.plugin.version>2.4.1</maven.release.plugin.version>
     <commons.discovery.version>0.5</commons.discovery.version>
     <commons.beanutils.version>1.8.3</commons.beanutils.version>
     <commons.io.version>2.4</commons.io.version>
@@ -48,13 +43,6 @@
       </notifier>
     </notifiers>
   </ciManagement>
-  <licenses>    
-    <license>
-      <name>RENCI Open Source Software License</name>
-      <url>LICENSE</url>
-      <distribution>repo</distribution>
-    </license>
-  </licenses>
   <scm>
     <developerConnection>scm:git:ssh://${user.name}@code.renci.org/gitroot/gate</developerConnection>
     <connection>scm:git:ssh://developername@code.renci.org/gitroot/gate</connection>
@@ -95,36 +83,6 @@
       </snapshots>
     </repository>
   </repositories>
-  <developers>
-    <developer>
-      <id>jdr0887</id>
-      <name>Jason Reilly</name>
-      <email>jdr0887@renci.org</email>
-      <url>http://www.renci.org/~jdr0887</url>
-      <organization>RENCI</organization>
-      <organizationUrl>http://www.renci.org/</organizationUrl>
-      <roles>
-        <role>Senior Research Software Developer</role>
-      </roles>
-    </developer>
-  </developers>
-  <distributionManagement>
-    <repository>
-      <id>renci.repository</id>
-      <name>renci.repository</name>
-      <url>https://ci-dev.renci.org/nexus/content/repositories/releases</url>
-    </repository>
-    <snapshotRepository>
-      <id>renci.repository</id>
-      <name>renci.repository</name>
-      <url>https://ci-dev.renci.org/nexus/content/repositories/snapshots</url>
-    </snapshotRepository>
-    <site>
-      <id>renci.site</id>
-      <name>renci.site</name>
-      <url>file:///${user.dir}/sites/gate</url>
-    </site>
-  </distributionManagement>
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -233,11 +191,6 @@
 	<version>${renci.commons.version}</version>
       </dependency>
       <dependency>
-	<groupId>junit</groupId>
-	<artifactId>junit</artifactId>
-	<version>4.8.2</version>
-      </dependency>
-      <dependency>
 	<groupId>org.apache.velocity</groupId>
 	<artifactId>velocity</artifactId>
 	<version>1.6.4</version>
@@ -306,31 +259,6 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <version>${maven.release.plugin.version}</version>
-        <configuration>
-          <preparationGoals>clean install</preparationGoals>
-        </configuration>
-      </plugin>
-      <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-compiler-plugin</artifactId>
-	<version>${maven.compiler.plugin.version}</version>
-	<configuration>
-	  <source>1.7</source>
-	  <target>1.7</target>
-	</configuration>
-      </plugin>
-      <plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-surefire-plugin</artifactId>
-	<version>${maven.surefire.plugin.version}</version>
-	<configuration>
-	  <skip>true</skip>
-	</configuration>
-      </plugin>
-      <plugin>
 	<groupId>org.apache.felix</groupId>
 	<artifactId>maven-bundle-plugin</artifactId>
 	<version>${maven.bundle.plugin.version}</version>
@@ -349,45 +277,6 @@
 	    <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Bundle-DocURL</_removeheaders>
 	    <_failok>false</_failok>
 	  </instructions>
-	</configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-site-plugin</artifactId>
-        <version>${maven.site.plugin.version}</version>
-	<executions>
-	  <execution>
-            <id>attach-descriptor</id>
-            <goals>
-              <goal>attach-descriptor</goal>
-            </goals>
-          </execution>
-        </executions>
-	<configuration>
-	  <reportPlugins>
-	    <plugin>
-	      <groupId>org.apache.maven.plugins</groupId>
-	      <artifactId>maven-project-info-reports-plugin</artifactId>
-	      <version>2.4</version>
-	      <configuration>
-		<dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-		<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-	      </configuration>
-	      <reports>
-		<report>scm</report>
-		<report>summary</report>
-		<report>issue-tracking</report>
-		<report>license</report>
-		<report>dependency-convergence</report>
-		<report>project-team</report>
-		<report>mailing-list</report>
-		<!-- <report>distribution-management</report> -->
-		<report>index</report>
-		<report>cim</report>
-		<!-- <report>dependency-management</report> -->
-	      </reports>
-	    </plugin>
-	  </reportPlugins>
 	</configuration>
       </plugin>
     </plugins>
