@@ -55,12 +55,12 @@
       <dependency>
 	<groupId>org.renci.gate</groupId>
 	<artifactId>gate-api</artifactId>
-	<version>0.1.28-SNAPSHOT</version>
+	<version>0.1.29-SNAPSHOT</version>
       </dependency>
       <dependency>
 	<groupId>org.renci.gate</groupId>
 	<artifactId>gate-features</artifactId>
-	<version>0.1.28-SNAPSHOT</version>
+	<version>0.1.29-SNAPSHOT</version>
 	<type>xml</type>
 	<classifier>features</classifier>
       </dependency>            
