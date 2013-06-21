@@ -1,6 +1,8 @@
 package org.renci.gate.engine;
 
-import java.util.Timer;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
@@ -14,31 +16,29 @@ public class GATEEngine {
 
     private final Logger logger = LoggerFactory.getLogger(GATEEngine.class);
 
-    private final Timer mainTimer = new Timer();
+    private final ScheduledExecutorService scheduleExecutorService = Executors.newSingleThreadScheduledExecutor();
 
     private BundleContext bundleContext;
 
     private Long period;
 
     private GATEServiceTracker serviceTracker;
-    
+
     public GATEEngine() {
         super();
     }
 
     public void start() throws Exception {
         logger.info("ENTERING start()");
-        long delay = 1 * 60 * 1000;
         this.serviceTracker = new GATEServiceTracker(bundleContext);
         this.serviceTracker.open();
-        MainTask mainTask = new MainTask(this.serviceTracker);
-        this.mainTimer.scheduleAtFixedRate(mainTask, delay, this.period * 60 * 1000);
+        GATEEngineRunnable runnable = new GATEEngineRunnable(this.serviceTracker);
+        this.scheduleExecutorService.scheduleAtFixedRate(runnable, 60, this.period * 60, TimeUnit.SECONDS);
     }
 
     public void stop() throws Exception {
         logger.info("ENTERING stop()");
-        this.mainTimer.purge();
-        this.mainTimer.cancel();
+        this.scheduleExecutorService.shutdownNow();
         this.serviceTracker.close();
     }
 
