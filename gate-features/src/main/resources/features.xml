@@ -9,18 +9,18 @@
     <bundle>mvn:org.apache.commons/commons-lang3/${commons.lang.version}</bundle>
     <bundle>mvn:commons-beanutils/commons-beanutils/${commons.beanutils.version}</bundle>
     <bundle>mvn:org.bouncycastle/com.springsource.org.bouncycastle.jce/1.39.0</bundle>
-    <bundle>mvn:com.jcraft.jzlib/com.springsource.com.jcraft.jzlib/1.0.7</bundle>
-    <bundle>mvn:com.jcraft.jsch/com.springsource.com.jcraft.jsch/0.1.41</bundle>
     <bundle>mvn:org.apache.log4j/com.springsource.org.apache.log4j/1.2.15</bundle>
     <bundle>mvn:org.apache.geronimo.specs/geronimo-validation_1.0_spec/1.1</bundle>
     <bundle>mvn:org.codehaus.jettison/jettison/1.3.1</bundle>
     <bundle>mvn:org.apache.velocity/com.springsource.org.apache.velocity/1.6.2</bundle>
     <bundle>mvn:org.renci.commons/commons-exec/${renci.commons.version}</bundle>
+    <bundle>mvn:org.renci.osgi.bundles/jsch-0.1.50-bundle/0.0.1</bundle>
     <bundle>mvn:org.renci.osgi.bundles/rrd4j-2.1.1-bundle/0.0.2</bundle>
     <bundle>mvn:org.renci.osgi.bundles/jgrapht-0.8.3-bundle/0.0.2</bundle>
     <bundle>mvn:org.renci.jlrm/jlrm-api/${renci.jlrm.version}</bundle>
     <bundle>mvn:org.renci.jlrm.jlrm-condor/jlrm-condor-api/${renci.jlrm.version}</bundle>
     <bundle>mvn:org.renci.jlrm.jlrm-condor/jlrm-condor-cli/${renci.jlrm.version}</bundle>
+    <bundle>mvn:org.renci.jlrm/jlrm-commons/${renci.jlrm.version}</bundle>
     <bundle>mvn:org.renci.jlrm.jlrm-lsf/jlrm-lsf-api/${renci.jlrm.version}</bundle>
     <bundle>mvn:org.renci.jlrm.jlrm-lsf/jlrm-lsf-cli/${renci.jlrm.version}</bundle>
     <bundle>mvn:org.renci.jlrm.jlrm-lsf/jlrm-lsf-ssh/${renci.jlrm.version}</bundle>
