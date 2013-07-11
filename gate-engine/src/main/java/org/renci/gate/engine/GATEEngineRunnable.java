@@ -71,13 +71,16 @@ public class GATEEngineRunnable implements Runnable {
             Map<String, GlideinMetric> glideinMetricMap = null;
 
             try {
+                if (!gateService.isValid()) {
+                    // invalid site...don't use it
+                    continue gateServiceMapLoop;
+                }
                 glideinMetricMap = gateService.lookupMetrics();
                 Thread.sleep(3000);
             } catch (Exception e) {
                 logger.error("There was a problem looking up metrics", e);
             }
 
-            logger.info("validating metric map");
             for (String key : glideinMetricMap.keySet()) {
                 GlideinMetric glideinMetric = glideinMetricMap.get(key);
                 if (glideinMetric == null) {
