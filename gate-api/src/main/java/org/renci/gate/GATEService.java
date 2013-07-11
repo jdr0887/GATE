@@ -13,6 +13,8 @@ public interface GATEService {
 
     public Map<String, GlideinMetric> lookupMetrics() throws GATEException;
 
+    public Boolean isValid() throws GATEException;
+
     public void createGlidein(Queue queue) throws GATEException;
 
     public void deleteGlidein(Queue queue) throws GATEException;
