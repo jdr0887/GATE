@@ -62,43 +62,7 @@ public class GATEEngineRunnable implements Runnable {
         }
 
         // get a snapshot of jobs across sites & queues
-        Map<String, Map<String, GlideinMetric>> siteQueueGlideinMetricsMap = new HashMap<String, Map<String, GlideinMetric>>();
-        logger.info("gateServiceMap.size() == {}", gateServiceMap.size());
-        boolean haveValidMetrics = true;
-        gateServiceMapLoop: for (String siteName : gateServiceMap.keySet()) {
-
-            GATEService gateService = gateServiceMap.get(siteName);
-            Map<String, GlideinMetric> glideinMetricMap = null;
-
-            try {
-                if (!gateService.isValid()) {
-                    // invalid site...don't use it
-                    continue gateServiceMapLoop;
-                }
-                glideinMetricMap = gateService.lookupMetrics();
-                Thread.sleep(3000);
-            } catch (Exception e) {
-                logger.error("There was a problem looking up metrics", e);
-            }
-
-            for (String key : glideinMetricMap.keySet()) {
-                GlideinMetric glideinMetric = glideinMetricMap.get(key);
-                if (glideinMetric == null) {
-                    logger.warn("we had null metrics for: {}", siteName);
-                    haveValidMetrics = false;
-                    break gateServiceMapLoop;
-                }
-            }
-
-            siteQueueGlideinMetricsMap.put(gateService.getSite().getName(), glideinMetricMap);
-        }
-
-        // if we don't have an accurate map of glidein jobs running across sites, then downstream job
-        // submissions will be skewed
-        if (!haveValidMetrics) {
-            logger.info("haveValidMetrics = {}", haveValidMetrics);
-            return;
-        }
+        Map<String, Map<String, GlideinMetric>> siteQueueGlideinMetricsMap = globalMetricsLookup(gateServiceMap);
 
         // go get a snapshot of local jobs
         Map<String, List<ClassAdvertisement>> jobMap = null;
@@ -157,64 +121,8 @@ public class GATEEngineRunnable implements Runnable {
         logger.info("runningCondorJobs: {}", runningCondorJobs);
         logger.info("idleCondorJobs: {}", idleCondorJobs);
 
-        // assume we need new glideins, and then run some tests to negate the assumptions
-        boolean needGlidein = true;
-
-        int totalRunningGlideinJobs = 0;
-        int totalPendingGlideinJobs = 0;
-        int maxAllowableJobs = 0;
-
-        try {
-
-            for (String siteName : gateServiceMap.keySet()) {
-
-                GATEService gateService = gateServiceMap.get(siteName);
-                Site siteInfo = gateService.getSite();
-                maxAllowableJobs += siteInfo.getMaxTotalPending() + siteInfo.getMaxTotalRunning();
-
-                logger.info(siteInfo.toString());
-                Map<String, GlideinMetric> metricsMap = siteQueueGlideinMetricsMap.get(siteInfo.getName());
-
-                for (String queue : metricsMap.keySet()) {
-                    logger.debug("queue: {}", queue);
-                    GlideinMetric metrics = metricsMap.get(queue);
-                    logger.info(metrics.toString());
-                    totalRunningGlideinJobs += metrics.getRunning();
-                    totalPendingGlideinJobs += metrics.getPending();
-                }
-
-            }
-
-            logger.info("totalRunningGlideinJobs: {}", totalRunningGlideinJobs);
-            logger.info("totalPendingGlideinJobs: {}", totalPendingGlideinJobs);
-            logger.info("maxAllowableJobs: {}", maxAllowableJobs);
-
-            int totalCurrentlySubmitted = totalRunningGlideinJobs + totalPendingGlideinJobs;
-            logger.info("totalCurrentlySubmitted: {}", totalCurrentlySubmitted);
-
-            if (idleCondorJobs == 0) {
-                logger.info("No more idle local Condor jobs");
-                needGlidein = false;
-            }
-
-            if (totalCurrentlySubmitted >= maxAllowableJobs) {
-                logger.info("Total number of glideins has reached the limit of " + maxAllowableJobs);
-                needGlidein = false;
-            }
-
-            if (totalRunningGlideinJobs > (totalCondorJobs * 0.4)) {
-                logger.info("Number of running glideins is enough for the workload.");
-                needGlidein = false;
-            }
-
-            if (runningCondorJobs > (totalCondorJobs * 0.8) && totalCurrentlySubmitted > 0) {
-                logger.info("Number of running jobs is high compared to idle jobs.");
-                needGlidein = false;
-            }
-
-        } catch (Exception e1) {
-            logger.error("Error", e1);
-        }
+        boolean needGlidein = isGlideinNeeded(gateServiceMap, siteQueueGlideinMetricsMap, idleCondorJobs,
+                runningCondorJobs, totalCondorJobs);
 
         if (!needGlidein) {
             logger.info("No glideins needed.");
@@ -292,6 +200,101 @@ public class GATEEngineRunnable implements Runnable {
 
     }
 
+    private Map<String, Map<String, GlideinMetric>> globalMetricsLookup(Map<String, GATEService> gateServiceMap) {
+
+        Map<String, Map<String, GlideinMetric>> siteQueueGlideinMetricsMap = new HashMap<String, Map<String, GlideinMetric>>();
+
+        logger.info("gateServiceMap.size() == {}", gateServiceMap.size());
+        for (String siteName : gateServiceMap.keySet()) {
+
+            GATEService gateService = gateServiceMap.get(siteName);
+            Map<String, GlideinMetric> glideinMetricMap = null;
+
+            try {
+                if (!gateService.isValid()) {
+                    logger.warn("isValid() failure: {}", siteName);
+                    continue;
+                }
+                glideinMetricMap = gateService.lookupMetrics();
+                if (glideinMetricMap == null) {
+                    logger.warn("null glideinMetricMap: {}", siteName);
+                    continue;
+                }
+                Thread.sleep(3000);
+            } catch (Exception e) {
+                logger.error("There was a problem looking up metrics", e);
+            }
+
+            siteQueueGlideinMetricsMap.put(gateService.getSite().getName(), glideinMetricMap);
+        }
+        return siteQueueGlideinMetricsMap;
+    }
+
+    private boolean isGlideinNeeded(Map<String, GATEService> gateServiceMap,
+            Map<String, Map<String, GlideinMetric>> siteQueueGlideinMetricsMap, int idleCondorJobs,
+            int runningCondorJobs, int totalCondorJobs) {
+
+        // assume we need new glideins, and then run some tests to negate the assumptions
+        boolean needGlidein = true;
+
+        int totalRunningGlideinJobs = 0;
+        int totalPendingGlideinJobs = 0;
+        int maxAllowableJobs = 0;
+
+        try {
+
+            for (String siteName : gateServiceMap.keySet()) {
+
+                GATEService gateService = gateServiceMap.get(siteName);
+                Site siteInfo = gateService.getSite();
+                maxAllowableJobs += siteInfo.getMaxTotalPending() + siteInfo.getMaxTotalRunning();
+
+                logger.info(siteInfo.toString());
+                Map<String, GlideinMetric> metricsMap = siteQueueGlideinMetricsMap.get(siteInfo.getName());
+
+                for (String queue : metricsMap.keySet()) {
+                    logger.debug("queue: {}", queue);
+                    GlideinMetric metrics = metricsMap.get(queue);
+                    logger.info(metrics.toString());
+                    totalRunningGlideinJobs += metrics.getRunning();
+                    totalPendingGlideinJobs += metrics.getPending();
+                }
+
+            }
+
+            logger.info("totalRunningGlideinJobs: {}", totalRunningGlideinJobs);
+            logger.info("totalPendingGlideinJobs: {}", totalPendingGlideinJobs);
+            logger.info("maxAllowableJobs: {}", maxAllowableJobs);
+
+            int totalCurrentlySubmitted = totalRunningGlideinJobs + totalPendingGlideinJobs;
+            logger.info("totalCurrentlySubmitted: {}", totalCurrentlySubmitted);
+
+            if (idleCondorJobs == 0) {
+                logger.info("No more idle local Condor jobs");
+                needGlidein = false;
+            }
+
+            if (totalCurrentlySubmitted >= maxAllowableJobs) {
+                logger.info("Total number of glideins has reached the limit of " + maxAllowableJobs);
+                needGlidein = false;
+            }
+
+            if (totalRunningGlideinJobs > (totalCondorJobs * 0.4)) {
+                logger.info("Number of running glideins is enough for the workload.");
+                needGlidein = false;
+            }
+
+            if (runningCondorJobs > (totalCondorJobs * 0.8) && totalCurrentlySubmitted > 0) {
+                logger.info("Number of running jobs is high compared to idle jobs.");
+                needGlidein = false;
+            }
+
+        } catch (Exception e1) {
+            logger.error("Error", e1);
+        }
+        return needGlidein;
+    }
+
     private List<SiteQueueScore> calculate(GATEService gateService, Site siteInfo,
             Map<String, GlideinMetric> metricsMap, LocalCondorMetric localCondorMetrics) {
         logger.info("ENTERING calculate(GATEService, Site, Map<String, GlideinMetric>, LocalCondorMetrics)");
@@ -313,10 +316,6 @@ public class GATEEngineRunnable implements Runnable {
 
             Queue queueInfo = siteInfo.getQueueInfoMap().get(queueName);
             GlideinMetric metrics = metricsMap.get(queueName);
-
-            if (metrics == null) {
-                continue;
-            }
 
             Integer numberToSubmit = calculateNumberToSubmit(siteInfo, queueInfo, metrics,
                     localCondorMetrics.getRunning(), localCondorMetrics.getIdle());
