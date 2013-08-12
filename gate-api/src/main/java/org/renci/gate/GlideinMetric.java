@@ -10,13 +10,19 @@ public class GlideinMetric {
 
     public GlideinMetric() {
         super();
+        this.running = 0;
+        this.pending = 0;
+    }
+
+    public GlideinMetric(String queue) {
+        this();
+        this.queue = queue;
     }
 
     public GlideinMetric(int running, int pending, String queue) {
-        super();
+        this(queue);
         this.running = running;
         this.pending = pending;
-        this.queue = queue;
     }
 
     public String getQueue() {
