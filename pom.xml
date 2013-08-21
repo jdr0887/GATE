@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.renci.gate</groupId>
     <artifactId>gate</artifactId>
-    <version>0.0.12</version>
+    <version>0.0.13</version>
   </parent>
   <name>GATE</name>
   <modelVersion>4.0.0</modelVersion>
@@ -11,7 +11,7 @@
   <version>0.1.40-SNAPSHOT</version>
   <packaging>pom</packaging>
   <properties>
-    <karaf.version>2.3.1</karaf.version>
+    <karaf.version>2.3.2</karaf.version>
   </properties>
   <url>http://ci-dev.renci.org/site/gate/project-info.html</url>
   <issueManagement>
