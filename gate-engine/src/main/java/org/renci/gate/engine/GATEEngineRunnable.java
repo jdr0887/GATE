@@ -252,6 +252,11 @@ public class GATEEngineRunnable implements Runnable {
                 logger.info(siteInfo.toString());
                 Map<String, GlideinMetric> metricsMap = siteQueueGlideinMetricsMap.get(siteInfo.getName());
 
+                if (metricsMap == null) {
+                    logger.warn("metricsMap is null for {}", siteName);
+                    continue;
+                }
+
                 for (String queue : metricsMap.keySet()) {
                     logger.debug("queue: {}", queue);
                     GlideinMetric metrics = metricsMap.get(queue);
