@@ -61,71 +61,43 @@ public class GATEEngineRunnable implements Runnable {
             }
         }
 
-        // get a snapshot of jobs across sites & queues
-        Map<String, Map<String, GlideinMetric>> siteQueueGlideinMetricsMap = globalMetricsLookup(gateServiceMap);
+        logger.info("gateServiceMap.size() == {}", gateServiceMap.size());
+
+        String username = System.getProperty("user.name");
 
         // go get a snapshot of local jobs
-        Map<String, List<ClassAdvertisement>> jobMap = null;
+        Map<String, List<ClassAdvertisement>> jobMap = new HashMap<String, List<ClassAdvertisement>>();
         try {
-            CondorLookupJobsByOwnerCallable callable = new CondorLookupJobsByOwnerCallable(
-                    System.getProperty("user.name"));
-            jobMap = callable.call();
+            CondorLookupJobsByOwnerCallable callable = new CondorLookupJobsByOwnerCallable(username);
+            jobMap.putAll(callable.call());
         } catch (JLRMException e) {
             e.printStackTrace();
         }
 
-        int totalCondorJobs = jobMap.size();
-
-        int idleCondorJobs = 0;
-        int runningCondorJobs = 0;
-
-        Map<String, Integer> requiredSiteMetricsMap = new HashMap<String, Integer>();
-
-        for (String job : jobMap.keySet()) {
-            logger.info("job: {}", job);
-            List<ClassAdvertisement> classAdList = jobMap.get(job);
-            for (ClassAdvertisement classAd : classAdList) {
-                logger.debug("classAd.getKey() = {}", classAd.getKey());
-                if (ClassAdvertisementFactory.CLASS_AD_KEY_JOB_STATUS.equalsIgnoreCase(classAd.getKey())) {
-                    int statusCode = Integer.valueOf(classAd.getValue().trim());
-                    if (statusCode == CondorJobStatusType.IDLE.getCode()) {
-                        ++idleCondorJobs;
-                    }
-                    if (statusCode == CondorJobStatusType.RUNNING.getCode()) {
-                        ++runningCondorJobs;
-                    }
-                }
-                if (ClassAdvertisementFactory.CLASS_AD_KEY_REQUIREMENTS.equalsIgnoreCase(classAd.getKey())) {
-
-                    String requirements = classAd.getValue();
-                    logger.debug("requirements = {}", requirements);
-                    if (requirements.contains("TARGET.JLRM_SITE_NAME")) {
-                        Pattern pattern = Pattern.compile("^.+JLRM_SITE_NAME == \"([\\S]+)\".+$");
-                        Matcher matcher = pattern.matcher(requirements);
-                        if (matcher.matches()) {
-                            String requiredSiteName = matcher.group(1);
-                            logger.debug("requiredSiteName = {}", requiredSiteName);
-                            if (!requiredSiteMetricsMap.containsKey(requiredSiteName)) {
-                                requiredSiteMetricsMap.put(requiredSiteName, 0);
-                            } else {
-                                requiredSiteMetricsMap.put(requiredSiteName,
-                                        requiredSiteMetricsMap.get(requiredSiteName) + 1);
-                            }
-                        }
-                    }
-
-                }
-            }
+        if (jobMap.size() == 0) {
+            logger.warn("no local condor jobs");
+            return;
         }
 
-        logger.info("runningCondorJobs: {}", runningCondorJobs);
+        int totalCondorJobs = jobMap.size();
+        logger.info("totalCondorJobs: {}", totalCondorJobs);
+
+        int idleCondorJobs = calculateJobCount(jobMap, CondorJobStatusType.IDLE);
         logger.info("idleCondorJobs: {}", idleCondorJobs);
+
+        int runningCondorJobs = calculateJobCount(jobMap, CondorJobStatusType.RUNNING);
+        logger.info("runningCondorJobs: {}", runningCondorJobs);
+
+        Map<String, Integer> requiredSiteMetricsMap = calculateRequiredSiteCount(jobMap);
+
+        // get a snapshot of jobs across sites & queues
+        Map<String, Map<String, GlideinMetric>> siteQueueGlideinMetricsMap = globalMetricsLookup(gateServiceMap);
 
         boolean needGlidein = isGlideinNeeded(gateServiceMap, siteQueueGlideinMetricsMap, idleCondorJobs,
                 runningCondorJobs, totalCondorJobs);
 
         if (!needGlidein) {
-            logger.info("No glideins needed.");
+            logger.warn("No glideins needed.");
             return;
         }
 
@@ -140,8 +112,6 @@ public class GATEEngineRunnable implements Runnable {
                 percentSiteRequiredJobOccuranceMap.put(siteName, percentSiteRequiredJobOccuranceScore);
             }
         }
-
-        logger.info("gateServiceMap.size(): {}", gateServiceMap.size());
 
         List<SiteQueueScore> siteQueueScoreInfoList = new ArrayList<SiteQueueScore>();
 
@@ -200,11 +170,54 @@ public class GATEEngineRunnable implements Runnable {
 
     }
 
+    private Map<String, Integer> calculateRequiredSiteCount(Map<String, List<ClassAdvertisement>> jobMap) {
+        Map<String, Integer> requiredSiteScoreMap = new HashMap<String, Integer>();
+        for (String job : jobMap.keySet()) {
+            List<ClassAdvertisement> classAdList = jobMap.get(job);
+            for (ClassAdvertisement classAd : classAdList) {
+                if (ClassAdvertisementFactory.CLASS_AD_KEY_REQUIREMENTS.equalsIgnoreCase(classAd.getKey())) {
+                    String requirements = classAd.getValue();
+                    if (requirements.contains("TARGET.JLRM_SITE_NAME")) {
+                        Pattern pattern = Pattern.compile("^.+JLRM_SITE_NAME == \"([\\S]+)\".+$");
+                        Matcher matcher = pattern.matcher(requirements);
+                        if (matcher.matches()) {
+                            String requiredSiteName = matcher.group(1);
+                            logger.debug("requiredSiteName = {}", requiredSiteName);
+                            if (!requiredSiteScoreMap.containsKey(requiredSiteName)) {
+                                requiredSiteScoreMap.put(requiredSiteName, 0);
+                            } else {
+                                requiredSiteScoreMap.put(requiredSiteName,
+                                        requiredSiteScoreMap.get(requiredSiteName) + 1);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return requiredSiteScoreMap;
+    }
+
+    private int calculateJobCount(Map<String, List<ClassAdvertisement>> jobMap, CondorJobStatusType status) {
+        int condorJobs = 0;
+        for (String job : jobMap.keySet()) {
+            List<ClassAdvertisement> classAdList = jobMap.get(job);
+            for (ClassAdvertisement classAd : classAdList) {
+                if (ClassAdvertisementFactory.CLASS_AD_KEY_JOB_STATUS.equalsIgnoreCase(classAd.getKey())) {
+                    int statusCode = Integer.valueOf(classAd.getValue().trim());
+                    if (statusCode == status.getCode()) {
+                        ++condorJobs;
+                    }
+                }
+            }
+        }
+        return condorJobs;
+    }
+
     private Map<String, Map<String, GlideinMetric>> globalMetricsLookup(Map<String, GATEService> gateServiceMap) {
+        logger.info("ENTERING globalMetricsLookup(Map<String, GATEService>)");
 
         Map<String, Map<String, GlideinMetric>> siteQueueGlideinMetricsMap = new HashMap<String, Map<String, GlideinMetric>>();
 
-        logger.info("gateServiceMap.size() == {}", gateServiceMap.size());
         for (String siteName : gateServiceMap.keySet()) {
 
             GATEService gateService = gateServiceMap.get(siteName);
@@ -233,6 +246,7 @@ public class GATEEngineRunnable implements Runnable {
     private boolean isGlideinNeeded(Map<String, GATEService> gateServiceMap,
             Map<String, Map<String, GlideinMetric>> siteQueueGlideinMetricsMap, int idleCondorJobs,
             int runningCondorJobs, int totalCondorJobs) {
+        logger.info("ENTERING isGlideinNeeded(Map<String, GATEService>, Map<String, Map<String, GlideinMetric>>, int, int, int)");
 
         // assume we need new glideins, and then run some tests to negate the assumptions
         boolean needGlidein = true;
@@ -305,7 +319,11 @@ public class GATEEngineRunnable implements Runnable {
         logger.info("ENTERING calculate(GATEService, Site, Map<String, GlideinMetric>, LocalCondorMetrics)");
         List<SiteQueueScore> ret = new ArrayList<SiteQueueScore>();
 
-        for (String queueName : siteInfo.getQueueInfoMap().keySet()) {
+        Map<String, Queue> siteQueueInfoMap = siteInfo.getQueueInfoMap();
+
+        for (String queueName : siteQueueInfoMap.keySet()) {
+
+            Queue queueInfo = siteQueueInfoMap.get(queueName);
 
             if (StringUtils.isNotEmpty(gateService.getActiveQueues())) {
                 List<String> activeQueueList = Arrays.asList(gateService.getActiveQueues().split(","));
@@ -319,7 +337,6 @@ public class GATEEngineRunnable implements Runnable {
             siteScoreInfo.setSiteName(siteInfo.getName());
             siteScoreInfo.setQueueName(queueName);
 
-            Queue queueInfo = siteInfo.getQueueInfoMap().get(queueName);
             GlideinMetric metrics = metricsMap.get(queueName);
 
             Integer numberToSubmit = calculateNumberToSubmit(siteInfo, queueInfo, metrics,
@@ -417,7 +434,9 @@ public class GATEEngineRunnable implements Runnable {
         }
 
         numToSubmit = Math.round(numToSubmit);
-        return Double.valueOf(Math.min(numToSubmit, queueInfo.getMaxMultipleJobsToSubmit())).intValue();
+        int ret = Double.valueOf(Math.min(numToSubmit, queueInfo.getMaxMultipleJobsToSubmit())).intValue();
+        // return ret;
+        return 1;
     }
 
 }
