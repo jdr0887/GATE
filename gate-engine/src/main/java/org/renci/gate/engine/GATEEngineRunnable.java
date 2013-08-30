@@ -14,6 +14,7 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.osgi.framework.ServiceReference;
+import org.renci.gate.GATEException;
 import org.renci.gate.GATEService;
 import org.renci.gate.GlideinMetric;
 import org.renci.gate.SiteQueueScore;
@@ -228,14 +229,31 @@ public class GATEEngineRunnable implements Runnable {
                     logger.warn("isValid() failure: {}", siteName);
                     continue;
                 }
+            } catch (GATEException e) {
+                logger.warn("isValid error", e);
+            }
+
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            try {
                 glideinMetricMap = gateService.lookupMetrics();
-                if (glideinMetricMap == null) {
-                    logger.warn("null glideinMetricMap: {}", siteName);
-                    continue;
-                }
-                Thread.sleep(3000);
             } catch (Exception e) {
-                logger.error("There was a problem looking up metrics", e);
+                logger.warn("There was a problem looking up metrics", e);
+            }
+
+            if (glideinMetricMap == null) {
+                logger.warn("null glideinMetricMap: {}", siteName);
+                continue;
+            }
+
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
             siteQueueGlideinMetricsMap.put(gateService.getSite().getName(), glideinMetricMap);
