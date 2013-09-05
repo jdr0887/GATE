@@ -10,19 +10,16 @@ public class SiteQueueScore {
 
     private String message;
 
-    private Integer numberToSubmit = 0;
-
     public SiteQueueScore() {
         super();
     }
 
-    public SiteQueueScore(String siteName, String queueName, Integer score, String message, Integer numberToSubmit) {
+    public SiteQueueScore(String siteName, String queueName, Integer score, String message) {
         super();
         this.siteName = siteName;
         this.queueName = queueName;
         this.score = score;
         this.message = message;
-        this.numberToSubmit = numberToSubmit;
     }
 
     public String getSiteName() {
@@ -57,18 +54,10 @@ public class SiteQueueScore {
         this.message = message;
     }
 
-    public Integer getNumberToSubmit() {
-        return numberToSubmit;
-    }
-
-    public void setNumberToSubmit(Integer numberToSubmit) {
-        this.numberToSubmit = numberToSubmit;
-    }
-
     @Override
     public String toString() {
-        return "SiteQueueScoreInfo [siteName=" + siteName + ", queueName=" + queueName + ", score=" + score
-                + ", message=" + message + ", numberToSubmit=" + numberToSubmit + "]";
+        return String.format("SiteQueueScore [siteName=%s, queueName=%s, score=%s, message=%s]", siteName, queueName,
+                score, message);
     }
 
     @Override
@@ -76,7 +65,6 @@ public class SiteQueueScore {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((message == null) ? 0 : message.hashCode());
-        result = prime * result + ((numberToSubmit == null) ? 0 : numberToSubmit.hashCode());
         result = prime * result + ((queueName == null) ? 0 : queueName.hashCode());
         result = prime * result + ((score == null) ? 0 : score.hashCode());
         result = prime * result + ((siteName == null) ? 0 : siteName.hashCode());
@@ -96,11 +84,6 @@ public class SiteQueueScore {
             if (other.message != null)
                 return false;
         } else if (!message.equals(other.message))
-            return false;
-        if (numberToSubmit == null) {
-            if (other.numberToSubmit != null)
-                return false;
-        } else if (!numberToSubmit.equals(other.numberToSubmit))
             return false;
         if (queueName == null) {
             if (other.queueName != null)
