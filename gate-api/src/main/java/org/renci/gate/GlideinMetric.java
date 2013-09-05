@@ -2,35 +2,36 @@ package org.renci.gate;
 
 public class GlideinMetric {
 
+    private String siteName;
+
+    private String queueName;
+
     private int running;
 
     private int pending;
 
-    private String queue;
-
-    public GlideinMetric() {
+    public GlideinMetric(String siteName, String queueName, int running, int pending) {
         super();
-        this.running = 0;
-        this.pending = 0;
-    }
-
-    public GlideinMetric(String queue) {
-        this();
-        this.queue = queue;
-    }
-
-    public GlideinMetric(int running, int pending, String queue) {
-        this(queue);
+        this.siteName = siteName;
+        this.queueName = queueName;
         this.running = running;
         this.pending = pending;
     }
 
-    public String getQueue() {
-        return queue;
+    public String getSiteName() {
+        return siteName;
     }
 
-    public void setQueue(String queue) {
-        this.queue = queue;
+    public void setSiteName(String siteName) {
+        this.siteName = siteName;
+    }
+
+    public String getQueueName() {
+        return queueName;
+    }
+
+    public void setQueueName(String queueName) {
+        this.queueName = queueName;
     }
 
     public int getRunning() {
@@ -63,7 +64,8 @@ public class GlideinMetric {
 
     @Override
     public String toString() {
-        return "GlideinMetrics [running=" + running + ", pending=" + pending + ", queue=" + queue + "]";
+        return String.format("GlideinMetric [siteName=%s, queueName=%s, running=%s, pending=%s]", siteName, queueName,
+                running, pending);
     }
 
 }
