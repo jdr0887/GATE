@@ -1,6 +1,6 @@
 package org.renci.gate;
 
-import java.util.Map;
+import java.util.List;
 
 import org.renci.jlrm.Queue;
 import org.renci.jlrm.Site;
@@ -11,7 +11,7 @@ import org.renci.jlrm.Site;
  */
 public interface GATEService {
 
-    public Map<String, GlideinMetric> lookupMetrics() throws GATEException;
+    public List<GlideinMetric> lookupMetrics() throws GATEException;
 
     public Boolean isValid() throws GATEException;
 
