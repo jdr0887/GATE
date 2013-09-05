@@ -19,18 +19,18 @@ public class KillGlideinRunnable implements Runnable {
 
     private Map<String, GATEService> gateServiceMap;
 
-    private Map<String, Map<String, GlideinMetric>> siteQueueGlideinMetricsMap;
+    private List<GlideinMetric> siteQueueGlideinMetricList;
 
     public KillGlideinRunnable() {
         super();
     }
 
     public KillGlideinRunnable(Map<String, List<ClassAdvertisement>> jobMap, Map<String, GATEService> gateServiceMap,
-            Map<String, Map<String, GlideinMetric>> siteQueueGlideinMetricsMap) {
+            List<GlideinMetric> siteQueueGlideinMetricList) {
         super();
         this.jobMap = jobMap;
         this.gateServiceMap = gateServiceMap;
-        this.siteQueueGlideinMetricsMap = siteQueueGlideinMetricsMap;
+        this.siteQueueGlideinMetricList = siteQueueGlideinMetricList;
     }
 
     @Override
@@ -39,29 +39,29 @@ public class KillGlideinRunnable implements Runnable {
 
         for (String siteName : gateServiceMap.keySet()) {
             GATEService gateService = gateServiceMap.get(siteName);
-            Map<String, GlideinMetric> glideinMetricMap = siteQueueGlideinMetricsMap.get(gateService.getSite()
-                    .getName());
-            for (String queue : glideinMetricMap.keySet()) {
-                GlideinMetric metric = glideinMetricMap.get(queue);
-                logger.debug("metric: {}", metric.toString());
-                try {
-                    if (metric.getPending() > 0) {
-                        // remove all pending glideins
-                        gateService.deletePendingGlideins();
-                    } else if (metric.getPending() == 0 && metric.getRunning() > 0) {
-                        // remove one running glidein
-                        Map<String, Queue> queueInfoMap = gateService.getSite().getQueueInfoMap();
-                        if (queueInfoMap.containsKey(metric.getQueue())) {
-                            gateService.deleteGlidein(queueInfoMap.get(metric.getQueue()));
-                        }
-                    }
-                } catch (GATEException e) {
-                    logger.error("GATEException", e);
-                }
 
+            for (GlideinMetric glideinMetric : siteQueueGlideinMetricList) {
+                logger.debug("glideinMetric: {}", glideinMetric.toString());
+                if (glideinMetric.getSiteName().equals(gateService.getSite().getName())) {
+                    try {
+                        if (glideinMetric.getPending() > 0) {
+                            // remove all pending glideins
+                            gateService.deletePendingGlideins();
+                        } else if (glideinMetric.getPending() == 0 && glideinMetric.getRunning() > 0) {
+                            // remove one running glidein
+                            List<Queue> queueList = gateService.getSite().getQueueList();
+                            for (Queue queue : queueList) {
+                                if (queue.getName().equals(glideinMetric.getQueueName())) {
+                                    gateService.deleteGlidein(queue);
+                                }
+                            }
+                        }
+                    } catch (GATEException e) {
+                        logger.error("GATEException", e);
+                    }
+                }
             }
         }
 
     }
-
 }

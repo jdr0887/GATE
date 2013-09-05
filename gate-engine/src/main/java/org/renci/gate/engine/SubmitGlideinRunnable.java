@@ -1,6 +1,6 @@
 package org.renci.gate.engine;
 
-import java.util.Map;
+import java.util.List;
 
 import org.renci.gate.GATEException;
 import org.renci.gate.GATEService;
@@ -14,38 +14,32 @@ public class SubmitGlideinRunnable implements Runnable {
 
     private final Logger logger = LoggerFactory.getLogger(SubmitGlideinRunnable.class);
 
-    private Map<String, GATEService> gateServiceMap;
+    private GATEService gateService;
 
-    private SiteQueueScore winner;
+    private SiteQueueScore siteQueueScore;
 
-    public SubmitGlideinRunnable(Map<String, GATEService> gateServiceMap, SiteQueueScore winner) {
+    public SubmitGlideinRunnable(GATEService gateService, SiteQueueScore siteQueueScore) {
         super();
-        this.gateServiceMap = gateServiceMap;
-        this.winner = winner;
+        this.gateService = gateService;
+        this.siteQueueScore = siteQueueScore;
     }
 
     @Override
     public void run() {
         logger.info("ENTERING run()");
-
-        GATEService gateService = gateServiceMap.get(winner.getSiteName());
         Site siteInfo = gateService.getSite();
         logger.debug(siteInfo.toString());
-        Queue queueInfo = siteInfo.getQueueInfoMap().get(winner.getQueueName());
-        logger.debug(queueInfo.toString());
-        for (int i = 0; i < winner.getNumberToSubmit(); ++i) {
-            logger.info(String.format("Submitting %d of %d glideins for %s to %s:%s", i + 1,
-                    winner.getNumberToSubmit(), siteInfo.getUsername(), winner.getSiteName(), winner.getQueueName()));
-            try {
-                gateService.createGlidein(queueInfo);
-                Thread.sleep(3000);
-            } catch (GATEException e) {
-                logger.error("GATEException", e);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        List<Queue> queueList = siteInfo.getQueueList();
+        for (Queue queue : queueList) {
+            if (queue.getName().equals(siteQueueScore.getQueueName())) {
+                logger.debug(queue.toString());
+                try {
+                    gateService.createGlidein(queue);
+                } catch (GATEException e) {
+                    logger.error("GATEException", e);
+                }
             }
         }
-
     }
 
 }
