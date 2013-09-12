@@ -20,7 +20,7 @@ public class GATEEngine {
 
     private BundleContext bundleContext;
 
-    private Long period;
+    private GATEEngineBeanService beanService;
 
     private GATEServiceTracker serviceTracker;
 
@@ -32,8 +32,8 @@ public class GATEEngine {
         logger.info("ENTERING start()");
         this.serviceTracker = new GATEServiceTracker(bundleContext);
         this.serviceTracker.open();
-        GATEEngineRunnable runnable = new GATEEngineRunnable(this.serviceTracker);
-        this.scheduleExecutorService.scheduleAtFixedRate(runnable, 60, this.period * 60, TimeUnit.SECONDS);
+        GATEEngineRunnable runnable = new GATEEngineRunnable(this.serviceTracker, this.beanService);
+        this.scheduleExecutorService.scheduleAtFixedRate(runnable, 2, this.beanService.getPeriod(), TimeUnit.MINUTES);
     }
 
     public void stop() throws Exception {
@@ -50,12 +50,12 @@ public class GATEEngine {
         this.bundleContext = bundleContext;
     }
 
-    public Long getPeriod() {
-        return period;
+    public GATEEngineBeanService getBeanService() {
+        return beanService;
     }
 
-    public void setPeriod(Long period) {
-        this.period = period;
+    public void setBeanService(GATEEngineBeanService beanService) {
+        this.beanService = beanService;
     }
 
 }
