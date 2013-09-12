@@ -39,19 +39,20 @@ public abstract class AbstractGlideinSubmissionStrategy implements GlideinSubmis
                     }
                 }
 
-                if (glideinMetric.getPending() >= site.getMaxTotalPending()) {
-                    logger.info("Pending job threshold has been met: {} of {}", glideinMetric.getPending(),
-                            site.getMaxTotalPending());
-                    siteQueueScoreIter.remove();
-                    continue;
-                }
-
                 List<Queue> siteQueueList = site.getQueueList();
 
                 for (Queue queue : siteQueueList) {
+
                     if (queue.getName().equals(glideinMetric.getQueueName())) {
-                        int totalJobs = glideinMetric.getRunning() + glideinMetric.getPending();
-                        if (totalJobs >= queue.getMaxJobLimit()) {
+
+                        if (glideinMetric.getPending() >= queue.getMaxPending()) {
+                            logger.info("Pending job threshold has been met: {} of {}", glideinMetric.getPending(),
+                                    queue.getMaxPending());
+                            siteQueueScoreIter.remove();
+                            continue;
+                        }
+
+                        if (glideinMetric.getRunning() >= queue.getMaxRunning()) {
                             logger.info("totalJobs is greater that queue max job limit");
                             siteQueueScoreIter.remove();
                             continue;
