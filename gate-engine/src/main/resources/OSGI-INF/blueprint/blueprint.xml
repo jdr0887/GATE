@@ -4,14 +4,20 @@
 
   <cm:property-placeholder persistent-id="org.renci.gate.engine" update-strategy="reload">
     <cm:default-properties>
-      <cm:property name="period" value="3" />
+      <cm:property name="period" value="10" />
+      <cm:property name="maxTotalGlideins" value="90" />
     </cm:default-properties>
   </cm:property-placeholder>
 
+  <bean id="GATEEngineBeanService" class="org.renci.gate.engine.GATEEngineBeanService">
+    <property name="period" value="${period}" />
+    <property name="maxTotalGlideins" value="${maxTotalGlideins}" />
+  </bean>
+
   <bean id="gateEngine" class="org.renci.gate.engine.GATEEngine" init-method="start" destroy-method="stop"
     activation="eager">
-    <property name="period" value="${period}" />
     <property name="bundleContext" ref="blueprintBundleContext" />
+    <property name="beanService" ref="GATEEngineBeanService" />
     <cm:managed-properties persistent-id="org.renci.gate.engine" update-strategy="container-managed" />
   </bean>
 
