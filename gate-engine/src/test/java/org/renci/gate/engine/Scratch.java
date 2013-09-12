@@ -49,20 +49,19 @@ public class Scratch {
     @Test
     public void testNumberToDelete() {
 
+        Site siteInfo = new Site();
+        siteInfo.setName("Kure");
+
         List<Queue> queueList = new ArrayList<Queue>();
 
         Queue pseqProdQueueInfo = new Queue();
         pseqProdQueueInfo.setName("pseq_prod");
         pseqProdQueueInfo.setWeight(1D);
-        pseqProdQueueInfo.setMaxJobLimit(30);
-        pseqProdQueueInfo.setMaxMultipleJobsToSubmit(4);
-        pseqProdQueueInfo.setPendingTime(1440);
-        pseqProdQueueInfo.setRunTime(2880);
+        pseqProdQueueInfo.setMaxPending(4);
+        pseqProdQueueInfo.setMaxRunning(30);
+        pseqProdQueueInfo.setRunTime(2880L);
         queueList.add(pseqProdQueueInfo);
 
-        Site siteInfo = new Site();
-        siteInfo.setMaxTotalPending(6);
-        siteInfo.setMaxTotalRunning(40);
         siteInfo.setQueueList(queueList);
 
         logger.info(
@@ -107,29 +106,26 @@ public class Scratch {
     @Test
     public void testNumberToSubmit() {
 
+        Site siteInfo = new Site();
+
         List<Queue> queueList = new ArrayList<Queue>();
 
         Queue pseqProdQueueInfo = new Queue();
         pseqProdQueueInfo.setName("pseq_prod");
         pseqProdQueueInfo.setWeight(1D);
-        pseqProdQueueInfo.setMaxJobLimit(12);
-        pseqProdQueueInfo.setMaxMultipleJobsToSubmit(2);
-        pseqProdQueueInfo.setPendingTime(1440);
-        pseqProdQueueInfo.setRunTime(5760);
+        pseqProdQueueInfo.setMaxPending(2);
+        pseqProdQueueInfo.setMaxRunning(12);
+        pseqProdQueueInfo.setRunTime(5760L);
         queueList.add(pseqProdQueueInfo);
 
         Queue weekQueueInfo = new Queue();
         weekQueueInfo.setName("week");
         weekQueueInfo.setWeight(0.8D);
-        weekQueueInfo.setMaxJobLimit(30);
-        weekQueueInfo.setMaxMultipleJobsToSubmit(2);
-        weekQueueInfo.setPendingTime(1440);
-        weekQueueInfo.setRunTime(2880);
+        weekQueueInfo.setMaxPending(2);
+        weekQueueInfo.setMaxRunning(12);
+        weekQueueInfo.setRunTime(2880L);
         queueList.add(weekQueueInfo);
 
-        Site siteInfo = new Site();
-        siteInfo.setMaxTotalPending(2);
-        siteInfo.setMaxTotalRunning(20);
         siteInfo.setQueueList(queueList);
 
         logger.info("Number To submit: {}", calculateNumberToSubmit(2, 0, siteInfo, pseqProdQueueInfo, null));
@@ -177,7 +173,6 @@ public class Scratch {
             GlideinMetric metrics) {
         logger.info("idleCondorJobs: {}, runningCondorJobs: {}", idleCondorJobs, runningCondorJobs);
         double numToSubmit = 1;
-        numToSubmit = queueInfo.getMaxMultipleJobsToSubmit();
         if (metrics != null) {
             logger.info("metrics.getPending(): {}, metrics.getRunning(): {}", metrics.getPending(),
                     metrics.getRunning());
@@ -187,14 +182,14 @@ public class Scratch {
         numToSubmit -= runningCondorJobs * 0.005;
         numToSubmit += idleCondorJobs * 0.005;
 
-        if (numToSubmit <= 1 && (metrics != null && metrics.getRunning() <= siteInfo.getMaxTotalRunning())) {
+        if (numToSubmit <= 1 && (metrics != null && metrics.getRunning() <= queueInfo.getMaxRunning())) {
             numToSubmit = 1;
         }
 
         numToSubmit = Math.round(numToSubmit);
 
-        Integer ret = Double.valueOf(Math.min(numToSubmit, queueInfo.getMaxMultipleJobsToSubmit())).intValue();
-        return ret;
+        // Integer ret = Double.valueOf(Math.min(numToSubmit, queueInfo.getMaxMultipleJobsToSubmit())).intValue();
+        return Double.valueOf(numToSubmit).intValue();
     }
 
     @Test
@@ -204,24 +199,21 @@ public class Scratch {
 
         Site kureSiteInfo = new Site();
         kureSiteInfo.setName("Kure");
-        kureSiteInfo.setMaxNoClaimTime(60);
 
         Queue pseqProdQueueInfo = new Queue();
         pseqProdQueueInfo.setName("pseq_prod");
         pseqProdQueueInfo.setWeight(1D);
-        pseqProdQueueInfo.setMaxJobLimit(30);
-        pseqProdQueueInfo.setMaxMultipleJobsToSubmit(2);
-        pseqProdQueueInfo.setPendingTime(1440);
-        pseqProdQueueInfo.setRunTime(2880);
+        pseqProdQueueInfo.setMaxPending(2);
+        pseqProdQueueInfo.setMaxRunning(30);
+        pseqProdQueueInfo.setRunTime(2880L);
         queueList.add(pseqProdQueueInfo);
 
         Queue weekQueueInfo = new Queue();
         weekQueueInfo.setName("week");
         weekQueueInfo.setWeight(0.8D);
-        weekQueueInfo.setMaxJobLimit(30);
-        weekQueueInfo.setMaxMultipleJobsToSubmit(4);
-        weekQueueInfo.setPendingTime(1440);
-        weekQueueInfo.setRunTime(2880);
+        weekQueueInfo.setMaxPending(2);
+        weekQueueInfo.setMaxRunning(30);
+        weekQueueInfo.setRunTime(2880L);
         queueList.add(weekQueueInfo);
         kureSiteInfo.setQueueList(queueList);
 
@@ -229,15 +221,13 @@ public class Scratch {
 
         Site topsailSiteInfo = new Site();
         topsailSiteInfo.setName("Topsail");
-        topsailSiteInfo.setMaxNoClaimTime(60);
 
         Queue queue16QueueInfo = new Queue();
         queue16QueueInfo.setName("queue16");
         queue16QueueInfo.setWeight(1D);
-        queue16QueueInfo.setMaxJobLimit(30);
-        queue16QueueInfo.setMaxMultipleJobsToSubmit(2);
-        queue16QueueInfo.setPendingTime(1440);
-        queue16QueueInfo.setRunTime(2880);
+        queue16QueueInfo.setMaxPending(2);
+        queue16QueueInfo.setMaxRunning(30);
+        queue16QueueInfo.setRunTime(2880L);
         queueList.add(queue16QueueInfo);
         topsailSiteInfo.setQueueList(queueList);
 
