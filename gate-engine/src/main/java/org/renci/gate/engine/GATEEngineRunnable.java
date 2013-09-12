@@ -16,6 +16,7 @@ import org.renci.gate.GlideinSubmissionBean;
 import org.renci.gate.GlideinSubmissionContext;
 import org.renci.gate.SiteQueueScore;
 import org.renci.jlrm.JLRMException;
+import org.renci.jlrm.Queue;
 import org.renci.jlrm.Site;
 import org.renci.jlrm.condor.ClassAdvertisement;
 import org.renci.jlrm.condor.ClassAdvertisementFactory;
@@ -30,9 +31,12 @@ public class GATEEngineRunnable implements Runnable {
 
     private GATEServiceTracker serviceTracker;
 
-    public GATEEngineRunnable(GATEServiceTracker serviceTracker) {
+    private GATEEngineBeanService beanService;
+
+    public GATEEngineRunnable(GATEServiceTracker serviceTracker, GATEEngineBeanService beanService) {
         super();
         this.serviceTracker = serviceTracker;
+        this.beanService = beanService;
     }
 
     @Override
@@ -225,31 +229,33 @@ public class GATEEngineRunnable implements Runnable {
 
         int totalRunningGlideinJobs = 0;
         int totalPendingGlideinJobs = 0;
-        int maxAllowableJobs = 0;
 
         try {
 
             for (String siteName : gateServiceMap.keySet()) {
 
                 GATEService gateService = gateServiceMap.get(siteName);
-                Site siteInfo = gateService.getSite();
-                maxAllowableJobs += siteInfo.getMaxTotalPending() + siteInfo.getMaxTotalRunning();
+                Site site = gateService.getSite();
 
-                logger.info(siteInfo.toString());
+                logger.info(site.toString());
 
-                for (GlideinMetric glideinMetric : siteQueueGlideinMetricList) {
-                    logger.info(glideinMetric.toString());
-                    if (siteName.equals(glideinMetric.getSiteName())) {
-                        totalRunningGlideinJobs += glideinMetric.getRunning();
-                        totalPendingGlideinJobs += glideinMetric.getPending();
+                for (Queue queue : site.getQueueList()) {
+
+                    for (GlideinMetric glideinMetric : siteQueueGlideinMetricList) {
+                        logger.info(glideinMetric.toString());
+                        if (siteName.equals(glideinMetric.getSiteName())
+                                && queue.getName().equals(glideinMetric.getQueueName())) {
+                            totalRunningGlideinJobs += glideinMetric.getRunning();
+                            totalPendingGlideinJobs += glideinMetric.getPending();
+                        }
                     }
+
                 }
 
             }
 
             logger.info("totalRunningGlideinJobs: {}", totalRunningGlideinJobs);
             logger.info("totalPendingGlideinJobs: {}", totalPendingGlideinJobs);
-            logger.info("maxAllowableJobs: {}", maxAllowableJobs);
 
             int totalCurrentlySubmitted = totalRunningGlideinJobs + totalPendingGlideinJobs;
             logger.info("totalCurrentlySubmitted: {}", totalCurrentlySubmitted);
@@ -259,8 +265,9 @@ public class GATEEngineRunnable implements Runnable {
                 needGlidein = false;
             }
 
-            if (totalCurrentlySubmitted >= maxAllowableJobs) {
-                logger.info("Total number of glideins has reached the limit of " + maxAllowableJobs);
+            if (totalCurrentlySubmitted >= this.beanService.getMaxTotalGlideins()) {
+                logger.info("Total number of glideins has reached the limit of {}",
+                        this.beanService.getMaxTotalGlideins());
                 needGlidein = false;
             }
 
