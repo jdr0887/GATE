@@ -124,6 +124,11 @@ public class SmallGlideinSubmissionStrategy extends AbstractGlideinSubmissionStr
 
         for (Queue queue : siteQueueList) {
 
+            if (!site.getName().equals(glideinMetric.getSiteName())
+                    && !queue.getName().equals(glideinMetric.getQueueName())) {
+                continue;
+            }
+
             SiteQueueScore siteScoreInfo = new SiteQueueScore();
             siteScoreInfo.setSiteName(site.getName());
             siteScoreInfo.setQueueName(queue.getName());
