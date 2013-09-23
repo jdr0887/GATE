@@ -52,32 +52,39 @@ public class MediumGlideinSubmissionStrategy extends AbstractGlideinSubmissionSt
 
         for (String siteName : gateServiceMap.keySet()) {
             GATEService gateService = gateServiceMap.get(siteName);
-            Site siteInfo = gateService.getSite();
+            Site site = gateService.getSite();
 
-            for (GlideinMetric glideinMetric : siteQueueGlideinMetricList) {
-                logger.info(glideinMetric.toString());
+            List<Queue> siteQueueList = site.getQueueList();
 
-                if (siteName.equals(glideinMetric.getSiteName())) {
+            for (Queue queue : siteQueueList) {
 
-                    Double percentSiteRequiredJobOccurance = 0D;
-                    if (percentSiteRequiredJobOccuranceMap.get(siteName) != null) {
-                        percentSiteRequiredJobOccurance = percentSiteRequiredJobOccuranceMap.get(siteName);
+                for (GlideinMetric glideinMetric : siteQueueGlideinMetricList) {
+
+                    if (site.getName().equals(glideinMetric.getSiteName())
+                            && queue.getName().equals(glideinMetric.getQueueName())) {
+
+                        logger.info(glideinMetric.toString());
+
+                        Double percentSiteRequiredJobOccurance = 0D;
+                        if (percentSiteRequiredJobOccuranceMap.get(siteName) != null) {
+                            percentSiteRequiredJobOccurance = percentSiteRequiredJobOccuranceMap.get(siteName);
+                        }
+                        LocalCondorMetric localCondorMetrics = new LocalCondorMetric(siteName,
+                                glideinSubmissionBean.getIdleCondorJobs(),
+                                glideinSubmissionBean.getRunningCondorJobs(), percentSiteRequiredJobOccurance);
+                        logger.info(localCondorMetrics.toString());
+
+                        if (localCondorMetrics.getSiteRequiredJobOccurance() == 1.0) {
+                            siteQueueScoreInfoList.clear();
+                            siteQueueScoreInfoList.add(calculate(site, queue, glideinMetric, localCondorMetrics));
+                            break;
+                        }
+
+                        siteQueueScoreInfoList.add(calculate(site, queue, glideinMetric, localCondorMetrics));
+
                     }
-                    LocalCondorMetric localCondorMetrics = new LocalCondorMetric(siteName,
-                            glideinSubmissionBean.getIdleCondorJobs(), glideinSubmissionBean.getRunningCondorJobs(),
-                            percentSiteRequiredJobOccurance);
-                    logger.info(localCondorMetrics.toString());
-
-                    if (localCondorMetrics.getSiteRequiredJobOccurance() == 1.0) {
-                        siteQueueScoreInfoList.clear();
-                        siteQueueScoreInfoList.addAll(calculate(gateService, siteInfo, glideinMetric,
-                                localCondorMetrics));
-                        break;
-                    }
-
-                    siteQueueScoreInfoList.addAll(calculate(gateService, siteInfo, glideinMetric, localCondorMetrics));
-
                 }
+
             }
 
         }
@@ -91,66 +98,52 @@ public class MediumGlideinSubmissionStrategy extends AbstractGlideinSubmissionSt
         return 1;
     }
 
-    private List<SiteQueueScore> calculate(GATEService gateService, Site site, GlideinMetric glideinMetric,
+    private SiteQueueScore calculate(Site site, Queue queue, GlideinMetric glideinMetric,
             LocalCondorMetric localCondorMetrics) {
-        logger.info("ENTERING calculate(GATEService, Site, Map<String, GlideinMetric>, LocalCondorMetrics)");
-        List<SiteQueueScore> ret = new ArrayList<SiteQueueScore>();
+        logger.info("ENTERING calculate(Site, Queue, GlideinMetric, LocalCondorMetric)");
 
-        List<Queue> siteQueueList = site.getQueueList();
+        SiteQueueScore siteScoreInfo = new SiteQueueScore();
+        siteScoreInfo.setSiteName(glideinMetric.getSiteName());
+        siteScoreInfo.setQueueName(glideinMetric.getQueueName());
 
-        for (Queue queue : siteQueueList) {
-
-            if (!site.getName().equals(glideinMetric.getSiteName())
-                    && !queue.getName().equals(glideinMetric.getQueueName())) {
-                continue;
-            }
-
-            SiteQueueScore siteScoreInfo = new SiteQueueScore();
-            siteScoreInfo.setSiteName(site.getName());
-            siteScoreInfo.setQueueName(queue.getName());
-
-            if (glideinMetric.getTotal() == 0) {
-                siteScoreInfo.setMessage("No glideins have been submitted yet");
-                siteScoreInfo.setScore(200);
-                ret.add(siteScoreInfo);
-                continue;
-            }
-
-            double score = 100;
-            double pendingWeight = 6.5;
-            for (int i = 1; i < glideinMetric.getPending() + 1; ++i) {
-                score -= i * pendingWeight;
-            }
-            logger.info("penalized score = {}", score);
-            double runningWeight = 4.5;
-            for (int i = 1; i < glideinMetric.getRunning() + 1; ++i) {
-                score += i * runningWeight;
-            }
-            logger.info("rewarded score = {}", score);
-            score *= queue.getWeight();
-            logger.info("adjusted by queue weight = {}", score);
-            if (localCondorMetrics.getSiteRequiredJobOccurance() > 0) {
-                score += localCondorMetrics.getSiteRequiredJobOccurance() * 100;
-                logger.info("adjusted by siteRequiredJobOccurance = {}", score);
-            }
-
-            // when a lot of glideins are running, lower the score to spread the
-            // jobs out between the sites
-            if (score > 200) {
-                siteScoreInfo.setMessage("Score lowered to spread jobs out on available sites");
-                siteScoreInfo.setScore(200);
-                ret.add(siteScoreInfo);
-                continue;
-            }
-
-            siteScoreInfo.setMessage("Total number of glideins: " + glideinMetric.getTotal());
-            siteScoreInfo.setScore(Long.valueOf(Math.round(score)).intValue());
-            logger.info(siteScoreInfo.toString());
-            ret.add(siteScoreInfo);
-
+        if (glideinMetric.getTotal() == 0) {
+            siteScoreInfo.setMessage("No glideins have been submitted yet");
+            siteScoreInfo.setScore(200);
+            return siteScoreInfo;
         }
 
-        return ret;
+        double score = 100;
+        double pendingWeight = 6.5;
+        for (int i = 1; i < glideinMetric.getPending() + 1; ++i) {
+            score -= i * pendingWeight;
+        }
+        logger.info("penalized score = {}", score);
+        double runningWeight = 4.5;
+        for (int i = 1; i < glideinMetric.getRunning() + 1; ++i) {
+            score += i * runningWeight;
+        }
+        logger.info("rewarded score = {}", score);
+        score *= queue.getWeight();
+        logger.info("adjusted by queue weight = {}", score);
+        if (localCondorMetrics.getSiteRequiredJobOccurance() > 0) {
+            score += localCondorMetrics.getSiteRequiredJobOccurance() * 100;
+            logger.info("adjusted by siteRequiredJobOccurance = {}", score);
+        }
+
+        // when a lot of glideins are running, lower the score to spread the
+        // jobs out between the sites
+        if (score > 200) {
+            siteScoreInfo.setMessage("Score lowered to spread jobs out on available sites");
+            siteScoreInfo.setScore(200);
+            return siteScoreInfo;
+        }
+
+        siteScoreInfo.setMessage("Total number of glideins: " + glideinMetric.getTotal());
+        siteScoreInfo.setScore(Long.valueOf(Math.round(score)).intValue());
+        logger.info(siteScoreInfo.toString());
+        return siteScoreInfo;
+
     }
+
 
 }
