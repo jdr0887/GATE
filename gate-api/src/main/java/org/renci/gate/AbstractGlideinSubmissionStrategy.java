@@ -30,20 +30,20 @@ public abstract class AbstractGlideinSubmissionStrategy implements GlideinSubmis
                 GATEService gateService = gateServiceMap.get(glideinMetric.getSiteName());
                 Site site = gateService.getSite();
 
-                if (StringUtils.isNotEmpty(gateService.getActiveQueues())) {
-                    List<String> activeQueueList = Arrays.asList(gateService.getActiveQueues().split(","));
-                    if (!activeQueueList.contains(glideinMetric.getQueueName())) {
-                        logger.info("excluding \"{}\" queue due to not being active", glideinMetric.getQueueName());
-                        siteQueueScoreIter.remove();
-                        continue;
-                    }
-                }
-
                 List<Queue> siteQueueList = site.getQueueList();
 
                 for (Queue queue : siteQueueList) {
 
                     if (queue.getName().equals(glideinMetric.getQueueName())) {
+
+                        if (StringUtils.isNotEmpty(gateService.getActiveQueues())) {
+                            List<String> activeQueueList = Arrays.asList(gateService.getActiveQueues().split(","));
+                            if (!activeQueueList.contains(queue.getName())) {
+                                logger.info("excluding \"{}\" queue due to not being active", queue.getName());
+                                siteQueueScoreIter.remove();
+                                continue;
+                            }
+                        }
 
                         if (glideinMetric.getPending() >= queue.getMaxPending()) {
                             logger.info("Pending job threshold has been met: {} of {}", glideinMetric.getPending(),
