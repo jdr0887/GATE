@@ -1,6 +1,5 @@
 package org.renci.gate;
 
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -36,13 +35,12 @@ public abstract class AbstractGlideinSubmissionStrategy implements GlideinSubmis
 
                     if (queue.getName().equals(glideinMetric.getQueueName())) {
 
-                        if (StringUtils.isNotEmpty(gateService.getActiveQueues())) {
-                            List<String> activeQueueList = Arrays.asList(gateService.getActiveQueues().split(","));
-                            if (!activeQueueList.contains(queue.getName())) {
-                                logger.info("excluding \"{}\" queue due to not being active", queue.getName());
-                                siteQueueScoreIter.remove();
-                                continue;
-                            }
+                        String activeQueues = gateService.getActiveQueues();
+                        logger.info("activeQueues: {}", activeQueues);
+                        if (StringUtils.isNotEmpty(activeQueues) && !activeQueues.contains(queue.getName())) {
+                            logger.info("excluding \"{}\" queue due to not being active", queue.getName());
+                            siteQueueScoreIter.remove();
+                            continue;
                         }
 
                         if (glideinMetric.getPending() >= queue.getMaxPending()) {
