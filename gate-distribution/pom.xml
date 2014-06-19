@@ -41,7 +41,7 @@
         <artifactId>maven-site-plugin</artifactId>
         <version>3.3</version>
         <configuration>
-          <skip>tru</skip>
+          <skip>true</skip>
         </configuration>
       </plugin>
       <plugin>
