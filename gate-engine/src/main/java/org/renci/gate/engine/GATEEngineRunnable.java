@@ -73,28 +73,31 @@ public class GATEEngineRunnable implements Runnable {
             logger.error("JLRMException", e);
         }
 
-        int totalCondorJobs = jobMap.size();
-        logger.info("totalCondorJobs: {}", totalCondorJobs);
+        int totalCondorJobCount = jobMap.size();
+        logger.info("totalCondorJobCount: {}", totalCondorJobCount);
 
-        int idleCondorJobs = calculateJobCount(jobMap, CondorJobStatusType.IDLE);
-        logger.info("idleCondorJobs: {}", idleCondorJobs);
+        int heldCondorJobCount = calculateJobCount(jobMap, CondorJobStatusType.HELD);
+        logger.info("heldCondorJobCount: {}", heldCondorJobCount);
 
-        int runningCondorJobs = calculateJobCount(jobMap, CondorJobStatusType.RUNNING);
-        logger.info("runningCondorJobs: {}", runningCondorJobs);
+        int idleCondorJobCount = calculateJobCount(jobMap, CondorJobStatusType.IDLE);
+        logger.info("idleCondorJobCount: {}", idleCondorJobCount);
+
+        int runningCondorJobCount = calculateJobCount(jobMap, CondorJobStatusType.RUNNING);
+        logger.info("runningCondorJobCount: {}", runningCondorJobCount);
 
         Map<String, Integer> requiredSiteMetricsMap = calculateRequiredSiteCount(jobMap);
 
         // get a snapshot of jobs across sites & queues
         List<GlideinMetric> siteQueueGlideinMetricList = globalMetricsLookup(gateServiceMap);
 
-        if (jobMap.size() == 0) {
+        if (jobMap.size() == 0 || heldCondorJobCount == totalCondorJobCount) {
             Executors.newSingleThreadExecutor().execute(
                     new KillGlideinRunnable(jobMap, gateServiceMap, siteQueueGlideinMetricList));
             return;
         }
 
-        boolean needGlidein = isGlideinNeeded(gateServiceMap, siteQueueGlideinMetricList, idleCondorJobs,
-                runningCondorJobs, totalCondorJobs);
+        boolean needGlidein = isGlideinNeeded(gateServiceMap, siteQueueGlideinMetricList, idleCondorJobCount,
+                runningCondorJobCount, totalCondorJobCount);
 
         if (!needGlidein) {
             logger.warn("No glideins needed.");
@@ -103,9 +106,9 @@ public class GATEEngineRunnable implements Runnable {
 
         GlideinSubmissionBean glideinSubmissionBean = new GlideinSubmissionBean();
         glideinSubmissionBean.setGateServiceMap(gateServiceMap);
-        glideinSubmissionBean.setIdleCondorJobs(idleCondorJobs);
+        glideinSubmissionBean.setIdleCondorJobs(idleCondorJobCount);
         glideinSubmissionBean.setRequiredSiteMetricsMap(requiredSiteMetricsMap);
-        glideinSubmissionBean.setRunningCondorJobs(runningCondorJobs);
+        glideinSubmissionBean.setRunningCondorJobs(runningCondorJobCount);
         glideinSubmissionBean.setSiteQueueGlideinMetricList(siteQueueGlideinMetricList);
 
         GlideinSubmissionContext context = new GlideinSubmissionContext(glideinSubmissionBean);
