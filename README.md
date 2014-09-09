@@ -8,40 +8,40 @@
      Here is an incomplete version that I currently use.
 
 <pre>
-<settings>
-  <profiles>
-    <profile>
-      <id>dev</id>
-      <repositories>
-        <repository>
-          <id>renci.repository</id>
-	  <name>renci.repository</name>
-	  <url>http://archiva.renci.org:8080/repository/internal</url>
-	  <releases>
-	    <enabled>true</enabled>
-	  </releases>
-	  <snapshots>
-	    <enabled>false</enabled>
-	  </snapshots>
-        </repository>
-        <repository>
-	  <id>renci.snapshot.repository</id>
-	  <name>renci.repository</name>
-	  <url>http://archiva.renci.org:8080/repository/snapshots</url>
-	  <releases>
-	    <enabled>false</enabled>
-	  </releases>
-	  <snapshots>
-	    <enabled>true</enabled>
-	  </snapshots>
-        </repository>
-      </repositories>
-    </profile>
-  </profiles>
-  <activeProfiles>
-    <activeProfile>dev</activeProfile>
-  </activeProfiles>
-</settings>
+&lt;settings&gt;
+  &lt;profiles&gt;
+    &lt;profile&gt;
+      &lt;id&gt;dev&lt;/id&gt;
+      &lt;repositories&gt;
+        &lt;repository&gt;
+          &lt;id&gt;renci.repository&lt;/id&gt;
+	  &lt;name&gt;renci.repository&lt;/name&gt;
+	  &lt;url&gt;http://archiva.renci.org:8080/repository/internal&lt;/url&gt;
+	  &lt;releases&gt;
+	    &lt;enabled&gt;true&lt;/enabled&gt;
+	  &lt;/releases&gt;
+	  &lt;snapshots&gt;
+	    &lt;enabled&gt;false&lt;/enabled&gt;
+	  &lt;/snapshots&gt;
+        &lt;/repository&gt;
+        &lt;repository&gt;
+	  &lt;id&gt;renci.snapshot.repository&lt;/id&gt;
+	  &lt;name&gt;renci.repository&lt;/name&gt;
+	  &lt;url&gt;http://archiva.renci.org:8080/repository/snapshots&lt;/url&gt;
+	  &lt;releases&gt;
+	    &lt;enabled&gt;false&lt;/enabled&gt;
+	  &lt;/releases&gt;
+	  &lt;snapshots&gt;
+	    &lt;enabled&gt;true&lt;/enabled&gt;
+	  &lt;/snapshots&gt;
+        &lt;/repository&gt;
+      &lt;/repositories&gt;
+    &lt;/profile&gt;
+  &lt;/profiles&gt;
+  &lt;activeProfiles&gt;
+    &lt;activeProfile&gt;dev&lt;/activeProfile&gt;
+  &lt;/activeProfiles&gt;
+&lt;/settings&gt;
 </pre>
   
   b. JAVA_HOME must be set
