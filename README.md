@@ -6,34 +6,49 @@
   a. ~/.m2/settings.xml
 
      Here is an incomplete version that I currently use.
-  
+
+<pre><![CDATA[
+<settings>
   <profiles>
     <profile>
       <id>dev</id>
-      <properties>
-      </properties>
       <repositories>
-	<repository>
-	  <id>renci.repository</id>
+        <repository>
+          <id>renci.repository</id>
 	  <name>renci.repository</name>
-	  <url>http://beluga.renci.org/m2/repository</url>
-	</repository>
+	  <url>http://archiva.renci.org:8080/repository/internal</url>
+	  <releases>
+	    <enabled>true</enabled>
+	  </releases>
+	  <snapshots>
+	    <enabled>false</enabled>
+	  </snapshots>
+        </repository>
+        <repository>
+	  <id>renci.snapshot.repository</id>
+	  <name>renci.repository</name>
+	  <url>http://archiva.renci.org:8080/repository/snapshots</url>
+	  <releases>
+	    <enabled>false</enabled>
+	  </releases>
+	  <snapshots>
+	    <enabled>true</enabled>
+	  </snapshots>
+        </repository>
       </repositories>
     </profile>
   </profiles>
   <activeProfiles>
     <activeProfile>dev</activeProfile>
   </activeProfiles>
-
+</settings>
+]]></pre>
+  
   b. JAVA_HOME must be set
 
-     For example, 'export JAVA_HOME=~/jdk-1.6.0_02'
+  c. Maven 3 must be installed and M2_HOME must be set 
 
-  c. maven2 must be installed and M2_HOME must be set 
-
-     For example, 'export M2_HOME=~/m2'
-
-How to build
+2. How to build
 
     Run 'mvn clean install'
 
