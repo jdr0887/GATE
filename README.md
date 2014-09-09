@@ -7,7 +7,7 @@
 
      Here is an incomplete version that I currently use.
 
-<pre><![CDATA[
+<pre>
 <settings>
   <profiles>
     <profile>
@@ -42,7 +42,7 @@
     <activeProfile>dev</activeProfile>
   </activeProfiles>
 </settings>
-]]></pre>
+</pre>
   
   b. JAVA_HOME must be set
 
