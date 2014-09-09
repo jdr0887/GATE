@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -90,9 +91,9 @@ public class GATEEngineRunnable implements Runnable {
         // get a snapshot of jobs across sites & queues
         List<GlideinMetric> siteQueueGlideinMetricList = globalMetricsLookup(gateServiceMap);
 
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
         if (jobMap.size() == 0 || heldCondorJobCount == totalCondorJobCount) {
-            Executors.newSingleThreadExecutor().execute(
-                    new KillGlideinRunnable(jobMap, gateServiceMap, siteQueueGlideinMetricList));
+            executorService.execute(new KillGlideinRunnable(jobMap, gateServiceMap, siteQueueGlideinMetricList));
             return;
         }
 
@@ -126,7 +127,7 @@ public class GATEEngineRunnable implements Runnable {
                 Site siteInfo = gateService.getSite();
                 logger.info(String.format("Submitting %d of %d glideins for %s to %s:%s", i + 1, numberToSubmit,
                         siteInfo.getUsername(), siteQueueScore.getSiteName(), siteQueueScore.getQueueName()));
-                Executors.newSingleThreadExecutor().execute(new SubmitGlideinRunnable(gateService, siteQueueScore));
+                executorService.execute(new SubmitGlideinRunnable(gateService, siteQueueScore));
             }
 
         }
