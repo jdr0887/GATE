@@ -40,7 +40,3 @@
 2. How to build
 
     Run 'mvn clean install'
-
-
-
-
