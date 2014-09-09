@@ -33,9 +33,8 @@
     </notifiers>
   </ciManagement>
   <scm>
-    <developerConnection>scm:git:ssh://${user.name}@code.renci.org/gitroot/gate</developerConnection>
-    <connection>scm:git:ssh://developername@code.renci.org/gitroot/gate</connection>
-    <tag>HEAD</tag>
+    <developerConnection>scm:git:ssh://git@github.com:jdr0887/GATE.git</developerConnection>
+    <connection>scm:git:ssh://git@github.com:jdr0887/GATE.git</connection>
   </scm>
   <dependencyManagement>
     <dependencies>
