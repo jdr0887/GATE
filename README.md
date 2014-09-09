@@ -24,17 +24,6 @@
             &lt;enabled&gt;false&lt;/enabled&gt;
           &lt;/snapshots&gt;
         &lt;/repository&gt;
-        &lt;repository&gt;
-          &lt;id&gt;renci.snapshot.repository&lt;/id&gt;
-          &lt;name&gt;renci.repository&lt;/name&gt;
-          &lt;url&gt;http://archiva.renci.org:8080/repository/snapshots&lt;/url&gt;
-          &lt;releases&gt;
-            &lt;enabled&gt;false&lt;/enabled&gt;
-          &lt;/releases&gt;
-          &lt;snapshots&gt;
-            &lt;enabled&gt;true&lt;/enabled&gt;
-          &lt;/snapshots&gt;
-        &lt;/repository&gt;
       &lt;/repositories&gt;
     &lt;/profile&gt;
   &lt;/profiles&gt;
