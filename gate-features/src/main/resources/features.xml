@@ -30,6 +30,9 @@
     <bundle>mvn:org.renci.jlrm.jlrm-slurm/jlrm-slurm-api/${renci.jlrm.version}</bundle>
     <bundle>mvn:org.renci.jlrm.jlrm-slurm/jlrm-slurm-cli/${renci.jlrm.version}</bundle>
     <bundle>mvn:org.renci.jlrm.jlrm-slurm/jlrm-slurm-ssh/${renci.jlrm.version}</bundle>
+    <bundle>mvn:org.renci.jlrm.jlrm-sge/jlrm-sge-api/${renci.jlrm.version}</bundle>
+    <bundle>mvn:org.renci.jlrm.jlrm-sge/jlrm-sge-cli/${renci.jlrm.version}</bundle>
+    <bundle>mvn:org.renci.jlrm.jlrm-sge/jlrm-sge-ssh/${renci.jlrm.version}</bundle>
     <bundle>mvn:org.renci.gate/gate-api/${project.version}</bundle>
   </feature>
 
