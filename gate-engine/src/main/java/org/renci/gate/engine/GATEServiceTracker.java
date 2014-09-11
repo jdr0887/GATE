@@ -17,13 +17,13 @@ public class GATEServiceTracker extends ServiceTracker {
 
     @Override
     public Object addingService(ServiceReference reference) {
-        logger.info("ENTERING addingService(ServiceReference)");
+        logger.debug("ENTERING addingService(ServiceReference)");
         return super.addingService(reference);
     }
 
     @Override
     public void removedService(ServiceReference reference, Object service) {
-        logger.info("ENTERING removedService(ServiceReference)");
+        logger.debug("ENTERING removedService(ServiceReference)");
         super.removedService(reference, service);
     }
 

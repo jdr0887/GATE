@@ -29,7 +29,7 @@ public class GATEEngine {
     }
 
     public void start() throws Exception {
-        logger.info("ENTERING start()");
+        logger.debug("ENTERING start()");
         this.serviceTracker = new GATEServiceTracker(bundleContext);
         this.serviceTracker.open();
         GATEEngineRunnable runnable = new GATEEngineRunnable(this.serviceTracker, this.beanService);
@@ -37,7 +37,7 @@ public class GATEEngine {
     }
 
     public void stop() throws Exception {
-        logger.info("ENTERING stop()");
+        logger.debug("ENTERING stop()");
         this.scheduleExecutorService.shutdownNow();
         this.serviceTracker.close();
     }

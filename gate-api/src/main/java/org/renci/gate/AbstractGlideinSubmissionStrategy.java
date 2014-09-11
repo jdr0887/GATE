@@ -19,7 +19,7 @@ public abstract class AbstractGlideinSubmissionStrategy implements GlideinSubmis
     }
 
     protected void filter(Map<String, GATEService> gateServiceMap, List<GlideinMetric> siteQueueGlideinMetricList) {
-        logger.info("ENTERING filter(List<GlideinMetric>)");
+        logger.debug("ENTERING filter(List<GlideinMetric>)");
 
         Iterator<GlideinMetric> siteQueueScoreIter = siteQueueGlideinMetricList.iterator();
         while (siteQueueScoreIter.hasNext()) {

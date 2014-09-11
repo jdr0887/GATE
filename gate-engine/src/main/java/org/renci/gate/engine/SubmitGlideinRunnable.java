@@ -26,7 +26,7 @@ public class SubmitGlideinRunnable implements Runnable {
 
     @Override
     public void run() {
-        logger.info("ENTERING run()");
+        logger.debug("ENTERING run()");
         Site siteInfo = gateService.getSite();
         logger.debug(siteInfo.toString());
         List<Queue> queueList = siteInfo.getQueueList();

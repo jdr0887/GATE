@@ -26,7 +26,7 @@ public class LargeGlideinSubmissionStrategy extends AbstractGlideinSubmissionStr
 
     @Override
     public List<SiteQueueScore> calculateSiteQueueScores(GlideinSubmissionBean glideinSubmissionBean) {
-        logger.info("ENTERING calculateSiteQueueScores(LoadSubmissionStrategyBean)");
+        logger.debug("ENTERING calculateSiteQueueScores(LoadSubmissionStrategyBean)");
 
         Map<String, GATEService> gateServiceMap = glideinSubmissionBean.getGateServiceMap();
         Map<String, Integer> requiredSiteMetricsMap = glideinSubmissionBean.getRequiredSiteMetricsMap();
@@ -94,13 +94,13 @@ public class LargeGlideinSubmissionStrategy extends AbstractGlideinSubmissionStr
 
     @Override
     public int calculateNumberToSubmit(GlideinSubmissionBean glideinSubmissionBean) {
-        logger.info("ENTERING calculateNumberToSubmit(LoadSubmissionStrategyBean)");
+        logger.debug("ENTERING calculateNumberToSubmit(LoadSubmissionStrategyBean)");
         return 1;
     }
 
     private SiteQueueScore calculate(Site site, Queue queue, GlideinMetric glideinMetric,
             LocalCondorMetric localCondorMetrics) {
-        logger.info("ENTERING calculate(Site, Queue, GlideinMetric, LocalCondorMetric)");
+        logger.debug("ENTERING calculate(Site, Queue, GlideinMetric, LocalCondorMetric)");
 
         SiteQueueScore siteScoreInfo = new SiteQueueScore();
         siteScoreInfo.setSiteName(glideinMetric.getSiteName());

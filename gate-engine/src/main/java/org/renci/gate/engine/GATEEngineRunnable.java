@@ -42,7 +42,7 @@ public class GATEEngineRunnable implements Runnable {
 
     @Override
     public void run() {
-        logger.info("ENTERING run()");
+        logger.debug("ENTERING run()");
 
         Map<String, GATEService> gateServiceMap = new HashMap<String, GATEService>();
 
@@ -177,7 +177,7 @@ public class GATEEngineRunnable implements Runnable {
     }
 
     private List<GlideinMetric> globalMetricsLookup(Map<String, GATEService> gateServiceMap) {
-        logger.info("ENTERING globalMetricsLookup(Map<String, GATEService>)");
+        logger.debug("ENTERING globalMetricsLookup(Map<String, GATEService>)");
 
         List<GlideinMetric> siteQueueGlideinMetricList = new ArrayList<GlideinMetric>();
 
@@ -226,7 +226,7 @@ public class GATEEngineRunnable implements Runnable {
     private boolean isGlideinNeeded(Map<String, GATEService> gateServiceMap,
             List<GlideinMetric> siteQueueGlideinMetricList, int idleCondorJobs, int runningCondorJobs,
             int totalCondorJobs) {
-        logger.info("ENTERING isGlideinNeeded(Map<String, GATEService>, List<GlideinMetric>, int, int, int)");
+        logger.debug("ENTERING isGlideinNeeded(Map<String, GATEService>, List<GlideinMetric>, int, int, int)");
 
         // assume we need new glideins, and then run some tests to negate the assumptions
         boolean needGlidein = true;

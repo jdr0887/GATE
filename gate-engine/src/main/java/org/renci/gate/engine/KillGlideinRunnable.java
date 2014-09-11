@@ -35,7 +35,7 @@ public class KillGlideinRunnable implements Runnable {
 
     @Override
     public void run() {
-        logger.info("ENTERING run()");
+        logger.debug("ENTERING run()");
 
         for (String siteName : gateServiceMap.keySet()) {
             GATEService gateService = gateServiceMap.get(siteName);
