@@ -89,6 +89,6 @@
     <module>gate-api</module>
     <module>gate-engine</module>
     <module>gate-features</module>
-    <!-- <module>gate-distribution</module> -->
+    <!-- <module>gate-server</module> -->
   </modules>
 </project>
