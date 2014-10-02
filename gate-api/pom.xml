@@ -2,13 +2,13 @@
   <parent>
     <groupId>org.renci</groupId>
     <artifactId>gate</artifactId>
-    <version>0.2.13</version>
+    <version>0.2.14-SNAPSHOT</version>
   </parent>
   <name>GATE :: API</name>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.renci.gate</groupId>
   <artifactId>gate-api</artifactId>
-  <version>0.2.13</version>
+  <version>0.2.14-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <dependencies>
     <dependency>
