@@ -4,7 +4,7 @@
   <body>
     <section name="Building">
       <subsection name="Prerequisites">
-	<p>jLRM is %100 Java and is built using the Apache Maven build system.</p>
+	<p>GATE is %100 Java and is built using the Apache Maven build system.</p>
 	<p>Prerequisites include:</p>
 	<ul>
 	  <li>Java 1.7+ (ensure JAVA_HOME is set in your environment)</li>
