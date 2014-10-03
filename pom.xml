@@ -13,25 +13,11 @@
   <properties>
     <karaf.version>3.0.1</karaf.version>
   </properties>
-  <url>http://ci-dev.renci.org/site/gate/project-info.html</url>
+  <url>https://jdr0887.github.io/GATE</url>
   <issueManagement>
-    <system>gForge</system>
-    <url>https://code.renci.org/gf/project/gate/tracker/</url>
+    <system>GitHub Issues</system>
+    <url>https://github.com/jdr0887/GATE/issues</url>
   </issueManagement>
-  <ciManagement>
-    <system>hudson</system>
-    <url>https://ci-dev.renci.org/hudson</url>
-    <notifiers>
-      <notifier>
-	<type>mail</type>
-	<sendOnError>true</sendOnError>
-	<sendOnFailure>true</sendOnFailure>
-	<configuration>
-	  <address>jdr0887@renci.org</address>
-	</configuration>
-      </notifier>
-    </notifiers>
-  </ciManagement>
   <scm>
     <url>https://jdr0887.github.io/GATE</url>
     <developerConnection>scm:git:git@github.com:jdr0887/GATE.git</developerConnection>
