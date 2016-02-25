@@ -51,7 +51,7 @@ public class GATEEngineRunnable implements Runnable {
         if (siteSelectorServiceRefArray != null) {
             for (ServiceReference serviceRef : siteSelectorServiceRefArray) {
                 Object service = serviceTracker.getService(serviceRef);
-                logger.info("service.getClass().getName() = {}", service.getClass().getName());
+                logger.debug("service.getClass().getName() = {}", service.getClass().getName());
                 if (service instanceof GATEService) {
                     GATEService gateService = (GATEService) service;
                     Site site = gateService.getSite();
