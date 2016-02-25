@@ -3,7 +3,7 @@
   <skin>
     <groupId>org.apache.maven.skins</groupId>
     <artifactId>maven-fluido-skin</artifactId>
-    <version>1.3.1</version>
+    <version>1.4</version>
   </skin>
   <custom>
     <fluidoSkin>
@@ -23,11 +23,13 @@
       <item name="Home" href="index.html"/>
       <item name="FAQ" href="faq.html"/>
     </menu>
-    <menu name="Documentation">
-      <item name="Manual" href="manual/index.html">
-	<item name="Building" href="manual/building.html"/>
-      </item>    
+    <menu name="Manual">
+      <item name="Building" href="manual/building.html"/>
     </menu>
+    <menu name="Plugins">
+      <item name="UNC" href="plugins/unc.html"/>
+      <item name="RENCI" href="plugins/renci.html"/>
+    </menu>    
     <menu ref="reports"/>
   </body>
 </project>
