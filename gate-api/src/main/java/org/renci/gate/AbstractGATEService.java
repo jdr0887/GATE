@@ -10,6 +10,8 @@ public abstract class AbstractGATEService implements GATEService {
 
     private String activeQueues;
 
+    private String hostAllow;
+
     public AbstractGATEService() {
         super();
     }
@@ -36,6 +38,14 @@ public abstract class AbstractGATEService implements GATEService {
 
     public void setActiveQueues(String activeQueues) {
         this.activeQueues = activeQueues;
+    }
+
+    public String getHostAllow() {
+        return hostAllow;
+    }
+
+    public void setHostAllow(String hostAllow) {
+        this.hostAllow = hostAllow;
     }
 
 }
