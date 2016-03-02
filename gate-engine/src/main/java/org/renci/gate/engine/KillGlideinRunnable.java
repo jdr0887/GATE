@@ -42,23 +42,26 @@ public class KillGlideinRunnable implements Runnable {
 
             for (GlideinMetric glideinMetric : siteQueueGlideinMetricList) {
                 logger.debug("glideinMetric: {}", glideinMetric.toString());
-                if (glideinMetric.getSiteName().equals(gateService.getSite().getName())) {
-                    try {
-                        if (glideinMetric.getPending() > 0) {
-                            // remove all pending glideins
-                            gateService.deletePendingGlideins();
-                        } else if (glideinMetric.getPending() == 0 && glideinMetric.getRunning() > 0) {
-                            // remove one running glidein
-                            List<Queue> queueList = gateService.getSite().getQueueList();
-                            for (Queue queue : queueList) {
-                                if (queue.getName().equals(glideinMetric.getQueueName())) {
-                                    gateService.deleteGlidein(queue);
-                                }
+
+                if (!glideinMetric.getSiteName().equals(gateService.getSite().getName())) {
+                    continue;
+                }
+
+                try {
+                    if (glideinMetric.getPending() > 0) {
+                        // remove all pending glideins
+                        gateService.deletePendingGlideins();
+                    } else if (glideinMetric.getPending() == 0 && glideinMetric.getRunning() > 0) {
+                        // remove one running glidein
+                        List<Queue> queueList = gateService.getSite().getQueueList();
+                        for (Queue queue : queueList) {
+                            if (queue.getName().equals(glideinMetric.getQueueName())) {
+                                gateService.deleteGlidein(queue);
                             }
                         }
-                    } catch (GATEException e) {
-                        logger.error("GATEException", e);
                     }
+                } catch (GATEException e) {
+                    logger.error("GATEException", e);
                 }
             }
         }
