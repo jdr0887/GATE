@@ -42,9 +42,13 @@
       <artifactId>commons-reflection</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-collections4</artifactId>
+    </dependency>            
+    <dependency>
       <groupId>org.renci.jlrm.jlrm-condor</groupId>
       <artifactId>jlrm-condor-cli</artifactId>
-    </dependency>    
+    </dependency>
   </dependencies>
   <build>
     <plugins>
