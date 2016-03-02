@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.osgi.framework.ServiceReference;
 import org.renci.gate.GATEException;
 import org.renci.gate.GATEService;
@@ -48,17 +52,25 @@ public class GATEEngineRunnable implements Runnable {
 
         ServiceReference[] siteSelectorServiceRefArray = serviceTracker.getServiceReferences();
 
-        if (siteSelectorServiceRefArray != null) {
-            for (ServiceReference serviceRef : siteSelectorServiceRefArray) {
-                Object service = serviceTracker.getService(serviceRef);
-                logger.debug("service.getClass().getName() = {}", service.getClass().getName());
-                if (service instanceof GATEService) {
-                    GATEService gateService = (GATEService) service;
-                    Site site = gateService.getSite();
-                    logger.info(site.toString());
-                    gateServiceMap.put(site.getName(), gateService);
-                }
+        if (ArrayUtils.isEmpty(siteSelectorServiceRefArray)) {
+            logger.warn("No ServiceReferences found");
+            return;
+        }
+
+        for (ServiceReference serviceRef : siteSelectorServiceRefArray) {
+            Object service = serviceTracker.getService(serviceRef);
+            logger.debug("service.getClass().getName() = {}", service.getClass().getName());
+            if (service instanceof GATEService) {
+                GATEService gateService = (GATEService) service;
+                Site site = gateService.getSite();
+                logger.info(site.toString());
+                gateServiceMap.put(site.getName(), gateService);
             }
+        }
+
+        if (MapUtils.isEmpty(gateServiceMap)) {
+            logger.warn("No GATEServices found");
+            return;
         }
 
         logger.info("gateServiceMap.size() == {}", gateServiceMap.size());
@@ -91,9 +103,13 @@ public class GATEEngineRunnable implements Runnable {
         // get a snapshot of jobs across sites & queues
         List<GlideinMetric> siteQueueGlideinMetricList = globalMetricsLookup(gateServiceMap);
 
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        if (jobMap.size() == 0 || heldCondorJobCount == totalCondorJobCount) {
-            executorService.execute(new KillGlideinRunnable(jobMap, gateServiceMap, siteQueueGlideinMetricList));
+        if (MapUtils.isEmpty(jobMap) || heldCondorJobCount == totalCondorJobCount) {
+            try {
+                Executors.newSingleThreadExecutor()
+                        .submit(new KillGlideinRunnable(jobMap, gateServiceMap, siteQueueGlideinMetricList)).get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
             return;
         }
 
@@ -115,22 +131,30 @@ public class GATEEngineRunnable implements Runnable {
         GlideinSubmissionContext context = new GlideinSubmissionContext(glideinSubmissionBean);
         List<SiteQueueScore> siteQueueScoreList = context.calculateSiteQueueScores();
 
+        int numberToSubmit = context.calculateNumberToSubmit();
+        logger.info("numberToSubmit: {}", numberToSubmit);
+
+        if (CollectionUtils.isEmpty(siteQueueScoreList)) {
+            logger.warn("No SiteQueueScores found");
+            return;
+        }
+
         logger.info("siteQueueScoreList.size(): {}", siteQueueScoreList.size());
 
+        ExecutorService es = Executors.newFixedThreadPool(numberToSubmit);
         for (SiteQueueScore siteQueueScore : siteQueueScoreList) {
-
-            int numberToSubmit = context.calculateNumberToSubmit();
-            logger.info("numberToSubmit: {}", numberToSubmit);
-
-            for (int i = 0; i < numberToSubmit; ++i) {
-                GATEService gateService = gateServiceMap.get(siteQueueScore.getSiteName());
-                Site siteInfo = gateService.getSite();
-                logger.info(String.format("Submitting %d of %d glideins for %s to %s:%s", i + 1, numberToSubmit,
-                        siteInfo.getUsername(), siteQueueScore.getSiteName(), siteQueueScore.getQueueName()));
-                executorService.execute(new SubmitGlideinRunnable(gateService, siteQueueScore));
-            }
-
+            es.submit(() -> {
+                for (int i = 0; i < numberToSubmit; ++i) {
+                    GATEService gateService = gateServiceMap.get(siteQueueScore.getSiteName());
+                    Site siteInfo = gateService.getSite();
+                    logger.info(String.format("Submitting %d of %d glideins for %s to %s:%s", i + 1, numberToSubmit,
+                            siteInfo.getUsername(), siteQueueScore.getSiteName(), siteQueueScore.getQueueName()));
+                    es.execute(new SubmitGlideinRunnable(gateService, siteQueueScore));
+                }
+            });
         }
+        es.shutdown();
+
     }
 
     private Map<String, Integer> calculateRequiredSiteCount(Map<String, List<ClassAdvertisement>> jobMap) {
