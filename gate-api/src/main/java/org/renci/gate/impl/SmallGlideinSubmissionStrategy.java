@@ -39,8 +39,8 @@ public class SmallGlideinSubmissionStrategy extends AbstractGlideinSubmissionStr
         for (String siteName : gateServiceMap.keySet()) {
             logger.info("siteName = {}", siteName);
             if (requiredSiteMetricsMap.containsKey(siteName)) {
-                percentSiteRequiredJobOccuranceScore = (double) (requiredSiteMetricsMap.get(siteName) / requiredSiteMetricsMap
-                        .size());
+                percentSiteRequiredJobOccuranceScore = (double) (requiredSiteMetricsMap.get(siteName)
+                        / requiredSiteMetricsMap.size());
                 logger.info("percentSiteRequiredJobOccuranceScore = {}", percentSiteRequiredJobOccuranceScore);
                 percentSiteRequiredJobOccuranceMap.put(siteName, percentSiteRequiredJobOccuranceScore);
             }
@@ -72,8 +72,8 @@ public class SmallGlideinSubmissionStrategy extends AbstractGlideinSubmissionStr
                             percentSiteRequiredJobOccurance = percentSiteRequiredJobOccuranceMap.get(siteName);
                         }
                         LocalCondorMetric localCondorMetrics = new LocalCondorMetric(siteName,
-                                glideinSubmissionBean.getIdleCondorJobs(),
-                                glideinSubmissionBean.getRunningCondorJobs(), percentSiteRequiredJobOccurance);
+                                glideinSubmissionBean.getIdleCondorJobs(), glideinSubmissionBean.getRunningCondorJobs(),
+                                percentSiteRequiredJobOccurance);
                         logger.info(localCondorMetrics.toString());
 
                         if (localCondorMetrics.getSiteRequiredJobOccurance() == 1.0) {
@@ -92,12 +92,7 @@ public class SmallGlideinSubmissionStrategy extends AbstractGlideinSubmissionStr
         }
 
         // sort list based on comparator...descending score
-        Collections.sort(siteQueueScoreInfoList, new Comparator<SiteQueueScore>() {
-            @Override
-            public int compare(SiteQueueScore o1, SiteQueueScore o2) {
-                return o2.getScore().compareTo(o1.getScore());
-            }
-        });
+        siteQueueScoreInfoList.sort((a, b) -> b.getScore().compareTo(a.getScore()));
 
         SiteQueueScore winner = null;
         if (siteQueueScoreInfoList.size() > 0) {
