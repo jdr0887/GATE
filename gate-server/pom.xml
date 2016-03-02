@@ -3,13 +3,13 @@
   <parent>
     <groupId>org.renci</groupId>
     <artifactId>gate</artifactId>
-    <version>0.2.13</version>
+    <version>0.2.17-SNAPSHOT</version>
   </parent>
   <name>GATE :: Server</name>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.renci.gate</groupId>
   <artifactId>gate-server</artifactId>
-  <version>0.2.13</version>
+  <version>0.2.17-SNAPSHOT</version>
   <packaging>karaf-assembly</packaging>
   <properties>
     <assembly.directory>${project.build.directory}/assembly</assembly.directory>
@@ -41,7 +41,7 @@
       <groupId>org.renci.gate</groupId>
       <artifactId>gate-features</artifactId>
       <classifier>features</classifier>
-      <version>0.2.13</version>
+      <version>0.2.17-SNAPSHOT</version>
       <type>xml</type>
       <scope>runtime</scope>
     </dependency>
@@ -66,13 +66,21 @@
     <plugins>
       <plugin>
 	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-eclipse-plugin</artifactId>
+	<version>${maven.eclipse.plugin.version}</version>
+	<configuration>
+	  <skip>true</skip>
+	</configuration>
+      </plugin>      
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-resources-plugin</artifactId>
+	<version>${maven.resources.plugin.version}</version>	
 	<executions>
 	  <execution>
-	    <id>copy-resources</id>
-	    <phase>prepare-package</phase>
+	    <id>process-resources</id>
 	    <goals>
-	      <goal>copy-resources</goal>
+	      <goal>resources</goal>
 	    </goals>
 	  </execution>
 	</executions>
@@ -86,15 +94,24 @@
 	  <ignoreDependencyFlag>true</ignoreDependencyFlag>
 	  <targetServerDirectory>${assembly.directory}</targetServerDirectory>
           <bootFeatures>
-            <feature>standard</feature>
-            <feature>ssh</feature>
+            <feature>feature</feature>
+            <feature>shell</feature>
+            <feature>bundle</feature>
             <feature>config</feature>
+            <feature>diagnostic</feature>
+            <feature>instance</feature>
+            <feature>jaas</feature>
+            <feature>log</feature>
+            <feature>package</feature>
+            <feature>service</feature>
+            <feature>system</feature>
+            <feature>ssh</feature>
             <feature>management</feature>
-            <feature>eventadmin</feature>
-	    <feature>transaction</feature>
+            <feature>deployer</feature>
+	    <feature>obr</feature>
 	    <feature>jndi</feature>
-	    <feature>spring</feature> 
-	    <feature>gate</feature>
+	    <feature>gate-common</feature>
+	    <feature>gate-engine</feature>
           </bootFeatures>
         </configuration>
       </plugin>
