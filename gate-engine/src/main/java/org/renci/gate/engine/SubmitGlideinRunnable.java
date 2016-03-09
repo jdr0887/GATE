@@ -18,10 +18,13 @@ public class SubmitGlideinRunnable implements Runnable {
 
     private SiteQueueScore siteQueueScore;
 
-    public SubmitGlideinRunnable(GATEService gateService, SiteQueueScore siteQueueScore) {
+    private Integer numberToSubmit;
+
+    public SubmitGlideinRunnable(GATEService gateService, SiteQueueScore siteQueueScore, Integer numberToSubmit) {
         super();
         this.gateService = gateService;
         this.siteQueueScore = siteQueueScore;
+        this.numberToSubmit = numberToSubmit;
     }
 
     @Override
@@ -30,14 +33,23 @@ public class SubmitGlideinRunnable implements Runnable {
         Site siteInfo = gateService.getSite();
         logger.debug(siteInfo.toString());
         List<Queue> queueList = siteInfo.getQueueList();
-        for (Queue queue : queueList) {
-            if (queue.getName().equals(siteQueueScore.getQueueName())) {
-                logger.debug(queue.toString());
-                try {
-                    gateService.createGlidein(queue);
-                } catch (GATEException e) {
-                    logger.error("GATEException", e);
-                }
+        Queue queue = null;
+        for (Queue q : queueList) {
+            if (q.getName().equals(siteQueueScore.getQueueName())) {
+                queue = q;
+                break;
+            }
+        }
+
+        logger.debug(queue.toString());
+
+        for (int i = 0; i < numberToSubmit; ++i) {
+            try {
+                logger.info(String.format("Submitting %d of %d glideins for %s to %s:%s", i + 1, numberToSubmit,
+                        siteInfo.getUsername(), siteQueueScore.getSiteName(), siteQueueScore.getQueueName()));
+                gateService.createGlidein(queue);
+            } catch (GATEException e) {
+                logger.error("GATEException", e);
             }
         }
     }
