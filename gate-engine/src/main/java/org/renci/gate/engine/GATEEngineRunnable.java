@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -141,19 +140,15 @@ public class GATEEngineRunnable implements Runnable {
 
         logger.info("siteQueueScoreList.size(): {}", siteQueueScoreList.size());
 
-        ExecutorService es = Executors.newFixedThreadPool(numberToSubmit);
-        for (SiteQueueScore siteQueueScore : siteQueueScoreList) {
-            es.submit(() -> {
-                for (int i = 0; i < numberToSubmit; ++i) {
-                    GATEService gateService = gateServiceMap.get(siteQueueScore.getSiteName());
-                    Site siteInfo = gateService.getSite();
-                    logger.info(String.format("Submitting %d of %d glideins for %s to %s:%s", i + 1, numberToSubmit,
-                            siteInfo.getUsername(), siteQueueScore.getSiteName(), siteQueueScore.getQueueName()));
-                    es.execute(new SubmitGlideinRunnable(gateService, siteQueueScore));
-                }
-            });
+        try {
+            for (SiteQueueScore siteQueueScore : siteQueueScoreList) {
+                GATEService gateService = gateServiceMap.get(siteQueueScore.getSiteName());
+                Executors.newSingleThreadExecutor()
+                        .submit(new SubmitGlideinRunnable(gateService, siteQueueScore, numberToSubmit)).get();
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
         }
-        es.shutdown();
 
     }
 
