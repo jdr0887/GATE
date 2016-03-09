@@ -31,7 +31,6 @@ public class SubmitGlideinRunnable implements Runnable {
     public void run() {
         logger.debug("ENTERING run()");
         Site siteInfo = gateService.getSite();
-        logger.debug(siteInfo.toString());
         List<Queue> queueList = siteInfo.getQueueList();
         Queue queue = null;
         for (Queue q : queueList) {
@@ -40,9 +39,10 @@ public class SubmitGlideinRunnable implements Runnable {
                 break;
             }
         }
-
-        logger.debug(queue.toString());
-
+        if (queue == null) {
+            logger.warn("Queue is null");
+            return;
+        }
         for (int i = 0; i < numberToSubmit; ++i) {
             try {
                 logger.info(String.format("Submitting %d of %d glideins for %s to %s:%s", i + 1, numberToSubmit,
