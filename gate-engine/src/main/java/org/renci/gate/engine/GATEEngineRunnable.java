@@ -20,6 +20,7 @@ import org.renci.gate.GlideinSubmissionBean;
 import org.renci.gate.GlideinSubmissionContext;
 import org.renci.gate.SiteQueueScore;
 import org.renci.jlrm.JLRMException;
+import org.renci.jlrm.JobStatusInfo;
 import org.renci.jlrm.Queue;
 import org.renci.jlrm.Site;
 import org.renci.jlrm.condor.ClassAdvertisement;
@@ -77,35 +78,35 @@ public class GATEEngineRunnable implements Runnable {
         String username = System.getProperty("user.name");
 
         // go get a snapshot of local jobs
-        Map<String, List<ClassAdvertisement>> jobMap = new HashMap<String, List<ClassAdvertisement>>();
+        Map<String, List<ClassAdvertisement>> localJobMap = new HashMap<String, List<ClassAdvertisement>>();
         try {
             CondorLookupJobsByOwnerCallable callable = new CondorLookupJobsByOwnerCallable(username);
-            jobMap.putAll(callable.call());
+            localJobMap.putAll(callable.call());
         } catch (JLRMException e) {
             logger.error("JLRMException", e);
         }
 
-        int totalCondorJobCount = jobMap.size();
+        int totalCondorJobCount = localJobMap.size();
         logger.info("totalCondorJobCount: {}", totalCondorJobCount);
 
-        int heldCondorJobCount = calculateJobCount(jobMap, CondorJobStatusType.HELD);
+        int heldCondorJobCount = calculateJobCount(localJobMap, CondorJobStatusType.HELD);
         logger.info("heldCondorJobCount: {}", heldCondorJobCount);
 
-        int idleCondorJobCount = calculateJobCount(jobMap, CondorJobStatusType.IDLE);
+        int idleCondorJobCount = calculateJobCount(localJobMap, CondorJobStatusType.IDLE);
         logger.info("idleCondorJobCount: {}", idleCondorJobCount);
 
-        int runningCondorJobCount = calculateJobCount(jobMap, CondorJobStatusType.RUNNING);
+        int runningCondorJobCount = calculateJobCount(localJobMap, CondorJobStatusType.RUNNING);
         logger.info("runningCondorJobCount: {}", runningCondorJobCount);
 
-        Map<String, Integer> requiredSiteMetricsMap = calculateRequiredSiteCount(jobMap);
+        Map<String, Integer> requiredSiteMetricsMap = calculateRequiredSiteCount(localJobMap);
 
         // get a snapshot of jobs across sites & queues
         List<GlideinMetric> siteQueueGlideinMetricList = globalMetricsLookup(gateServiceMap);
 
-        if (MapUtils.isEmpty(jobMap) || heldCondorJobCount == totalCondorJobCount) {
+        if (MapUtils.isEmpty(localJobMap) || heldCondorJobCount == totalCondorJobCount) {
             try {
                 Executors.newSingleThreadExecutor()
-                        .submit(new KillGlideinRunnable(jobMap, gateServiceMap, siteQueueGlideinMetricList)).get();
+                        .submit(new KillGlideinRunnable(localJobMap, gateServiceMap, siteQueueGlideinMetricList)).get();
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
@@ -197,47 +198,20 @@ public class GATEEngineRunnable implements Runnable {
 
     private List<GlideinMetric> globalMetricsLookup(Map<String, GATEService> gateServiceMap) {
         logger.debug("ENTERING globalMetricsLookup(Map<String, GATEService>)");
-
         List<GlideinMetric> siteQueueGlideinMetricList = new ArrayList<GlideinMetric>();
-
         for (String siteName : gateServiceMap.keySet()) {
-
             GATEService gateService = gateServiceMap.get(siteName);
-            List<GlideinMetric> glideinMetricList = null;
-
             try {
                 if (!gateService.isValid()) {
                     logger.warn("isValid() failure: {}", siteName);
                     continue;
                 }
+                gateService.init();
+                List<GlideinMetric> glideinMetricList = gateService.getMetrics();
+                siteQueueGlideinMetricList.addAll(glideinMetricList);
             } catch (GATEException e) {
                 logger.warn("isValid error", e);
             }
-
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                glideinMetricList = gateService.lookupMetrics();
-            } catch (Exception e) {
-                logger.warn("There was a problem looking up metrics", e);
-            }
-
-            if (glideinMetricList == null) {
-                logger.warn("null glideinMetricList: {}", siteName);
-                continue;
-            }
-
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            siteQueueGlideinMetricList.addAll(glideinMetricList);
         }
         return siteQueueGlideinMetricList;
     }
