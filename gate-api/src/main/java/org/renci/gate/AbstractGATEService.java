@@ -1,5 +1,8 @@
 package org.renci.gate;
 
+import java.util.Set;
+
+import org.renci.jlrm.JobStatusInfo;
 import org.renci.jlrm.Site;
 
 public abstract class AbstractGATEService implements GATEService {
@@ -12,8 +15,18 @@ public abstract class AbstractGATEService implements GATEService {
 
     private String hostAllow;
 
+    private Set<JobStatusInfo> jobStatusInfo;
+
     public AbstractGATEService() {
         super();
+    }
+
+    public Set<JobStatusInfo> getJobStatusInfo() {
+        return jobStatusInfo;
+    }
+
+    public void setJobStatusInfo(Set<JobStatusInfo> jobStatusInfo) {
+        this.jobStatusInfo = jobStatusInfo;
     }
 
     public Site getSite() {
