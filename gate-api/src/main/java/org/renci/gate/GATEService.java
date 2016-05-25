@@ -11,7 +11,9 @@ import org.renci.jlrm.Site;
  */
 public interface GATEService {
 
-    public List<GlideinMetric> lookupMetrics() throws GATEException;
+    public void init() throws GATEException;
+
+    public List<GlideinMetric> getMetrics() throws GATEException;
 
     public Boolean isValid() throws GATEException;
 
