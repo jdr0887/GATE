@@ -206,11 +206,15 @@ public class GATEEngineRunnable implements Runnable {
                     logger.warn("isValid() failure: {}", siteName);
                     continue;
                 }
+            } catch (Exception e) {
+                logger.error("Problem with validation", e);
+            }
+            try {
                 gateService.init();
                 List<GlideinMetric> glideinMetricList = gateService.getMetrics();
                 siteQueueGlideinMetricList.addAll(glideinMetricList);
-            } catch (GATEException e) {
-                logger.warn("isValid error", e);
+            } catch (Exception e) {
+                logger.error("Problem with init", e);
             }
         }
         return siteQueueGlideinMetricList;
