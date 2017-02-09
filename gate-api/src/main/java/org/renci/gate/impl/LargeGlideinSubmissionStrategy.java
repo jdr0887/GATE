@@ -88,6 +88,8 @@ public class LargeGlideinSubmissionStrategy extends AbstractGlideinSubmissionStr
             }
 
         }
+        // sort list based on comparator...descending score
+        siteQueueScoreInfoList.sort((a, b) -> b.getScore().compareTo(a.getScore()));
 
         return siteQueueScoreInfoList;
     }

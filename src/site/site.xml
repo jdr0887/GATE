@@ -20,8 +20,7 @@
   </bannerRight>
   <body>
     <menu name="Overview">
-      <item name="Home" href="index.html"/>
-      <item name="FAQ" href="faq.html"/>
+      <item name="About" href="index.html"/>
     </menu>
     <menu name="Manual">
       <item name="Building" href="manual/building.html"/>

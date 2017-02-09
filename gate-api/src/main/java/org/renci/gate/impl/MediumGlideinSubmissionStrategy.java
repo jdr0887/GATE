@@ -89,6 +89,9 @@ public class MediumGlideinSubmissionStrategy extends AbstractGlideinSubmissionSt
 
         }
 
+        // sort list based on comparator...descending score
+        siteQueueScoreInfoList.sort((a, b) -> b.getScore().compareTo(a.getScore()));
+
         return siteQueueScoreInfoList;
     }
 

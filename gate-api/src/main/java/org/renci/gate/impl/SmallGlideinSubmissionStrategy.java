@@ -94,19 +94,19 @@ public class SmallGlideinSubmissionStrategy extends AbstractGlideinSubmissionStr
         // sort list based on comparator...descending score
         siteQueueScoreInfoList.sort((a, b) -> b.getScore().compareTo(a.getScore()));
 
-        SiteQueueScore winner = null;
-        if (siteQueueScoreInfoList.size() > 0) {
-            winner = siteQueueScoreInfoList.get(0);
-        }
-
-        siteQueueScoreInfoList.clear();
-
-        if (winner == null) {
-            logger.warn("no winner!!!");
-            return siteQueueScoreInfoList;
-        }
-
-        siteQueueScoreInfoList.add(winner);
+        // SiteQueueScore winner = null;
+        // if (siteQueueScoreInfoList.size() > 0) {
+        // winner = siteQueueScoreInfoList.get(0);
+        // }
+        //
+        // siteQueueScoreInfoList.clear();
+        //
+        // if (winner == null) {
+        // logger.warn("no winner!!!");
+        // return siteQueueScoreInfoList;
+        // }
+        //
+        // siteQueueScoreInfoList.add(winner);
 
         return siteQueueScoreInfoList;
     }

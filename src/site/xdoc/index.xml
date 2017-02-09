@@ -1,9 +1,11 @@
 <document>
   <body>
-    <section name="About GATE">
-      <p></p>
-    </section>
-    <section name="Assumptions &amp; Goals">
+    <section name="Grid Access Triage Engine (GATE)">
+      <p>GATE is an OSGi based application that intelligently
+      provisions Glideins to clusters (plugins) to meet job demand
+      from a localized HTCondor installation.  GATE was originally
+      developed alongside <a
+      href="https://github.com/jdr0887/MaPSeq-API">MaPSeq</a></p>
     </section>
   </body>
 </document>
