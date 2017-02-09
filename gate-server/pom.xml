@@ -12,6 +12,7 @@
   <version>0.2.17-SNAPSHOT</version>
   <packaging>karaf-assembly</packaging>
   <properties>
+    <maven.site.plugin.skip>true</maven.site.plugin.skip>
     <assembly.directory>${project.build.directory}/assembly</assembly.directory>
   </properties>
   <dependencies>

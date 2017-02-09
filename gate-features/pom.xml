@@ -10,6 +10,9 @@
   <artifactId>gate-features</artifactId>
   <version>0.2.28-SNAPSHOT</version>
   <packaging>pom</packaging>
+  <properties>
+    <maven.site.plugin.skip>true</maven.site.plugin.skip>
+  </properties>
   <build>
     <resources>
       <resource>
