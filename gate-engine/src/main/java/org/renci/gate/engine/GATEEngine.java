@@ -8,10 +8,6 @@ import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * 
- * @author jdr0887
- */
 public class GATEEngine {
 
     private final Logger logger = LoggerFactory.getLogger(GATEEngine.class);
